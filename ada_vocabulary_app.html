@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ada Word World (Vocabulary App)</title>
+    <title>Ada'nın Başarı Dünyası (Vocabulary)</title>
     
     <!-- Tailwind CSS (Aesthetics & Responsiveness) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -88,12 +88,12 @@
     
     <!-- Header -->
     <header class="bg-gradient-to-br from-red-400 to-teal-400 text-white p-4 rounded-b-xl shadow-lg">
-        <h1 class="text-2xl font-bold text-center">Ada Word World 🌟</h1>
+        <h1 class="text-2xl font-bold text-center">Ada'nın Başarı Dünyası 🌟</h1>
         <div class="flex justify-around items-center mt-2 text-sm font-semibold">
             <span>🔥 Seri: <span id="streak-count">0</span> Gün</span>
             <span>⏱️ <span id="timer-display">00:00</span> / 15:00</span>
         </div>
-        <p id="streak-goal-msg" class="text-center text-xs mt-1 italic opacity-90">10 days series get a gift!</p>
+        <p id="streak-goal-msg" class="text-center text-xs mt-1 italic opacity-90">10 gün üst üste seri yap, ödül kazan!</p>
         <!-- Progress Bar -->
         <div class="w-full bg-white bg-opacity-30 rounded-full h-2 mt-2">
             <div id="progress-bar" class="bg-yellow-300 h-2 rounded-full transition-all duration-500" style="width: 0%;"></div>
@@ -105,36 +105,36 @@
         <div id="loading-screen" class="absolute inset-0 bg-white/80 flex items-center justify-center z-50">
             <div class="text-center">
                 <div class="animate-spin rounded-full h-12 w-12 border-4 border-r-white border-teal-500 mx-auto"></div>
-                <p class="mt-4 text-gray-700">Güvenli Bağlantı Kuruluyor...</p>
+                <p class="mt-4 text-gray-700">Bağlanılıyor...</p>
             </div>
         </div>
 
         <!-- Screens will be rendered here -->
-        <div id="screen-home" class="screen hidden flex-col items-center space-y-5">
+        <div id="screen-home" class="screen flex flex-col items-center space-y-5">
             <div class="text-center my-8">
-                <h3 class="text-3xl font-extrabold text-gray-800">Welcome Ada!</h3>
-                <p id="completion-msg" class="text-green-600 font-bold mt-2 hidden">Today is OK! ✅</p>
-                <p id="reward-notification" class="text-red-500 font-bold mt-2 text-lg animate-pulse hidden" onclick="showScreen('reward')">🎁 Win the gift! Tıkla!</p>
+                <h3 class="text-3xl font-extrabold text-gray-800">Hoşgeldin Ada!</h3>
+                <p id="completion-msg" class="text-green-600 font-bold mt-2 hidden">BUGÜN TAMAMLANDI! ✅</p>
+                <p id="reward-notification" class="text-red-500 font-bold mt-2 text-lg animate-pulse hidden">🎁 ÖDÜL KAZANDIN! Tıkla!</p>
             </div>
             
             <button class="w-11/12 p-4 bg-teal-500 text-white font-bold rounded-xl btn-action shadow-teal-700" onclick="startStudy('flashcard')">
-                🃏 CARDS
+                🃏 KARTLARLA ÖĞREN
             </button>
             <button class="w-11/12 p-4 bg-red-500 text-white font-bold rounded-xl btn-action shadow-red-700" onclick="startStudy('quiz')">
-                ✍️ QUIZ
+                ✍️ ÇOKTAN SEÇMELİ SINAV
             </button>
             <button class="w-11/12 p-4 bg-yellow-500 text-white font-bold rounded-xl btn-action shadow-yellow-700" onclick="startStudy('fillInTheBlanks')">
-                ✏️ FILL THE BLANKS
+                ✏️ BOŞLUK DOLDURMA SINAVI
             </button>
             <button class="w-11/12 p-4 bg-gray-600 text-white font-bold rounded-xl btn-action shadow-gray-800" onclick="showScreen('parent')">
-                🔒 WORDS
+                🔒 EBEVEYN KELİME YÖNETİMİ
             </button>
         </div>
 
         <!-- FLASHCARD EKRANI -->
         <div id="screen-flashcard" class="screen hidden flex-col items-center">
             <button class="text-gray-500 mb-4 self-start" onclick="stopStudy()">
-                <span class="text-2xl">⬅️</span> Back to Menu
+                <span class="text-2xl">⬅️</span> Menüye Dön
             </button>
             <div class="flashcard-container mb-6" onclick="flipCard()">
                 <div class="flashcard" id="active-card">
@@ -155,10 +155,10 @@
         <!-- ÇOKTAN SEÇMELİ EKRANI -->
         <div id="screen-quiz" class="screen hidden flex-col items-center">
             <button class="text-gray-500 mb-4 self-start" onclick="stopStudy()">
-                <span class="text-2xl">⬅️</span> Back to Menu
+                <span class="text-2xl">⬅️</span> Menüye Dön
             </button>
             
-            <h3 class="text-xl font-semibold mb-6 text-gray-700">Choose the correct one:</h3>
+            <h3 class="text-xl font-semibold mb-6 text-gray-700">Aşağıdaki kelimelerden doğru olanı seç:</h3>
             
             <p class="text-3xl font-bold text-red-500 mb-8 text-center px-4" id="quiz-question-mc">Yükleniyor...</p>
 
@@ -172,7 +172,7 @@
         <!-- BOŞLUK DOLDURMA EKRANI -->
         <div id="screen-fillInTheBlanks" class="screen hidden flex-col items-center">
             <button class="text-gray-500 mb-4 self-start" onclick="stopStudy()">
-                <span class="text-2xl">⬅️</span> Back to Menu
+                <span class="text-2xl">⬅️</span> Menüye Dön
             </button>
             
             <h3 class="text-xl font-semibold mb-6 text-gray-700">Lütfen doğru çeviriyi yazın:</h3>
@@ -195,7 +195,6 @@
                 <span class="text-2xl">⬅️</span> Menüye Dön
             </button>
             <h3 class="text-2xl font-bold mb-4 text-gray-800">🔒 Kelime Yönetimi (Ebeveyn)</h3>
-            <p class="text-sm text-gray-500 mb-4">Kullanıcı ID: <span class="font-mono text-xs text-red-500 break-all" id="user-id-display">Yükleniyor...</span></p>
             <div class="w-full max-w-sm bg-gray-100 p-4 rounded-xl space-y-3 shadow-inner">
                 <input type="text" id="new-eng" placeholder="İngilizce Kelime" class="p-2 border rounded-lg w-full">
                 <input type="text" id="new-tr" placeholder="Türkçe Anlamı" class="p-2 border rounded-lg w-full">
@@ -215,9 +214,9 @@
 
         <!-- ÖDÜL EKRANI -->
         <div id="screen-reward" class="screen hidden flex-col items-center justify-center h-full">
-            <h2 class="text-3xl font-extrabold text-red-600 mb-4 animate-bounce">🎉 Congratilations ADA! 🎉</h2>
-            <p class="text-xl text-gray-700 mb-8">10 days serie is OK!</p>
-            <p class="text-2xl font-semibold text-teal-600 mb-6">Choose yout gift:</p>
+            <h2 class="text-3xl font-extrabold text-red-600 mb-4 animate-bounce">🎉 TEBRİKLER ADA! 🎉</h2>
+            <p class="text-xl text-gray-700 mb-8">10 Günlük muhteşem seriyi tamamladın!</p>
+            <p class="text-2xl font-semibold text-teal-600 mb-6">Şimdi hediye paketini seç:</p>
             <div class="flex space-x-6">
                 <!-- Her kutuya specific ödül atadık -->
                 <div class="text-6xl cursor-pointer hover:scale-110 transition-transform gift-box" data-gift="1" onclick="openGift(1)">🎁</div>
@@ -228,7 +227,7 @@
                 <!-- Ödül Buraya Gelecek -->
             </div>
             <button id="claim-button" class="mt-10 p-4 bg-teal-500 text-white font-bold rounded-xl btn-action shadow-teal-700 hidden" onclick="claimReward()">
-                Take the gift, Back to Menu
+                Ödülü Aldım, Menüye Dön
             </button>
         </div>
     </div>
@@ -247,54 +246,29 @@
 <script type="module">
     // Firebase modüllerini içe aktarma
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken, setPersistence, inMemoryPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, collection, onSnapshot, updateDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, collection, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // Hata ayıklama için log seviyesini ayarla
-    setLogLevel('debug'); 
-
-    // --- 1. FIREBASE KONFİGÜRASYONU VE BAŞLATMA (ZORUNLU BAĞLANTI) ---
-    let firebaseConfig = null;
-    let configParseSuccess = false;
-    try {
-        // Yapılandırma JSON'unu güvenli bir şekilde ayrıştırma
-        const configString = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}';
-        firebaseConfig = JSON.parse(configString);
-        // Yapılandırma başarılı ve proje kimliği mevcutsa
-        if (firebaseConfig && firebaseConfig.projectId) {
-            configParseSuccess = true;
-        } else {
-            // Eğer config varsa ama Project ID yoksa kritik hata
-            console.error("CRITICAL: Firebase configuration is missing Project ID. Cannot start persistent mode.");
-        }
-    } catch (e) {
-        // JSON ayrıştırma hatası
-        console.error("CRITICAL: Failed to parse Firebase config. Cannot start persistent mode.", e);
-    }
+    // --- 1. FIREBASE KONFİGÜRASYONU VE BAŞLATMA ---
+    const firebaseConfig = {
+    apiKey: "AIzaSyAp3ywA8mWCKOH3fA7JACPfx3Ko_7VaD00",
+    authDomain: "ada-vocabulary-world.firebaseapp.com",
+    projectId: "ada-vocabulary-world",
+    storageBucket: "ada-vocabulary-world.firebasestorage.app",
+    messagingSenderId: "358916729594",
+    appId: "1:358916729594:web:a5da6a37d9bafbf9d47743"
     
-    // Sadece başarılı bir yapılandırma varsa Firebase'i aktif et
-    let isFirebaseActive = configParseSuccess; 
-    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
     
-    // Global değişkenler
-    let app = null;
-    let db = null;
-    let auth = null;
-
     // --- TEMEL AYARLAR ---
     const TARGET_TIME = 15 * 60; // 15 dakika (saniye)
     const STREAK_GOAL = 10;
     const APP_ID = typeof __app_id !== 'undefined' ? __app_id : 'default-ada-voc-app-v1'; 
 
     let userId = null;
-    let appData = {
-        streak: 0,
-        todayTime: 0,
-        dayCompleted: false,
-        lastActiveDate: null,
-        lastCompletedDate: null,
-        rewardClaimed: true 
-    };
+    let appData = null;
     let timerInterval = null;
     let isStudying = false;
     let words = []; // Kelime listesi
@@ -304,76 +278,46 @@
     let currentStudyWord = null;
     let expectedAnswer = null; 
 
-    // --- 2. FIREBASE VE AUTHENTICATION (KATI MOD) ---
+    // --- 2. FIREBASE VE AUTHENTICATION ---
 
     async function startApp() {
-        document.getElementById('loading-screen').classList.remove('hidden');
-
-        if (!isFirebaseActive) {
-             // Yapılandırma eksikse uygulama menüsünü gösterme
-             showModal("Kritik Hata", "Firebase yapılandırması eksik olduğu için uygulama başlatılamıyor. İlerleme takibi (Firestore) yapılamaz.");
-             document.getElementById('loading-screen').classList.add('hidden');
-             return;
-        }
-
         try {
-            // Firestore başlatma
-            app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-
-            let userCredential = null;
-
-            // Kimlik doğrulama
+            document.getElementById('loading-screen').classList.remove('hidden');
+            
             if (initialAuthToken) {
-                await setPersistence(auth, inMemoryPersistence);
-                userCredential = await signInWithCustomToken(auth, initialAuthToken);
+                const userCredential = await signInWithCustomToken(auth, initialAuthToken);
+                userId = userCredential.user.uid;
+                console.log("Firebase özel token ile giriş başarılı. User ID:", userId);
             } else {
-                userCredential = await signInAnonymously(auth);
+                const userCredential = await signInAnonymously(auth);
+                userId = userCredential.user.uid;
+                console.log("Firebase anonim giriş başarılı. User ID:", userId);
             }
 
-            // User ID'yi al
-            if (userCredential && userCredential.user) {
-                userId = userCredential.user.uid;
-                isAuthReady = true;
-                console.log("Firebase giriş başarılı. User ID:", userId);
-                
-                document.getElementById('user-id-display').innerText = userId;
-                setupDataListeners();
-                updateUI(); // Başlangıç UI güncellemesi
-                showScreen('home'); // Başarılıysa menüyü göster
-                
-            } else {
-                throw new Error("Firebase user ID could not be retrieved after sign-in.");
-            }
+            isAuthReady = true;
+
+            setupDataListeners();
             
         } catch (error) {
-            // Hata durumunda uygulama BAŞLATILMAZ
-            console.error("Firebase başlatılırken veya bağlanılırken kritik hata:", error);
-            
-            // Kullanıcıyı bilgilendir ve uygulamayı durdur
-            showModal("Kritik Hata", `Firebase bağlantısı kurulamadı. İlerleme takibi (Firestore) yapılamaz. Hata: ${error.message}`);
-            
+            console.error("Firebase başlatılırken hata:", error);
+            showModal("Bağlantı Hatası", "Uygulamaya bağlanılamadı. Lütfen konsolu kontrol edin.");
+        } finally {
             document.getElementById('loading-screen').classList.add('hidden');
-            return; 
         }
-        
-        document.getElementById('loading-screen').classList.add('hidden');
     }
 
     const getUserDataRef = () => doc(db, 'artifacts', APP_ID, 'users', userId, 'profile', 'meta');
     const getWordsRef = () => collection(db, 'artifacts', APP_ID, 'users', userId, 'words');
 
     async function setupDataListeners() {
-        if (!db || !userId) return; // Zaten FirebaseActive kontrolü yapıldı
+        if (!isAuthReady) return;
 
         // 1. Profil ve Seri Takibi Verilerini Dinleme
         onSnapshot(getUserDataRef(), (docSnapshot) => {
             if (docSnapshot.exists()) {
                 appData = docSnapshot.data();
             } else {
-                // Eğer veri yoksa, varsayılan değerleri oluştur ve kaydet
-                const initialData = {
+                appData = {
                     streak: 0,
                     todayTime: 0,
                     dayCompleted: false,
@@ -381,64 +325,51 @@
                     lastCompletedDate: null,
                     rewardClaimed: true 
                 };
-                setDoc(getUserDataRef(), initialData);
-                appData = initialData;
+                setDoc(getUserDataRef(), appData);
             }
             checkDayReset();
             updateUI();
-        }, (error) => {
-            console.error("User Data Snapshot Error:", error);
         });
 
         // 2. Kelimeleri Dinleme
         onSnapshot(getWordsRef(), (snapshot) => {
             words = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             updateWordListUI();
-        }, (error) => {
-            console.error("Words Snapshot Error:", error);
         });
     }
 
     function checkDayReset() {
         if (!appData) return;
-        
         const todayStr = new Date().toDateString();
         
         if (appData.lastActiveDate !== todayStr) {
+            appData.todayTime = 0;
+            appData.dayCompleted = false;
+            appData.lastActiveDate = todayStr;
             
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
             const yesterdayStr = yesterday.toDateString();
 
-            let newStreak = appData.streak;
-
-            // Eğer bugün aktif olunan ilk günse ve dün tamamlanmadıysa, seriyi sıfırla.
-            // Ancak, lastCompletedDate'in dünkü tarih olmaması ve bugünkü tarih olmaması durumunda sıfırlama yapar.
-            if (appData.lastCompletedDate !== todayStr && appData.lastCompletedDate !== yesterdayStr) {
-                newStreak = 0;
+            if (appData.lastCompletedDate !== null && appData.lastCompletedDate !== yesterdayStr) {
+                 appData.streak = 0;
             }
             
-            // Veritabanını güncelle
             updateDoc(getUserDataRef(), {
-                todayTime: 0,
-                dayCompleted: false,
-                lastActiveDate: todayStr,
-                streak: newStreak
+                todayTime: appData.todayTime,
+                dayCompleted: appData.dayCompleted,
+                lastActiveDate: appData.lastActiveDate,
+                streak: appData.streak
             });
-            
-            appData.todayTime = 0;
-            appData.dayCompleted = false;
-            appData.lastActiveDate = todayStr;
-            appData.streak = newStreak;
         }
     }
 
     // --- 3. AKILLI ZAMANLAYICI MANTIĞI ---
 
     function startTimer() {
-        if (appData && appData.dayCompleted) {
-            document.getElementById('completion-msg').classList.remove('hidden');
-            return;
+        if (appData.dayCompleted) {
+             document.getElementById('completion-msg').classList.remove('hidden');
+             return;
         }
 
         isStudying = true;
@@ -460,30 +391,12 @@
     function stopTimer() {
         isStudying = false;
         if (timerInterval) clearInterval(timerInterval);
-        // Çalışma süresi durduğunda, güncel süreyi anında kaydet
-        if (appData && !appData.dayCompleted && appData.todayTime > 0) {
-            updateDoc(getUserDataRef(), { todayTime: appData.todayTime });
-        }
     }
 
     async function completeDay() {
         appData.dayCompleted = true;
-        
-        const lastCompletedDate = new Date().toDateString();
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayStr = yesterday.toDateString();
-
-        // Seri artışı sadece art arda günlerde tamamlandıysa gerçekleşir
-        let newStreak = appData.streak;
-        if (appData.lastCompletedDate !== lastCompletedDate) {
-            if (appData.lastCompletedDate === yesterdayStr || appData.lastCompletedDate === null) {
-                newStreak++;
-            }
-        }
-        
-        appData.lastCompletedDate = lastCompletedDate;
-        appData.streak = newStreak;
+        appData.streak++;
+        appData.lastCompletedDate = new Date().toDateString();
         
         showModal("Tebrikler!", "Bugünkü 15 dakikalık hedefini tamamladın! Seriye 1 gün eklendi.");
         
@@ -500,19 +413,14 @@
     // --- 4. ÖDÜL VE SERİ TAKİBİ ---
     
     function checkRewardStatus() {
-        if (!appData) return;
-        
         const rewardNotif = document.getElementById('reward-notification');
         
-        // Ödül Hakkı Kazanma Kontrolü
-        if (appData.streak > 0 && appData.streak % STREAK_GOAL === 0 && appData.rewardClaimed === true) {
-             // Sadece 10'un katları ilk kez vurulduğunda ödül hakkını sıfırla
+        if (appData && appData.streak > 0 && appData.streak % STREAK_GOAL === 0 && appData.rewardClaimed === true) {
              appData.rewardClaimed = false;
              updateDoc(getUserDataRef(), { rewardClaimed: false });
         }
         
-        // Bildirim Görüntüleme Kontrolü
-        if (appData.rewardClaimed === false) {
+        if (appData && appData.rewardClaimed === false) {
             rewardNotif.classList.remove('hidden');
             rewardNotif.onclick = () => showScreen('reward');
         } else {
@@ -530,7 +438,7 @@
     };
 
     window.openGift = function(boxNum) {
-        if (!appData || appData.rewardClaimed) {
+        if (appData.rewardClaimed) {
             showModal("Hata", "Şu an aktif bir ödül hakkın yok. Yeni seri için çalışmaya devam!");
             return;
         }
@@ -555,8 +463,7 @@
     }
 
     window.claimReward = function() {
-        if (appData && appData.rewardClaimed === false) {
-             appData.rewardClaimed = true;
+        if (appData.rewardClaimed === false) {
              updateDoc(getUserDataRef(), { rewardClaimed: true });
         }
         document.getElementById('gift-reveal').classList.add('opacity-0');
@@ -583,18 +490,17 @@
         }
 
         try {
-            // Kelime eklemek için setDoc kullanıyoruz, doc() ile otomatik ID oluşturuluyor.
             await setDoc(doc(getWordsRef()), { 
                 en: en, 
                 tr: tr, 
-                createdAt: new Date().toISOString() 
+                createdAt: new Date() 
             });
             document.getElementById('new-eng').value = "";
             document.getElementById('new-tr').value = "";
             showModal("Başarılı", `Kelime: "${en}" başarıyla eklendi!`);
         } catch (error) {
             console.error("Kelime eklenirken hata:", error);
-            showModal("Hata", "Kelime eklenirken bir sorun oluştu. Bağlantıyı kontrol edin.");
+            showModal("Hata", "Kelime eklenirken bir sorun oluştu.");
         }
     }
 
@@ -617,46 +523,7 @@
         });
     }
     
-    // --- 6. ÖĞRENME MODÜLLERİ VE YARDIMCI FONKSİYONLAR ---
-    
-    function updateUI() {
-        if (!appData) return;
-
-        // Zamanlayıcı
-        const minutes = Math.floor(appData.todayTime / 60).toString().padStart(2, '0');
-        const seconds = (appData.todayTime % 60).toString().padStart(2, '0');
-        document.getElementById('timer-display').innerText = `${minutes}:${seconds}`;
-
-        // İlerleme Çubuğu
-        const progress = Math.min(100, (appData.todayTime / TARGET_TIME) * 100);
-        document.getElementById('progress-bar').style.width = `${progress}%`;
-        
-        // Seri ve Tamamlanma mesajı
-        document.getElementById('streak-count').innerText = appData.streak;
-        document.getElementById('completion-msg').classList.toggle('hidden', !appData.dayCompleted);
-        
-        checkRewardStatus();
-    }
-    
-    function showScreen(screenId) {
-        document.querySelectorAll('.screen').forEach(screen => {
-            screen.classList.add('hidden');
-        });
-
-        const activeScreen = document.getElementById(`screen-${screenId}`);
-        if (activeScreen) {
-             activeScreen.classList.remove('hidden');
-             activeScreen.classList.add('flex'); // Yeni ekranı göster
-        }
-
-        // Parent ekranına girerken/çıkarken zamanlayıcıyı durdur
-        if (screenId === 'home' && isStudying) {
-            startTimer();
-        } else if (screenId === 'parent') {
-            stopTimer();
-        }
-    }
-    window.showScreen = showScreen; // HTML'den erişim için
+    // --- 6. ÖĞRENME MODÜLLERİ ---
 
     window.startStudy = function(mode) {
         if (words.length === 0) { 
@@ -688,38 +555,14 @@
         stopTimer();
         showScreen('home');
     }
-    
-    function showModal(title, message) {
-        document.getElementById('modal-title').innerText = title;
-        document.getElementById('modal-message').innerText = message;
-        document.getElementById('modal-backdrop').classList.remove('hidden');
-        document.getElementById('modal-backdrop').classList.add('flex');
-        document.getElementById('custom-modal').classList.remove('scale-90');
-        document.getElementById('custom-modal').classList.add('scale-100');
-    }
-    
-    window.closeModal = function() {
-        document.getElementById('custom-modal').classList.remove('scale-100');
-        document.getElementById('custom-modal').classList.add('scale-90');
-        setTimeout(() => {
-            document.getElementById('modal-backdrop').classList.add('hidden');
-            document.getElementById('modal-backdrop').classList.remove('flex');
-        }, 300);
-    }
-
 
     // FLASHCARD MANTIĞI
     function loadFlashcard() {
-        // Kelimeleri karıştırarak seçmek daha iyi bir öğrenme akışı sağlar
-        const availableWords = [...words];
-        if (availableWords.length === 0) return;
-
-        currentStudyWord = availableWords[Math.floor(Math.random() * availableWords.length)];
+        currentStudyWord = words[Math.floor(Math.random() * words.length)];
         
         const card = document.getElementById('active-card');
         card.classList.remove('flipped');
         
-        // Kartı çevirmeden önce metni yüklemek için kısa bir gecikme
         setTimeout(() => {
             document.querySelector('#active-card .card-front').innerText = currentStudyWord.en;
             document.querySelector('#active-card .card-back').innerText = currentStudyWord.tr;
@@ -731,7 +574,6 @@
     }
 
     window.nextCard = function(known) {
-        // known parametresi ile öğrenme seviyesi kaydedilebilir, şimdilik sadece bir sonraki karta geçiliyor.
         loadFlashcard();
     }
 
@@ -820,7 +662,6 @@
     // QUIZ MANTIĞI (Boşluk Doldurma)
 
     window.loadFillInTheBlanks = function() {
-        if (words.length === 0) return;
         currentStudyWord = words[Math.floor(Math.random() * words.length)];
         
         // %50 ihtimalle EN->TR, %50 ihtimalle TR->EN
@@ -835,8 +676,6 @@
         feedback.innerText = "";
         inputField.disabled = false;
         checkButton.disabled = false;
-        
-        inputField.classList.remove('bg-green-100', 'bg-red-100');
         
         if (isEnToTr) {
             questionText.innerText = `"${currentStudyWord.en}" kelimesinin Türkçe karşılığı nedir?`;
@@ -859,30 +698,85 @@
         
         const expected = expectedAnswer.toLowerCase();
         
-        // Cevabın birden fazla kelime olabileceği için basit eşitlik kontrolü
         const isCorrect = userInput === expected; 
 
         inputField.disabled = true; // Cevaplandıktan sonra girişi kitle
-        checkButton.disabled = true; // Butonu devre dışı bırak
-
+        checkButton.disabled = true;
+        
         if (isCorrect) {
-            feedback.innerText = "🎉 Doğru! Süper!";
+            feedback.innerText = "🎉 Doğru! Harikasın.";
             feedback.className = "mt-6 h-6 font-bold text-green-600";
             inputField.classList.add('bg-green-100');
         } else {
-            feedback.innerHTML = `❌ Yanlış. Doğru cevap: <span class="text-teal-600 font-extrabold">${expectedAnswer}</span>`;
+            feedback.innerText = `❌ Yanlış. Doğru cevap: "${expectedAnswer}"`;
             feedback.className = "mt-6 h-6 font-bold text-red-600";
             inputField.classList.add('bg-red-100');
         }
-
+        
         // Yeni soruyu yükle
         setTimeout(() => {
+            inputField.classList.remove('bg-green-100', 'bg-red-100');
             loadFillInTheBlanks();
         }, 2000); // 2 saniye sonra yeni soruya geç
     }
+
+
+    // --- 7. UI GÜNCELLEME VE GENEL FONKSİYONLAR ---
+
+    function updateUI() {
+        if (!appData) return;
+
+        // Süre ve Progress Bar
+        const mins = Math.floor(appData.todayTime / 60);
+        const secs = appData.todayTime % 60;
+        document.getElementById('timer-display').innerText = 
+            `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        
+        const percent = Math.min((appData.todayTime / TARGET_TIME) * 100, 100);
+        document.getElementById('progress-bar').style.width = percent + "%";
+
+        // Seri
+        document.getElementById('streak-count').innerText = appData.streak;
+        
+        // Gün tamamlandı mesajı
+        const completionMsg = document.getElementById('completion-msg');
+        if (appData.dayCompleted) {
+            completionMsg.classList.remove('hidden');
+        } else {
+            completionMsg.classList.add('hidden');
+        }
+        
+        // Ödül durumu kontrolü
+        checkRewardStatus();
+    }
     
-    // --- UYGULAMAYI BAŞLAT ---
-    startApp();
+    window.showScreen = function(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+        document.getElementById('screen-' + screenId).classList.remove('hidden');
+        
+        if (screenId === 'home' || screenId === 'parent' || screenId === 'reward') {
+            stopTimer();
+            if (screenId === 'reward') {
+                document.getElementById('gift-reveal').classList.add('opacity-0');
+                document.getElementById('claim-button').classList.add('hidden');
+            }
+        }
+    }
+
+    window.showModal = function(title, message) {
+        document.getElementById('modal-title').innerText = title;
+        document.getElementById('modal-message').innerText = message;
+        document.getElementById('modal-backdrop').classList.remove('hidden');
+        document.getElementById('custom-modal').classList.add('scale-100');
+    }
+
+    window.closeModal = function() {
+        document.getElementById('custom-modal').classList.remove('scale-100');
+        document.getElementById('modal-backdrop').classList.add('hidden');
+    }
+
+    // Uygulama başlatma
+    window.onload = startApp;
 
 </script>
 </body>
