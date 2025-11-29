@@ -1,110 +1,201 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sınav Koçu</title>
-<style>
-body { font-family: Arial; max-width: 480px; margin: auto; padding: 1rem; }
-h1 { text-align: center; }
-.quiz-card input { width: 100%; padding: 0.5rem; margin: 0.5rem 0; }
-button { padding: 0.5rem 1rem; background: #6a5af9; color: white; border: none; border-radius: 8px; cursor: pointer; }
-.progress-bar { height: 10px; background: #eee; border-radius: 5px; margin: 1rem 0; }
-.progress { height: 100%; background: #6a5af9; border-radius: 5px; width: 0%; }
-.reward-modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; display:none; }
-.modal-content { background:white; padding:2rem; border-radius:12px; text-align:center; }
-</style>
-</head>
-<body>
+import React, { useState, useEffect } from "react";
+import { initializeApp } from "firebase/app";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
 
-<h1>Sınav Koçu</h1>
-<div class="progress-bar"><div class="progress"></div></div>
-<div class="quiz-card">
-  <h2 id="question">Yükleniyor...</h2>
-  <input type="text" id="answer" placeholder="Cevabını yaz">
-  <button id="submitBtn">Gönder</button>
-</div>
-
-<div class="reward-modal" id="rewardModal">
-  <div class="modal-content">
-    <h2>Tebrikler! 🎉</h2>
-    <p>Seriyi tamamladın!</p>
-    <button onclick="closeModal()">Kapat</button>
-  </div>
-</div>
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-<script>
-// --- Firebase Ayarları ---
+// Firebase config
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  authDomain: "YOUR_AUTH_DOMAIN",
   projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "SENDER_ID",
-  appId: "APP_ID"
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID",
 };
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
 
-// --- Quiz Verisi ---
-let quizzes = [
-  {id:1, question:"1 + 1 = ?", answer:"2"},
-  {id:2, question:"2 + 2 = ?", answer:"4"},
-  {id:3, question:"3 + 3 = ?", answer:"6"}
-];
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-let current = 0;
+function App() {
+  const [userId, setUserId] = useState(null);
+  const [words, setWords] = useState([]);
+  const [newWord, setNewWord] = useState("");
+  const [newMeaning, setNewMeaning] = useState("");
+  const [quizAnswers, setQuizAnswers] = useState({});
+  const [fillAnswers, setFillAnswers] = useState({});
+  const [dailyMinutes, setDailyMinutes] = useState(0);
+  const [progress, setProgress] = useState([]);
+  const [startTime, setStartTime] = useState(null);
 
-// --- Cihazlar Arası Senkron ---
-function updateProgressOnFirebase() {
-  db.collection("progress").doc("main").set({ current });
-}
-
-function getProgressFromFirebase() {
-  db.collection("progress").doc("main").onSnapshot(doc => {
-    if(doc.exists){
-      current = doc.data().current;
-      showQuiz();
+  // Anonim kullanıcı oluştur
+  useEffect(() => {
+    let anonId = localStorage.getItem("anonUserId");
+    if (!anonId) {
+      anonId = "user_" + Math.random().toString(36).substring(2, 15);
+      localStorage.setItem("anonUserId", anonId);
     }
-  });
+    setUserId(anonId);
+    loadWords();
+    loadProgress(anonId);
+    setStartTime(Date.now());
+  }, []);
+
+  // Sayfa kapandığında süreyi kaydet
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (startTime) {
+        const diff = Math.floor((Date.now() - startTime) / 1000 / 60); // dakika
+        setDailyMinutes(diff);
+      }
+    }, 10000); // her 10 saniyede bir güncelle
+    return () => clearInterval(interval);
+  }, [startTime]);
+
+  useEffect(() => {
+    if (dailyMinutes >= 15) updateDailyProgress();
+  }, [dailyMinutes]);
+
+  const loadWords = async () => {
+    const docRef = doc(db, "users", "globalWords");
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) setWords(docSnap.data().words);
+  };
+
+  const loadProgress = async (anonId) => {
+    const docRef = doc(db, "users", anonId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      setProgress(docSnap.data().dailyProgress || []);
+    } else {
+      await setDoc(docRef, { dailyProgress: [], startDate: new Date().toISOString() });
+      setProgress([]);
+    }
+  };
+
+  const addWord = async () => {
+    if (!newWord || !newMeaning) return;
+    const newEntry = { id: Date.now(), word: newWord, meaning: newMeaning };
+    const updatedWords = [...words, newEntry];
+    setWords(updatedWords);
+    setNewWord("");
+    setNewMeaning("");
+    const docRef = doc(db, "users", "globalWords");
+    await setDoc(docRef, { words: updatedWords });
+  };
+
+  const updateDailyProgress = async () => {
+    if (!userId) return;
+    const today = new Date().toISOString().split("T")[0];
+    if (progress.some((p) => p.date === today)) return;
+
+    const newProgress = [...progress, { date: today, completed: true }];
+    setProgress(newProgress);
+    const docRef = doc(db, "users", userId);
+    await updateDoc(docRef, { dailyProgress: newProgress });
+  };
+
+  const handleQuizChange = (id, value) => {
+    setQuizAnswers({ ...quizAnswers, [id]: value });
+  };
+
+  const handleFillChange = (id, value) => {
+    setFillAnswers({ ...fillAnswers, [id]: value });
+  };
+
+  const gifts = progress.length >= 10 ? ["🎁", "🎉", "🏆"] : [];
+
+  return (
+    <div style={{ padding: "20px", fontFamily: "Arial" }}>
+      <h1>English Learning App</h1>
+
+      {/* Kelime Girişi */}
+      <section>
+        <h2>Add a new word</h2>
+        <input
+          type="text"
+          placeholder="Word"
+          value={newWord}
+          onChange={(e) => setNewWord(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Meaning"
+          value={newMeaning}
+          onChange={(e) => setNewMeaning(e.target.value)}
+        />
+        <button onClick={addWord}>Add Word</button>
+      </section>
+
+      {/* Flashcards */}
+      <section>
+        <h2>Flashcards</h2>
+        {words.map((w) => (
+          <div key={w.id}>
+            <strong>{w.word}</strong> - {w.meaning}
+          </div>
+        ))}
+      </section>
+
+      {/* Quiz */}
+      <section>
+        <h2>Quiz</h2>
+        {words.map((w) => {
+          const options = [w.meaning, "Wrong1", "Wrong2"].sort(() => Math.random() - 0.5);
+          return (
+            <div key={w.id}>
+              <p>What is "{w.word}" in Turkish?</p>
+              {options.map((opt) => (
+                <label key={opt} style={{ marginRight: "10px" }}>
+                  <input
+                    type="radio"
+                    name={`quiz_${w.id}`}
+                    value={opt}
+                    checked={quizAnswers[w.id] === opt}
+                    onChange={(e) => handleQuizChange(w.id, e.target.value)}
+                  />
+                  {opt}
+                </label>
+              ))}
+            </div>
+          );
+        })}
+      </section>
+
+      {/* Fill in the blanks */}
+      <section>
+        <h2>Fill in the blanks</h2>
+        {words.map((w) => (
+          <div key={w.id}>
+            <p>I have an ___ ({w.word}).</p>
+            <input
+              type="text"
+              value={fillAnswers[w.id] || ""}
+              onChange={(e) => handleFillChange(w.id, e.target.value)}
+            />
+          </div>
+        ))}
+      </section>
+
+      {/* Hediye */}
+      {gifts.length > 0 && (
+        <section>
+          <h2>Congratulations! Your Gifts:</h2>
+          <div style={{ fontSize: "2rem" }}>{gifts.join(" ")}</div>
+        </section>
+      )}
+
+      <section>
+        <p>Daily minutes: {dailyMinutes}</p>
+        <p>Days completed: {progress.length} / 10</p>
+      </section>
+    </div>
+  );
 }
 
-// --- Quiz Göster ---
-function showQuiz(){
-  if(current < quizzes.length){
-    document.getElementById("question").innerText = quizzes[current].question;
-    document.getElementById("answer").value = "";
-    document.querySelector(".progress").style.width = ((current)/quizzes.length*100) + "%";
-  } else {
-    document.getElementById("rewardModal").style.display = "flex";
-    document.querySelector(".progress").style.width = "100%";
-  }
-}
-
-// --- Gönder Butonu ---
-document.getElementById("submitBtn").addEventListener("click", ()=>{
-  let userAnswer = document.getElementById("answer").value.trim();
-  if(userAnswer === quizzes[current].answer){
-    alert("Doğru!");
-  } else {
-    alert("Yanlış!");
-  }
-  current++;
-  updateProgressOnFirebase();
-  showQuiz();
-});
-
-function closeModal(){
-  document.getElementById("rewardModal").style.display = "none";
-}
-
-// Başlangıç
-getProgressFromFirebase();
-</script>
-
-</body>
-</html>
+export default App;
