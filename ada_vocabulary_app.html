@@ -261,6 +261,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
+    const initialAuthToken = null;
     
     // --- TEMEL AYARLAR ---
     const TARGET_TIME = 15 * 60; // 15 dakika (saniye)
