@@ -105,12 +105,12 @@
         <div id="loading-screen" class="absolute inset-0 bg-white/80 flex items-center justify-center z-50">
             <div class="text-center">
                 <div class="animate-spin rounded-full h-12 w-12 border-4 border-r-white border-teal-500 mx-auto"></div>
-                <p class="mt-4 text-gray-700">Bağlanılıyor...</p>
+                <p class="mt-4 text-gray-700">Güvenli Bağlantı Kuruluyor...</p>
             </div>
         </div>
 
         <!-- Screens will be rendered here -->
-        <div id="screen-home" class="screen flex flex-col items-center space-y-5">
+        <div id="screen-home" class="screen hidden flex-col items-center space-y-5">
             <div class="text-center my-8">
                 <h3 class="text-3xl font-extrabold text-gray-800">Welcome Ada!</h3>
                 <p id="completion-msg" class="text-green-600 font-bold mt-2 hidden">Today is OK! ✅</p>
@@ -253,8 +253,27 @@
     // Hata ayıklama için log seviyesini ayarla
     setLogLevel('debug'); 
 
-    // --- 1. FIREBASE KONFİGÜRASYONU VE BAŞLATMA ---
-    const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+    // --- 1. FIREBASE KONFİGÜRASYONU VE BAŞLATMA (ZORUNLU BAĞLANTI) ---
+    let firebaseConfig = null;
+    let configParseSuccess = false;
+    try {
+        // Yapılandırma JSON'unu güvenli bir şekilde ayrıştırma
+        const configString = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}';
+        firebaseConfig = JSON.parse(configString);
+        // Yapılandırma başarılı ve proje kimliği mevcutsa
+        if (firebaseConfig && firebaseConfig.projectId) {
+            configParseSuccess = true;
+        } else {
+            // Eğer config varsa ama Project ID yoksa kritik hata
+            console.error("CRITICAL: Firebase configuration is missing Project ID. Cannot start persistent mode.");
+        }
+    } catch (e) {
+        // JSON ayrıştırma hatası
+        console.error("CRITICAL: Failed to parse Firebase config. Cannot start persistent mode.", e);
+    }
+    
+    // Sadece başarılı bir yapılandırma varsa Firebase'i aktif et
+    let isFirebaseActive = configParseSuccess; 
     const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
     
     // Global değişkenler
@@ -268,7 +287,14 @@
     const APP_ID = typeof __app_id !== 'undefined' ? __app_id : 'default-ada-voc-app-v1'; 
 
     let userId = null;
-    let appData = null;
+    let appData = {
+        streak: 0,
+        todayTime: 0,
+        dayCompleted: false,
+        lastActiveDate: null,
+        lastCompletedDate: null,
+        rewardClaimed: true 
+    };
     let timerInterval = null;
     let isStudying = false;
     let words = []; // Kelime listesi
@@ -278,16 +304,20 @@
     let currentStudyWord = null;
     let expectedAnswer = null; 
 
-    // --- 2. FIREBASE VE AUTHENTICATION ---
+    // --- 2. FIREBASE VE AUTHENTICATION (KATI MOD) ---
 
     async function startApp() {
         document.getElementById('loading-screen').classList.remove('hidden');
 
+        if (!isFirebaseActive) {
+             // Yapılandırma eksikse uygulama menüsünü gösterme
+             showModal("Kritik Hata", "Firebase yapılandırması eksik olduğu için uygulama başlatılamıyor. İlerleme takibi (Firestore) yapılamaz.");
+             document.getElementById('loading-screen').classList.add('hidden');
+             return;
+        }
+
         try {
             // Firestore başlatma
-            if (!firebaseConfig || !firebaseConfig.projectId) {
-                throw new Error("Firebase configuration is missing Project ID.");
-            }
             app = initializeApp(firebaseConfig);
             db = getFirestore(app);
             auth = getAuth(app);
@@ -296,43 +326,46 @@
 
             // Kimlik doğrulama
             if (initialAuthToken) {
-                // Custom Token ile giriş yap ve kalıcılığı memory'de tut
                 await setPersistence(auth, inMemoryPersistence);
                 userCredential = await signInWithCustomToken(auth, initialAuthToken);
             } else {
-                // Anonim giriş yap
                 userCredential = await signInAnonymously(auth);
             }
 
-            // --- HATA ÇÖZÜMÜ: userId'nin kesinlikle ayarlandığından emin ol ---
+            // User ID'yi al
             if (userCredential && userCredential.user) {
                 userId = userCredential.user.uid;
                 isAuthReady = true;
                 console.log("Firebase giriş başarılı. User ID:", userId);
                 
-                // userId'yi hemen ekrana yazdır (Hata çözümü 1)
                 document.getElementById('user-id-display').innerText = userId;
-
-                // Veri dinleyicilerini başlat (Hata çözümü 2: Sadece auth başarılıysa çağır)
                 setupDataListeners();
+                updateUI(); // Başlangıç UI güncellemesi
+                showScreen('home'); // Başarılıysa menüyü göster
+                
             } else {
-                 throw new Error("Firebase user ID could not be retrieved after sign-in.");
+                throw new Error("Firebase user ID could not be retrieved after sign-in.");
             }
             
         } catch (error) {
-            console.error("Firebase başlatılırken veya bağlanılırken hata:", error);
-            showModal("Bağlantı Hatası", `Uygulamaya bağlanılamadı. Hata: ${error.message}`);
-        } finally {
+            // Hata durumunda uygulama BAŞLATILMAZ
+            console.error("Firebase başlatılırken veya bağlanılırken kritik hata:", error);
+            
+            // Kullanıcıyı bilgilendir ve uygulamayı durdur
+            showModal("Kritik Hata", `Firebase bağlantısı kurulamadı. İlerleme takibi (Firestore) yapılamaz. Hata: ${error.message}`);
+            
             document.getElementById('loading-screen').classList.add('hidden');
+            return; 
         }
+        
+        document.getElementById('loading-screen').classList.add('hidden');
     }
 
     const getUserDataRef = () => doc(db, 'artifacts', APP_ID, 'users', userId, 'profile', 'meta');
     const getWordsRef = () => collection(db, 'artifacts', APP_ID, 'users', userId, 'words');
 
     async function setupDataListeners() {
-        // Zaten startApp içinde userId ve isAuthReady kontrol edildi, ancak defensive programlama için tutuyoruz.
-        if (!isAuthReady || !db || !userId) return;
+        if (!db || !userId) return; // Zaten FirebaseActive kontrolü yapıldı
 
         // 1. Profil ve Seri Takibi Verilerini Dinleme
         onSnapshot(getUserDataRef(), (docSnapshot) => {
@@ -340,7 +373,7 @@
                 appData = docSnapshot.data();
             } else {
                 // Eğer veri yoksa, varsayılan değerleri oluştur ve kaydet
-                appData = {
+                const initialData = {
                     streak: 0,
                     todayTime: 0,
                     dayCompleted: false,
@@ -348,7 +381,8 @@
                     lastCompletedDate: null,
                     rewardClaimed: true 
                 };
-                setDoc(getUserDataRef(), appData);
+                setDoc(getUserDataRef(), initialData);
+                appData = initialData;
             }
             checkDayReset();
             updateUI();
@@ -367,6 +401,7 @@
 
     function checkDayReset() {
         if (!appData) return;
+        
         const todayStr = new Date().toDateString();
         
         if (appData.lastActiveDate !== todayStr) {
@@ -378,6 +413,7 @@
             let newStreak = appData.streak;
 
             // Eğer bugün aktif olunan ilk günse ve dün tamamlanmadıysa, seriyi sıfırla.
+            // Ancak, lastCompletedDate'in dünkü tarih olmaması ve bugünkü tarih olmaması durumunda sıfırlama yapar.
             if (appData.lastCompletedDate !== todayStr && appData.lastCompletedDate !== yesterdayStr) {
                 newStreak = 0;
             }
@@ -439,13 +475,15 @@
         const yesterdayStr = yesterday.toDateString();
 
         // Seri artışı sadece art arda günlerde tamamlandıysa gerçekleşir
-        if (appData.lastCompletedDate === lastCompletedDate) {
-            // Zaten bugün tamamlanmış, streak artmaz.
-        } else if (appData.lastCompletedDate === yesterdayStr || appData.lastCompletedDate === null) {
-            appData.streak++;
+        let newStreak = appData.streak;
+        if (appData.lastCompletedDate !== lastCompletedDate) {
+            if (appData.lastCompletedDate === yesterdayStr || appData.lastCompletedDate === null) {
+                newStreak++;
+            }
         }
         
         appData.lastCompletedDate = lastCompletedDate;
+        appData.streak = newStreak;
         
         showModal("Tebrikler!", "Bugünkü 15 dakikalık hedefini tamamladın! Seriye 1 gün eklendi.");
         
@@ -518,6 +556,7 @@
 
     window.claimReward = function() {
         if (appData && appData.rewardClaimed === false) {
+             appData.rewardClaimed = true;
              updateDoc(getUserDataRef(), { rewardClaimed: true });
         }
         document.getElementById('gift-reveal').classList.add('opacity-0');
@@ -543,12 +582,6 @@
             return;
         }
 
-        // Hata çözümü: Firebase bağlantısı ve userId kontrolü
-        if (!db || !userId) {
-            showModal("Hata", "Veritabanı bağlantısı henüz hazır değil. Lütfen bekleyin.");
-            return;
-        }
-
         try {
             // Kelime eklemek için setDoc kullanıyoruz, doc() ile otomatik ID oluşturuluyor.
             await setDoc(doc(getWordsRef()), { 
@@ -561,7 +594,7 @@
             showModal("Başarılı", `Kelime: "${en}" başarıyla eklendi!`);
         } catch (error) {
             console.error("Kelime eklenirken hata:", error);
-            showModal("Hata", "Kelime eklenirken bir sorun oluştu.");
+            showModal("Hata", "Kelime eklenirken bir sorun oluştu. Bağlantıyı kontrol edin.");
         }
     }
 
@@ -608,10 +641,6 @@
     function showScreen(screenId) {
         document.querySelectorAll('.screen').forEach(screen => {
             screen.classList.add('hidden');
-            // Ekran değiştirirken tüm modülleri durdur
-            if (screen.id.includes('study')) {
-                 screen.classList.remove('flex'); // önceki ekranı gizle
-            }
         });
 
         const activeScreen = document.getElementById(`screen-${screenId}`);
