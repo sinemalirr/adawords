@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ada'nın Başarı Dünyası (Vocabulary)</title>
     
-    <!-- Tailwind CSS (Aesthetics & Responsiveness) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
@@ -86,7 +85,6 @@
 
 <div id="app-container" class="bg-white flex flex-col">
     
-    <!-- Header -->
     <header class="bg-gradient-to-br from-red-400 to-teal-400 text-white p-4 rounded-b-xl shadow-lg">
         <h1 class="text-2xl font-bold text-center">Ada'nın Başarı Dünyası 🌟</h1>
         <div class="flex justify-around items-center mt-2 text-sm font-semibold">
@@ -94,13 +92,11 @@
             <span>⏱️ <span id="timer-display">00:00</span> / 15:00</span>
         </div>
         <p id="streak-goal-msg" class="text-center text-xs mt-1 italic opacity-90">10 gün üst üste seri yap, ödül kazan!</p>
-        <!-- Progress Bar -->
         <div class="w-full bg-white bg-opacity-30 rounded-full h-2 mt-2">
             <div id="progress-bar" class="bg-yellow-300 h-2 rounded-full transition-all duration-500" style="width: 0%;"></div>
         </div>
     </header>
 
-    <!-- Main Content Area -->
     <div id="main-content" class="flex-1 p-5 overflow-y-auto">
         <div id="loading-screen" class="absolute inset-0 bg-white/80 flex items-center justify-center z-50">
             <div class="text-center">
@@ -109,7 +105,6 @@
             </div>
         </div>
 
-        <!-- Screens will be rendered here -->
         <div id="screen-home" class="screen flex flex-col items-center space-y-5">
             <div class="text-center my-8">
                 <h3 class="text-3xl font-extrabold text-gray-800">Hoşgeldin Ada!</h3>
@@ -131,7 +126,6 @@
             </button>
         </div>
 
-        <!-- FLASHCARD EKRANI -->
         <div id="screen-flashcard" class="screen hidden flex-col items-center">
             <button class="text-gray-500 mb-4 self-start" onclick="stopStudy()">
                 <span class="text-2xl">⬅️</span> Menüye Dön
@@ -152,7 +146,6 @@
             </div>
         </div>
 
-        <!-- ÇOKTAN SEÇMELİ EKRANI -->
         <div id="screen-quiz" class="screen hidden flex-col items-center">
             <button class="text-gray-500 mb-4 self-start" onclick="stopStudy()">
                 <span class="text-2xl">⬅️</span> Menüye Dön
@@ -163,13 +156,11 @@
             <p class="text-3xl font-bold text-red-500 mb-8 text-center px-4" id="quiz-question-mc">Yükleniyor...</p>
 
             <div id="answer-options-mc" class="flex flex-col space-y-4 w-full max-w-sm">
-                <!-- Cevap butonları buraya JS ile yüklenecek -->
-            </div>
+                </div>
             
             <div id="quiz-feedback-mc" class="mt-6 h-6 font-bold text-center"></div>
         </div>
 
-        <!-- BOŞLUK DOLDURMA EKRANI -->
         <div id="screen-fillInTheBlanks" class="screen hidden flex-col items-center">
             <button class="text-gray-500 mb-4 self-start" onclick="stopStudy()">
                 <span class="text-2xl">⬅️</span> Menüye Dön
@@ -189,7 +180,6 @@
         </div>
 
 
-        <!-- EBEVEYN EKRANI -->
         <div id="screen-parent" class="screen hidden flex-col items-center">
             <button class="text-gray-500 mb-6 self-start" onclick="showScreen('home')">
                 <span class="text-2xl">⬅️</span> Menüye Dön
@@ -206,26 +196,22 @@
             <h4 class="text-xl font-semibold mt-6 mb-2">Ekli Kelimeler (<span id="word-count">0</span>)</h4>
             <div class="w-full max-w-sm h-48 overflow-y-auto border rounded-lg p-2 bg-white shadow-md">
                 <ul id="word-list-display">
-                    <!-- Kelimeler buraya gelecek -->
-                </ul>
+                    </ul>
             </div>
             <p class="text-sm text-gray-500 mt-2">Bu ekranda harcanan süre sayılmaz.</p>
         </div>
 
-        <!-- ÖDÜL EKRANI -->
         <div id="screen-reward" class="screen hidden flex-col items-center justify-center h-full">
             <h2 class="text-3xl font-extrabold text-red-600 mb-4 animate-bounce">🎉 TEBRİKLER ADA! 🎉</h2>
             <p class="text-xl text-gray-700 mb-8">10 Günlük muhteşem seriyi tamamladın!</p>
             <p class="text-2xl font-semibold text-teal-600 mb-6">Şimdi hediye paketini seç:</p>
             <div class="flex space-x-6">
-                <!-- Her kutuya specific ödül atadık -->
                 <div class="text-6xl cursor-pointer hover:scale-110 transition-transform gift-box" data-gift="1" onclick="openGift(1)">🎁</div>
                 <div class="text-6xl cursor-pointer hover:scale-110 transition-transform gift-box" data-gift="2" onclick="openGift(2)">🎁</div>
                 <div class="text-6xl cursor-pointer hover:scale-110 transition-transform gift-box" data-gift="3" onclick="openGift(3)">🎁</div>
             </div>
             <div id="gift-reveal" class="mt-8 p-4 bg-yellow-100 text-gray-900 rounded-lg shadow-inner text-center text-xl font-bold transition-all duration-500 opacity-0">
-                <!-- Ödül Buraya Gelecek -->
-            </div>
+                </div>
             <button id="claim-button" class="mt-10 p-4 bg-teal-500 text-white font-bold rounded-xl btn-action shadow-teal-700 hidden" onclick="claimReward()">
                 Ödülü Aldım, Menüye Dön
             </button>
@@ -233,7 +219,6 @@
     </div>
 </div>
 
-<!-- Custom Modal for Notifications (No alert()) -->
 <div id="modal-backdrop" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden items-center justify-center z-50">
     <div id="custom-modal" class="bg-white p-6 rounded-xl shadow-2xl w-11/12 max-w-sm text-center transform scale-90 transition-transform duration-300">
         <h3 id="modal-title" class="text-xl font-bold mb-3 text-red-500">Bildirim</h3>
@@ -246,17 +231,18 @@
 <script type="module">
     // Firebase modüllerini içe aktarma
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    // Düzeltme: EmailAuthProvider, linkWithCredential ve onAuthStateChanged import edildi.
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, EmailAuthProvider, linkWithCredential } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, collection, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // --- 1. FIREBASE KONFİGÜRASYONU VE BAŞLATMA ---
     const firebaseConfig = {
-    apiKey: "AIzaSyAp3ywA8mWCKOH3fA7JACPfx3Ko_7VaD00",
-    authDomain: "ada-vocabulary-world.firebaseapp.com",
-    projectId: "ada-vocabulary-world",
-    storageBucket: "ada-vocabulary-world.firebasestorage.app",
-    messagingSenderId: "358916729594",
-    appId: "1:358916729594:web:a5da6a37d9bafbf9d47743"
+        apiKey: "AIzaSyAp3ywA8mWCKOH3fA7JACPfx3Ko_7VaD00",
+        authDomain: "ada-vocabulary-world.firebaseapp.com",
+        projectId: "ada-vocabulary-world",
+        storageBucket: "ada-vocabulary-world.firebasestorage.app",
+        messagingSenderId: "358916729594",
+        appId: "1:358916729594:web:a5da6a37d9bafbf9d47743"
     };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
@@ -281,36 +267,44 @@
 
     // --- HESAP BAĞLAMA FONKSİYONLARI ---
 
-async function saveAccountWithEmail(email, password) {
-    // ... (E-posta ile bağlama kodu buraya)
-}
+    // Düzeltme: Fonksiyon içeriği eklendi.
+    async function saveAccountWithEmail(email, password) {
+        const user = auth.currentUser; 
+        try {
+            if (!user) {
+                showModal("Hata", "Önce oturum açılmalıdır.");
+                return;
+            }
+            // EmailAuthProvider'ı kullanarak kimlik bilgisi oluşturma
+            const credential = EmailAuthProvider.credential(email, password);
+            // Anonim hesabı e-posta/şifre ile kalıcı olarak bağlama
+            await linkWithCredential(user, credential);
+            
+            showModal("Başarılı", "Hesabın başarıyla e-posta ve şifre ile kalıcı olarak bağlandı!");
+            console.log("Anonim hesap başarıyla e-posta ile bağlandı.");
+
+        } catch (error) {
+            console.error("Hesap bağlama hatası:", error.code, error.message);
+            
+            if (error.code === 'auth/credential-already-in-use') {
+                showModal("Hata", "Bu e-posta zaten başka bir hesapla ilişkilendirilmiş.");
+            } else {
+                 showModal("Hata", "Hesap bağlama sırasında bir sorun oluştu.");
+            }
+        }
+    }
+
+    async function saveAccountWithGoogle() {
+        showModal("Uyarı", "Google ile bağlama fonksiyonu henüz uygulanmadı.");
+    }
 
     // --- 2. FIREBASE VE AUTHENTICATION ---
 
+    // startApp fonksiyonu artık window.onload tarafından çağrılmayacak.
+    // onAuthStateChanged tarafından yönetilecek (Bu, daha temiz bir yaklaşımdır).
     async function startApp() {
-        try {
-            document.getElementById('loading-screen').classList.remove('hidden');
-            
-            if (initialAuthToken) {
-                const userCredential = await signInWithCustomToken(auth, initialAuthToken);
-                userId = userCredential.user.uid;
-                console.log("Firebase özel token ile giriş başarılı. User ID:", userId);
-            } else {
-                const userCredential = await signInAnonymously(auth);
-                userId = userCredential.user.uid;
-                console.log("Firebase anonim giriş başarılı. User ID:", userId);
-            }
-
-            isAuthReady = true;
-
-            setupDataListeners();
-            
-        } catch (error) {
-            console.error("Firebase başlatılırken hata:", error);
-            showModal("Bağlantı Hatası", "Uygulamaya bağlanılamadı. Lütfen konsolu kontrol edin.");
-        } finally {
-            document.getElementById('loading-screen').classList.add('hidden');
-        }
+        // Bu fonksiyon artık kullanılmıyor, ancak diğer fonksiyonlarınızdaki çağrıları bozmamak için bırakıldı.
+        // Ana giriş mantığı onAuthStateChanged'a taşındı.
     }
 
     const getUserDataRef = () => doc(db, 'artifacts', APP_ID, 'users', userId, 'profile', 'meta');
@@ -586,35 +580,24 @@ async function saveAccountWithEmail(email, password) {
 
     // QUIZ MANTIĞI (Çoktan Seçmeli)
     
-    /**
-     * Doğru kelime ve rastgele seçilmiş 2 yanlış kelimeyi (çeldiricileri) döndürür.
-     */
     function getShuffledOptions(correctWord, allWords) {
-        // Doğru kelime dışındaki tüm kelimeleri al
         const decoys = allWords.filter(w => w.en !== correctWord.en);
-        
-        // Rastgele 2 yanlış kelime seç
         const shuffledDecoys = decoys.sort(() => 0.5 - Math.random());
-        // En az 2 çeldirici olduğundan emin olmak için kontrol ediyoruz
         const incorrectOptions = shuffledDecoys.slice(0, Math.min(2, decoys.length)).map(w => ({ en: w.en, isCorrect: false }));
         
-        // Doğru kelimeyi ekle
         const correctOption = { en: correctWord.en, isCorrect: true };
         let options = [...incorrectOptions, correctOption];
         
-        // Seçenekleri karıştır
         return options.sort(() => 0.5 - Math.random());
     }
 
     window.loadQuiz = function() {
-        // Kelime listesi yeterli değilse hata mesajı göster (startStudy'de kontrol edildi, ama yine de güvenliğe alalım)
         if (words.length < 3) {
             document.getElementById('quiz-question-mc').innerText = "Quiz için en az 3 farklı kelime ekleyin!";
             document.getElementById('answer-options-mc').innerHTML = "";
             return;
         }
 
-        // Rastgele kelimeyi seç
         currentStudyWord = words[Math.floor(Math.random() * words.length)];
         
         document.getElementById('quiz-question-mc').innerText = currentStudyWord.tr;
@@ -638,7 +621,6 @@ async function saveAccountWithEmail(email, password) {
         const optionsContainer = document.getElementById('answer-options-mc');
         const feedback = document.getElementById('quiz-feedback-mc');
         
-        // Tüm butonları devre dışı bırak
         Array.from(optionsContainer.children).forEach(btn => btn.onclick = null);
 
         if (selectedButton.dataset.isCorrect === 'true') {
@@ -652,7 +634,6 @@ async function saveAccountWithEmail(email, password) {
             feedback.innerText = "❌ Yanlış Cevap.";
             feedback.className = "mt-6 h-6 font-bold text-red-600";
             
-            // Doğru cevabı vurgula
             const correctButton = Array.from(optionsContainer.children).find(btn => btn.dataset.isCorrect === 'true');
             if (correctButton) {
                  correctButton.classList.remove('bg-white', 'border-teal-500', 'shadow-md', 'quiz-option-btn');
@@ -660,10 +641,9 @@ async function saveAccountWithEmail(email, password) {
             }
         }
         
-        // Yeni soruyu yükle
         setTimeout(() => {
             loadQuiz();
-        }, 1500); // 1.5 saniye sonra yeni soruya geç
+        }, 1500);
     }
 
     // QUIZ MANTIĞI (Boşluk Doldurma)
@@ -671,7 +651,6 @@ async function saveAccountWithEmail(email, password) {
     window.loadFillInTheBlanks = function() {
         currentStudyWord = words[Math.floor(Math.random() * words.length)];
         
-        // %50 ihtimalle EN->TR, %50 ihtimalle TR->EN
         const isEnToTr = Math.random() < 0.5; 
         
         const questionText = document.getElementById('fitb-question');
@@ -707,7 +686,7 @@ async function saveAccountWithEmail(email, password) {
         
         const isCorrect = userInput === expected; 
 
-        inputField.disabled = true; // Cevaplandıktan sonra girişi kitle
+        inputField.disabled = true;
         checkButton.disabled = true;
         
         if (isCorrect) {
@@ -720,11 +699,10 @@ async function saveAccountWithEmail(email, password) {
             inputField.classList.add('bg-red-100');
         }
         
-        // Yeni soruyu yükle
         setTimeout(() => {
             inputField.classList.remove('bg-green-100', 'bg-red-100');
             loadFillInTheBlanks();
-        }, 2000); // 2 saniye sonra yeni soruya geç
+        }, 2000);
     }
 
 
@@ -782,40 +760,53 @@ async function saveAccountWithEmail(email, password) {
         document.getElementById('modal-backdrop').classList.add('hidden');
     }
 
-    // Uygulama başlatma
-    
-    onAuthStateChanged(auth, (user) => {
-    if (user) {
-        // Oturum varsa devam et
-        userId = user.uid;
-        isAuthReady = true;
-        setupDataListeners();
-        // ... yükleme ekranını gizleme
-    } else {
-        // Oturum yoksa anonim giriş yap
-        signInAnonymously(auth).then(anonUser => {
-            // ... anonim giriş başarılı olursa yapılacaklar
+    // --- UYGULAMA BAŞLATMA ve AUTHENTICATION YÖNETİMİ ---
+
+    // onAuthStateChanged dinleyicisi: Oturum durumunu yönetir ve verileri yükler.
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            // Oturum varsa (anonim veya kalıcı), User ID'yi kullan
+            userId = user.uid;
+            isAuthReady = true;
+            console.log("Oturum bulundu. User ID:", userId);
             setupDataListeners();
-        });
-    }
-    // Yükleme ekranını gizleme (finally bloğu gibi davranır)
-    document.getElementById('loading-screen').classList.add('hidden');
+        } else {
+            // Oturum yoksa, anonim olarak giriş yap
+            try {
+                const anonUserCredential = await signInAnonymously(auth);
+                userId = anonUserCredential.user.uid;
+                console.log("Firebase anonim giriş başarılı. User ID:", userId);
+            } catch(error) {
+                 console.error("Anonim giriş hatası:", error);
+                 showModal("Hata", "Anonim oturum başlatılamadı.");
+                 return;
+            }
+            isAuthReady = true;
+            setupDataListeners();
+        }
+        
+        // Yükleme ekranını gizleme (Burada gizlenmesi daha doğru)
+        document.getElementById('loading-screen').classList.add('hidden');
+    }); // <-- Düzeltme: onAuthStateChanged fonksiyonu burada kapanır.
 
-        document.addEventListener('DOMContentLoaded', () => {
-    
-    // Eğer butona tıklandığında e-posta ve şifre ile kaydetme yapılıyorsa:
-    const registerButton = document.getElementById('registerButton');
+    // DOMContentLoaded dinleyicisi: Sadece DOM elemanları hazır olduğunda çalışması gerekenler için kullanılır.
+    // Düzeltme: Bu blok, onAuthStateChanged bloğunun dışında tanımlanmıştır.
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // Eğer butona tıklandığında e-posta ve şifre ile kaydetme yapılıyorsa:
+        const registerButton = document.getElementById('registerButton');
 
-    if (registerButton) {
-        registerButton.addEventListener('click', () => {
-            // Gerekli input alanlarından değerleri alın
-            const email = document.getElementById('emailInput').value;
-            const password = document.getElementById('passwordInput').value;
-            
-           saveAccountWithEmail(email, password); 
+        if (registerButton) {
+            registerButton.addEventListener('click', () => {
+                // Gerekli input alanlarından değerleri alın
+                const email = document.getElementById('emailInput').value;
+                const password = document.getElementById('passwordInput').value;
+                
+                // Bağlama fonksiyonunu çağırın
+                saveAccountWithEmail(email, password); 
             });
         }
-    });
+    }); // <-- Düzeltme: DOMContentLoaded fonksiyonu burada kapanır.
         
 </script>
 </body>
