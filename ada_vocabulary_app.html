@@ -196,43 +196,25 @@
 
 
         <div id="screen-parent" class="screen hidden flex-col items-center">
-    
-    <button class="text-gray-500 mb-6 self-start" onclick="showScreen('home')">
-        <span class="text-2xl">⬅️</span> Menüye Dön
-    </button>
-    <h3 class="text-2xl font-bold mb-4 text-gray-800">🔒 Kelime Yönetimi (Ebeveyn)</h3>
-    
-    <div class="w-full max-w-sm bg-gray-100 p-4 rounded-xl space-y-3 shadow-inner">
-        <input type="text" id="new-eng" placeholder="İngilizce Kelime" class="p-2 border rounded-lg w-full">
-        <input type="text" id="new-tr" placeholder="Türkçe Anlamı" class="p-2 border rounded-lg w-full">
-        <button class="w-full p-2 bg-gray-600 text-white font-semibold rounded-lg btn-action shadow-gray-800" onclick="addWord()">
-            + Yeni Kelime Ekle
-        </button>
-    </div>
+            <button class="text-gray-500 mb-6 self-start" onclick="showScreen('home')">
+                <span class="text-2xl">⬅️</span> Menüye Dön
+            </button>
+            <h3 class="text-2xl font-bold mb-4 text-gray-800">🔒 Kelime Yönetimi (Ebeveyn)</h3>
+            <div class="w-full max-w-sm bg-gray-100 p-4 rounded-xl space-y-3 shadow-inner">
+                <input type="text" id="new-eng" placeholder="İngilizce Kelime" class="p-2 border rounded-lg w-full">
+                <input type="text" id="new-tr" placeholder="Türkçe Anlamı" class="p-2 border rounded-lg w-full">
+                <button class="w-full p-2 bg-gray-600 text-white font-semibold rounded-lg btn-action shadow-gray-800" onclick="addWord()">
+                    + Yeni Kelime Ekle
+                </button>
+            </div>
 
-    <div id="account-link-form" class="w-full max-w-sm bg-blue-100 p-4 rounded-xl space-y-3 shadow-inner mt-6">
-        <h4 class="text-lg font-bold text-blue-700">Kalıcı Hesap Bağlama</h4>
-        <p class="text-sm text-gray-600">Verilerini her cihazda görmek için anonim hesabı e-posta ile bağla.</p>
-        
-        <input type="email" id="emailInput" placeholder="Kullanılacak E-posta" 
-               class="p-2 border rounded-lg w-full focus:ring-blue-500 focus:border-blue-500">
-        <input type="password" id="passwordInput" placeholder="Yeni Şifre Oluştur" 
-               class="p-2 border rounded-lg w-full focus:ring-blue-500 focus:border-blue-500">
-        
-        <button id="registerButton" 
-                class="w-full p-2 bg-blue-600 text-white font-semibold rounded-lg btn-action shadow-blue-800">
-            Hesabı E-posta ile Bağla
-        </button>
-    </div>
-
-    <h4 class="text-xl font-semibold mt-6 mb-2">Ekli Kelimeler (<span id="word-count">0</span>)</h4>
-    <div class="w-full max-w-sm h-48 overflow-y-auto border rounded-lg p-2 bg-white shadow-md">
-        <ul id="word-list-display">
-            </ul>
-    </div>
-    <p class="text-sm text-gray-500 mt-2">Bu ekranda harcanan süre sayılmaz.</p>
-    
-</div>
+            <h4 class="text-xl font-semibold mt-6 mb-2">Ekli Kelimeler (<span id="word-count">0</span>)</h4>
+            <div class="w-full max-w-sm h-48 overflow-y-auto border rounded-lg p-2 bg-white shadow-md">
+                <ul id="word-list-display">
+                    </ul>
+            </div>
+            <p class="text-sm text-gray-500 mt-2">Bu ekranda harcanan süre sayılmaz.</p>
+        </div>
 
         <div id="screen-reward" class="screen hidden flex-col items-center justify-center h-full">
             <h2 class="text-3xl font-extrabold text-red-600 mb-4 animate-bounce">🎉 TEBRİKLER ADA! 🎉</h2>
@@ -315,6 +297,15 @@
             
             showModal("Başarılı", "Hesabın başarıyla e-posta ve şifre ile kalıcı olarak bağlandı!");
             console.log("Anonim hesap başarıyla e-posta ile bağlandı.");
+
+            // ✨ YENİ KOD: Formu gizle ✨
+        const form = document.getElementById('account-link-form');
+        if (form) {
+            form.classList.add('hidden');
+        }
+        // ✨ YENİ KOD SONU ✨
+        
+        console.log("Anonim hesap başarıyla e-posta ile bağlandı.");
 
         } catch (error) {
             console.error("Hesap bağlama hatası:", error.code, error.message);
