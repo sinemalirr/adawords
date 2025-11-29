@@ -285,10 +285,6 @@ async function saveAccountWithEmail(email, password) {
     // ... (E-posta ile bağlama kodu buraya)
 }
 
-async function saveAccountWithGoogle() {
-    // ... (Google ile bağlama kodu buraya)
-}
-
     // --- 2. FIREBASE VE AUTHENTICATION ---
 
     async function startApp() {
@@ -787,7 +783,7 @@ async function saveAccountWithGoogle() {
     }
 
     // Uygulama başlatma
-    window.onload = startApp;
+    
     onAuthStateChanged(auth, (user) => {
     if (user) {
         // Oturum varsa devam et
@@ -820,7 +816,7 @@ async function saveAccountWithGoogle() {
             saveAccountWithEmail(email, password); 
         });
     }
-
+});
 </script>
 </body>
 </html>
