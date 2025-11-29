@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ada Word World (Vocabulary)</title>
+    <title>Ada Word World (Vocabulary App)</title>
     
     <!-- Tailwind CSS (Aesthetics & Responsiveness) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -195,7 +195,7 @@
                 <span class="text-2xl">⬅️</span> Menüye Dön
             </button>
             <h3 class="text-2xl font-bold mb-4 text-gray-800">🔒 Kelime Yönetimi (Ebeveyn)</h3>
-            <p class="text-sm text-gray-500 mb-4">Kullanıcı ID: <span class="font-mono text-xs text-red-500" id="user-id-display">Yükleniyor...</span></p>
+            <p class="text-sm text-gray-500 mb-4">Kullanıcı ID: <span class="font-mono text-xs text-red-500 break-all" id="user-id-display">Yükleniyor...</span></p>
             <div class="w-full max-w-sm bg-gray-100 p-4 rounded-xl space-y-3 shadow-inner">
                 <input type="text" id="new-eng" placeholder="İngilizce Kelime" class="p-2 border rounded-lg w-full">
                 <input type="text" id="new-tr" placeholder="Türkçe Anlamı" class="p-2 border rounded-lg w-full">
@@ -292,23 +292,32 @@
             db = getFirestore(app);
             auth = getAuth(app);
 
+            let userCredential = null;
+
             // Kimlik doğrulama
             if (initialAuthToken) {
                 // Custom Token ile giriş yap ve kalıcılığı memory'de tut
                 await setPersistence(auth, inMemoryPersistence);
-                const userCredential = await signInWithCustomToken(auth, initialAuthToken);
-                userId = userCredential.user.uid;
-                console.log("Firebase özel token ile giriş başarılı. User ID:", userId);
+                userCredential = await signInWithCustomToken(auth, initialAuthToken);
             } else {
                 // Anonim giriş yap
-                const userCredential = await signInAnonymously(auth);
-                userId = userCredential.user.uid;
-                console.log("Firebase anonim giriş başarılı. User ID:", userId);
+                userCredential = await signInAnonymously(auth);
             }
 
-            isAuthReady = true;
+            // --- HATA ÇÖZÜMÜ: userId'nin kesinlikle ayarlandığından emin ol ---
+            if (userCredential && userCredential.user) {
+                userId = userCredential.user.uid;
+                isAuthReady = true;
+                console.log("Firebase giriş başarılı. User ID:", userId);
+                
+                // userId'yi hemen ekrana yazdır (Hata çözümü 1)
+                document.getElementById('user-id-display').innerText = userId;
 
-            setupDataListeners();
+                // Veri dinleyicilerini başlat (Hata çözümü 2: Sadece auth başarılıysa çağır)
+                setupDataListeners();
+            } else {
+                 throw new Error("Firebase user ID could not be retrieved after sign-in.");
+            }
             
         } catch (error) {
             console.error("Firebase başlatılırken veya bağlanılırken hata:", error);
@@ -322,9 +331,8 @@
     const getWordsRef = () => collection(db, 'artifacts', APP_ID, 'users', userId, 'words');
 
     async function setupDataListeners() {
-        if (!isAuthReady || !db) return;
-
-        document.getElementById('user-id-display').innerText = userId;
+        // Zaten startApp içinde userId ve isAuthReady kontrol edildi, ancak defensive programlama için tutuyoruz.
+        if (!isAuthReady || !db || !userId) return;
 
         // 1. Profil ve Seri Takibi Verilerini Dinleme
         onSnapshot(getUserDataRef(), (docSnapshot) => {
@@ -535,8 +543,9 @@
             return;
         }
 
+        // Hata çözümü: Firebase bağlantısı ve userId kontrolü
         if (!db || !userId) {
-            showModal("Hata", "Veritabanı bağlantısı henüz hazır değil.");
+            showModal("Hata", "Veritabanı bağlantısı henüz hazır değil. Lütfen bekleyin.");
             return;
         }
 
