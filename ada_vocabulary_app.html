@@ -105,28 +105,27 @@
             </div>
         </div>
 
-    <div class="text-center my-8">
-        <h3 class="text-3xl font-extrabold text-gray-800">Hoşgeldin Ada!</h3>
-        <p id="completion-msg" class="text-green-600 font-bold mt-2 hidden">BUGÜN TAMAMLANDI! ✅</p>
-        <p id="reward-notification" class="text-red-500 font-bold mt-2 text-lg animate-pulse hidden">🎁 ÖDÜL KAZANDIN! Tıkla!</p>
-    </div>
-    
-    <div id="account-link-form" class="w-11/12 bg-blue-100 p-4 rounded-xl space-y-3 shadow-inner">
-        <h4 class="text-lg font-bold text-blue-700">Kalıcı Hesap Bağlama</h4>
-        <p class="text-sm text-gray-600">Verilerini kaybetmemek ve her cihazda görmek için anonim hesabı e-posta ile bağla.</p>
-        
-        <input type="email" id="emailInput" placeholder="Kullanılacak E-posta" 
-               class="p-2 border rounded-lg w-full focus:ring-blue-500 focus:border-blue-500">
-        <input type="password" id="passwordInput" placeholder="Yeni Şifre Oluştur" 
-               class="p-2 border rounded-lg w-full focus:ring-blue-500 focus:border-blue-500">
-        
-        <button id="registerButton" 
-                class="w-full p-2 bg-blue-600 text-white font-semibold rounded-lg btn-action shadow-blue-800">
-            Hesabı E-posta ile Bağla
-        </button>
-    </div>
-    <button class="w-11/12 p-4 bg-teal-500 text-white font-bold rounded-xl btn-action shadow-teal-700" onclick="startStudy('flashcard')">
-            
+        <div id="screen-home" class="screen flex flex-col items-center space-y-5">
+            <div class="text-center my-8">
+                <h3 class="text-3xl font-extrabold text-gray-800">Hoşgeldin Ada!</h3>
+                <p id="completion-msg" class="text-green-600 font-bold mt-2 hidden">BUGÜN TAMAMLANDI! ✅</p>
+                <p id="reward-notification" class="text-red-500 font-bold mt-2 text-lg animate-pulse hidden">🎁 ÖDÜL KAZANDIN! Tıkla!</p>
+            </div>
+
+            <div id="account-link-form" class="w-11/12 bg-blue-100 p-4 rounded-xl space-y-3 shadow-inner">
+                <h4 class="text-lg font-bold text-blue-700">Kalıcı Hesap Bağlama</h4>
+                <p class="text-sm text-gray-600">Verilerini kaybetmemek ve her cihazda görmek için anonim hesabı e-posta ile bağla.</p>
+                
+                <input type="email" id="emailInput" placeholder="Kullanılacak E-posta" 
+                       class="p-2 border rounded-lg w-full focus:ring-blue-500 focus:border-blue-500">
+                <input type="password" id="passwordInput" placeholder="Yeni Şifre Oluştur" 
+                       class="p-2 border rounded-lg w-full focus:ring-blue-500 focus:border-blue-500">
+                
+                <button id="registerButton" 
+                        class="w-full p-2 bg-blue-600 text-white font-semibold rounded-lg btn-action shadow-blue-800">
+                    Hesabı E-posta ile Bağla
+                </button>
+            </div>
             <button class="w-11/12 p-4 bg-teal-500 text-white font-bold rounded-xl btn-action shadow-teal-700" onclick="startStudy('flashcard')">
                 🃏 KARTLARLA ÖĞREN
             </button>
@@ -140,7 +139,6 @@
                 🔒 EBEVEYN KELİME YÖNETİMİ
             </button>
         </div>
-
         <div id="screen-flashcard" class="screen hidden flex-col items-center">
             <button class="text-gray-500 mb-4 self-start" onclick="stopStudy()">
                 <span class="text-2xl">⬅️</span> Menüye Dön
@@ -199,7 +197,7 @@
             <button class="text-gray-500 mb-6 self-start" onclick="showScreen('home')">
                 <span class="text-2xl">⬅️</span> Menüye Dön
             </button>
-            <h3 class="text-2xl font-bold mb-4 text-gray-800">🔒 Kelime Yönetimi (Ebeveyn)</h3>
+            <h3 class="text-2xl font-bold mb-4 text-gray-800">🔒 Kelime Yönetimi (Ebeveyne Özel)</h3>
             <div class="w-full max-w-sm bg-gray-100 p-4 rounded-xl space-y-3 shadow-inner">
                 <input type="text" id="new-eng" placeholder="İngilizce Kelime" class="p-2 border rounded-lg w-full">
                 <input type="text" id="new-tr" placeholder="Türkçe Anlamı" class="p-2 border rounded-lg w-full">
@@ -246,8 +244,7 @@
 <script type="module">
     // Firebase modüllerini içe aktarma
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    // Düzeltme: EmailAuthProvider, linkWithCredential ve onAuthStateChanged import edildi.
-    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, EmailAuthProvider, linkWithCredential } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged, EmailAuthProvider, linkWithCredential } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, collection, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // --- 1. FIREBASE KONFİGÜRASYONU VE BAŞLATMA ---
@@ -262,7 +259,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-    const initialAuthToken = null;
     
     // --- TEMEL AYARLAR ---
     const TARGET_TIME = 15 * 60; // 15 dakika (saniye)
@@ -280,9 +276,8 @@
     let currentStudyWord = null;
     let expectedAnswer = null; 
 
-    // --- HESAP BAĞLAMA FONKSİYONLARI ---
+    // --- HESAP BAĞLAMA FONKSİYONLARI (Form gizleme mantığı dahil) ---
 
-    // Düzeltme: Fonksiyon içeriği eklendi.
     async function saveAccountWithEmail(email, password) {
         const user = auth.currentUser; 
         try {
@@ -290,46 +285,36 @@
                 showModal("Hata", "Önce oturum açılmalıdır.");
                 return;
             }
-            // EmailAuthProvider'ı kullanarak kimlik bilgisi oluşturma
             const credential = EmailAuthProvider.credential(email, password);
-            // Anonim hesabı e-posta/şifre ile kalıcı olarak bağlama
             await linkWithCredential(user, credential);
             
             showModal("Başarılı", "Hesabın başarıyla e-posta ve şifre ile kalıcı olarak bağlandı!");
-            console.log("Anonim hesap başarıyla e-posta ile bağlandı.");
-
-            // ✨ YENİ KOD: Formu gizle ✨
-        const form = document.getElementById('account-link-form');
-        if (form) {
-            form.classList.add('hidden');
-        }
-        // ✨ YENİ KOD SONU ✨
-        
-        console.log("Anonim hesap başarıyla e-posta ile bağlandı.");
+            
+            // BAĞLANTI BAŞARILI: Formu gizle
+            const form = document.getElementById('account-link-form');
+            if (form) {
+                form.classList.add('hidden');
+            }
 
         } catch (error) {
             console.error("Hesap bağlama hatası:", error.code, error.message);
             
             if (error.code === 'auth/credential-already-in-use') {
                 showModal("Hata", "Bu e-posta zaten başka bir hesapla ilişkilendirilmiş.");
+            } else if (error.code === 'auth/provider-already-linked') {
+                // Zaten bağlıysa formu gizleyelim
+                showModal("Uyarı", "Hesabın zaten e-posta/şifre ile kalıcı olarak bağlanmış.");
+                const form = document.getElementById('account-link-form');
+                if (form) {
+                    form.classList.add('hidden');
+                }
             } else {
                  showModal("Hata", "Hesap bağlama sırasında bir sorun oluştu.");
             }
         }
     }
 
-    async function saveAccountWithGoogle() {
-        showModal("Uyarı", "Google ile bağlama fonksiyonu henüz uygulanmadı.");
-    }
-
     // --- 2. FIREBASE VE AUTHENTICATION ---
-
-    // startApp fonksiyonu artık window.onload tarafından çağrılmayacak.
-    // onAuthStateChanged tarafından yönetilecek (Bu, daha temiz bir yaklaşımdır).
-    async function startApp() {
-        // Bu fonksiyon artık kullanılmıyor, ancak diğer fonksiyonlarınızdaki çağrıları bozmamak için bırakıldı.
-        // Ana giriş mantığı onAuthStateChanged'a taşındı.
-    }
 
     const getUserDataRef = () => doc(db, 'artifacts', APP_ID, 'users', userId, 'profile', 'meta');
     const getWordsRef = () => collection(db, 'artifacts', APP_ID, 'users', userId, 'words');
@@ -454,7 +439,6 @@
         }
     }
 
-    // Kullanıcının istediği spesifik ödül seçenekleri
     const REWARD_OPTIONS = {
         1: "🍔 Büyük Boy Hamburger Menüsü!",
         2: "🍕 Aile Boyu Pizza Ismarlama Hakkı!",
@@ -581,17 +565,21 @@
         showScreen('home');
     }
 
-    // FLASHCARD MANTIĞI
+    // FLASHCARD MANTIĞI (Düzeltildi: Kesintisiz Akış)
     function loadFlashcard() {
+        // Yeni bir kelime seç
         currentStudyWord = words[Math.floor(Math.random() * words.length)];
         
         const card = document.getElementById('active-card');
+        
+        // ✨ DÜZELTME: Kartı geri döndürerek İngilizce yüzüyle başlamasını sağla
         card.classList.remove('flipped');
         
+        // Kartın dönme animasyonu tamamlandıktan sonra yeni kelimeyi yükle
         setTimeout(() => {
             document.querySelector('#active-card .card-front').innerText = currentStudyWord.en;
             document.querySelector('#active-card .card-back').innerText = currentStudyWord.tr;
-        }, 300);
+        }, 300); 
     }
 
     window.flipCard = function() {
@@ -599,6 +587,7 @@
     }
 
     window.nextCard = function(known) {
+        // ✨ DÜZELTME: Kartı geçtikten sonra yeni kelimeyi yükle
         loadFlashcard();
     }
 
@@ -761,7 +750,16 @@
     
     window.showScreen = function(screenId) {
         document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-        document.getElementById('screen-' + screenId).classList.remove('hidden');
+        const targetScreen = document.getElementById('screen-' + screenId);
+        
+        // Hata kontrolü
+        if (!targetScreen) {
+             console.error(`Hata: 'screen-${screenId}' ID'li ekran bulunamadı.`);
+             showModal("Kritik Hata", "Uygulama ekranlarından biri yüklenemedi. Lütfen kodunuzu kontrol edin.");
+             return;
+        }
+        
+        targetScreen.classList.remove('hidden');
         
         if (screenId === 'home' || screenId === 'parent' || screenId === 'reward') {
             stopTimer();
@@ -786,22 +784,25 @@
 
     // --- UYGULAMA BAŞLATMA ve AUTHENTICATION YÖNETİMİ ---
 
-    // onAuthStateChanged dinleyicisi: Oturum durumunu yönetir ve verileri yükler.
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             // Oturum varsa (anonim veya kalıcı), User ID'yi kullan
             userId = user.uid;
             isAuthReady = true;
-            console.log("Oturum bulundu. User ID:", userId);
+
+            // Eğer kullanıcının bir e-posta adresi varsa (yani kalıcı hesap) formu gizle
+            const form = document.getElementById('account-link-form');
+            if (form && user.email) {
+                form.classList.add('hidden');
+            }
+
             setupDataListeners();
         } else {
             // Oturum yoksa, anonim olarak giriş yap
             try {
                 const anonUserCredential = await signInAnonymously(auth);
                 userId = anonUserCredential.user.uid;
-                console.log("Firebase anonim giriş başarılı. User ID:", userId);
             } catch(error) {
-                 console.error("Anonim giriş hatası:", error);
                  showModal("Hata", "Anonim oturum başlatılamadı.");
                  return;
             }
@@ -809,28 +810,24 @@
             setupDataListeners();
         }
         
-        // Yükleme ekranını gizleme (Burada gizlenmesi daha doğru)
+        // Yükleme ekranını gizleme
         document.getElementById('loading-screen').classList.add('hidden');
-    }); // <-- Düzeltme: onAuthStateChanged fonksiyonu burada kapanır.
+    });
 
     // DOMContentLoaded dinleyicisi: Sadece DOM elemanları hazır olduğunda çalışması gerekenler için kullanılır.
-    // Düzeltme: Bu blok, onAuthStateChanged bloğunun dışında tanımlanmıştır.
     document.addEventListener('DOMContentLoaded', () => {
         
-        // Eğer butona tıklandığında e-posta ve şifre ile kaydetme yapılıyorsa:
         const registerButton = document.getElementById('registerButton');
 
         if (registerButton) {
             registerButton.addEventListener('click', () => {
-                // Gerekli input alanlarından değerleri alın
                 const email = document.getElementById('emailInput').value;
                 const password = document.getElementById('passwordInput').value;
                 
-                // Bağlama fonksiyonunu çağırın
                 saveAccountWithEmail(email, password); 
             });
         }
-    }); // <-- Düzeltme: DOMContentLoaded fonksiyonu burada kapanır.
+    });
         
 </script>
 </body>
