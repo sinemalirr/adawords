@@ -1,107 +1,792 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>Vocabulary Quiz</title>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
-    h1 { color: #4B0082; }
-    #quiz, #word-list { margin-top: 20px; }
-    button { margin-top: 10px; padding: 8px 12px; }
-    .word { margin: 5px 0; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Ada'nın Başarı Dünyası (Vocabulary)</title>
+<!-- Tailwind CSS (Aesthetics & Responsiveness) -->
+<script src="<https://cdn.tailwindcss.com>"></script>
+
+<style>
+    :root {
+        --primary: #FF6B6B; /* Kırmızımsı Pembe */
+        --secondary: #4ECDC4; /* Turkuaz */
+        --accent: #FFE66D; /* Sarı */
+        --dark: #2C3E50; /* Koyu Mavi */
+    }
+
+    body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; }
+
+    /* Mobil Cihaz Görünümü için Kısıtlama */
+    #app-container {
+        max-width: 420px;
+        height: 100vh;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+
+    /* Flashcard Styling */
+    .flashcard-container {
+        perspective: 1000px;
+        width: 90%;
+        height: 250px;
+    }
+    .flashcard {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 0.6s;
+    }
+    .flashcard.flipped { transform: rotateY(180deg); }
+    .card-face {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: var(--dark);
+        border-radius: 15px;
+        border: 3px solid var(--secondary);
+        background-color: white;
+        padding: 20px;
+        box-sizing: border-box;
+        text-align: center;
+    }
+    .card-back { transform: rotateY(180deg); background-color: #e0fffb; color: var(--primary); font-size: 1.5rem; }
+
+    /* Button Animations */
+    .btn-action {
+        box-shadow: 0 4px 0 var(--dark);
+        transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .btn-action:active {
+        transform: translateY(2px);
+        box-shadow: 2px 0 0 var(--dark);
+    }
+
+    /* Quiz Button Styling */
+    .quiz-option-btn {
+        box-shadow: 0 2px 0 #155e75; /* Teal shadow */
+    }
+    .quiz-option-btn:hover {
+        background-color: #f0fdfa; /* Light teal on hover */
+    }
+    .quiz-option-btn:active {
+        transform: translateY(1px);
+        box-shadow: 0 1px 0 #155e75;
+    }
+</style>
 </head>
-<body>
-  <h1>Vocabulary Quiz</h1>
+<body class="flex justify-center items-center h-screen">
 
-  <div id="word-list">
-    <h2>Bugünkü Kelimeler</h2>
-    <div id="words"></div>
-    <button onclick="startQuiz()">Quiz Başlat</button>
-  </div>
+<div id="app-container" class="bg-white flex flex-col">
+  <!-- Header -->
+<header class="bg-gradient-to-br from-red-400 to-teal-400 text-white p-4 rounded-b-xl shadow-lg">
+    <h1 class="text-2xl font-bold text-center">Ada'nın Başarı Dünyası 🌟</h1>
+    <div class="flex justify-around items-center mt-2 text-sm font-semibold">
+        <span>🔥 Seri: <span id="streak-count">0</span> Gün</span>
+        <span>⏱️ <span id="timer-display">00:00</span> / 15:00</span>
+    </div>
+    <p id="streak-goal-msg" class="text-center text-xs mt-1 italic opacity-90">10 gün üst üste seri yap, ödül kazan!</p>
+    <!-- Progress Bar -->
+    <div class="w-full bg-white bg-opacity-30 rounded-full h-2 mt-2">
+        <div id="progress-bar" class="bg-yellow-300 h-2 rounded-full transition-all duration-500" style="width: 0%;"></div>
+    </div>
+</header>
 
-  <div id="quiz" style="display:none;">
-    <h2>Quiz</h2>
-    <div id="quiz-question"></div>
-    <input type="text" id="answer" placeholder="Cevap" />
-    <button onclick="submitAnswer()">Gönder</button>
-    <div id="quiz-result"></div>
-  </div>
+<!-- Main Content Area -->
+<div id="main-content" class="flex-1 p-5 overflow-y-auto">
+    <div id="loading-screen" class="absolute inset-0 bg-white/80 flex items-center justify-center z-50">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-4 border-r-white border-teal-500 mx-auto"></div>
+            <p class="mt-4 text-gray-700">Bağlanılıyor...</p>
+        </div>
+    </div>
 
-  <script>
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyAp3ywA8mWCKOH3fA7JACPfx3Ko_7VaD00",
-      authDomain: "ada-vocabulary-world.firebaseapp.com",
-      projectId: "ada-vocabulary-world",
-      storageBucket: "ada-vocabulary-world.firebasestorage.app",
-      messagingSenderId: "358916729594",
-      appId: "1:358916729594:web:a5da6a37d9bafbf9d47743"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    <!-- Screens will be rendered here -->
+    <div id="screen-home" class="screen flex flex-col items-center space-y-5">
+        <div class="text-center my-8">
+            <h3 class="text-3xl font-extrabold text-gray-800">Hoşgeldin Ada!</h3>
+            <p id="completion-msg" class="text-green-600 font-bold mt-2 hidden">BUGÜN TAMAMLANDI! ✅</p>
+            <p id="reward-notification" class="text-red-500 font-bold mt-2 text-lg animate-pulse hidden">🎁 ÖDÜL KAZANDIN! Tıkla!</p>
+        </div>
 
-    // Örnek kelime listesi
-    let words = [
-      { word: "apple", meaning: "elma" },
-      { word: "book", meaning: "kitap" },
-      { word: "house", meaning: "ev" },
-    ];
+        <button class="w-11/12 p-4 bg-teal-500 text-white font-bold rounded-xl btn-action shadow-teal-700" onclick="startStudy('flashcard')">
+            🃏 KARTLARLA ÖĞREN
+        </button>
+        <button class="w-11/12 p-4 bg-red-500 text-white font-bold rounded-xl btn-action shadow-red-700" onclick="startStudy('quiz')">
+            ✍️ ÇOKTAN SEÇMELİ SINAV
+        </button>
+        <button class="w-11/12 p-4 bg-yellow-500 text-white font-bold rounded-xl btn-action shadow-yellow-700" onclick="startStudy('fillInTheBlanks')">
+            ✏️ BOŞLUK DOLDURMA SINAVI
+        </button>
+        <button class="w-11/12 p-4 bg-gray-600 text-white font-bold rounded-xl btn-action shadow-gray-800" onclick="showScreen('parent')">
+            🔒 EBEVEYN KELİME YÖNETİMİ
+        </button>
+    </div>
 
-    // Bugünkü kelimeleri göster
-    const wordsDiv = document.getElementById("words");
-    words.forEach(w => {
-      const div = document.createElement("div");
-      div.className = "word";
-      div.textContent = `${w.word} - ${w.meaning}`;
-      wordsDiv.appendChild(div);
+    <!-- FLASHCARD EKRANI -->
+    <div id="screen-flashcard" class="screen hidden flex-col items-center">
+        <button class="text-gray-500 mb-4 self-start" onclick="stopStudy()">
+            <span class="text-2xl">⬅️</span> Menüye Dön
+        </button>
+        <div class="flashcard-container mb-6" onclick="flipCard()">
+            <div class="flashcard" id="active-card">
+                <div class="card-face card-front border-teal-500">Yükleniyor...</div>
+                <div class="card-face card-back border-red-500">Loading...</div>
+            </div>
+        </div>
+        <div class="flex space-x-4">
+            <button class="p-3 bg-red-400 text-white font-semibold rounded-full btn-action shadow-red-600" onclick="nextCard(false)">
+                😓 Unuttum
+            </button>
+            <button class="p-3 bg-teal-500 text-white font-semibold rounded-full btn-action shadow-teal-700" onclick="nextCard(true)">
+                🧠 Biliyorum
+            </button>
+        </div>
+    </div>
+
+    <!-- ÇOKTAN SEÇMELİ EKRANI -->
+    <div id="screen-quiz" class="screen hidden flex-col items-center">
+        <button class="text-gray-500 mb-4 self-start" onclick="stopStudy()">
+            <span class="text-2xl">⬅️</span> Menüye Dön
+        </button>
+
+        <h3 class="text-xl font-semibold mb-6 text-gray-700">Aşağıdaki kelimelerden doğru olanı seç:</h3>
+
+        <p class="text-3xl font-bold text-red-500 mb-8 text-center px-4" id="quiz-question-mc">Yükleniyor...</p>
+
+        <div id="answer-options-mc" class="flex flex-col space-y-4 w-full max-w-sm">
+            <!-- Cevap butonları buraya JS ile yüklenecek -->
+        </div>
+
+        <div id="quiz-feedback-mc" class="mt-6 h-6 font-bold text-center"></div>
+    </div>
+
+    <!-- BOŞLUK DOLDURMA EKRANI -->
+    <div id="screen-fillInTheBlanks" class="screen hidden flex-col items-center">
+        <button class="text-gray-500 mb-4 self-start" onclick="stopStudy()">
+            <span class="text-2xl">⬅️</span> Menüye Dön
+        </button>
+
+        <h3 class="text-xl font-semibold mb-6 text-gray-700">Lütfen doğru çeviriyi yazın:</h3>
+
+        <p class="text-3xl font-bold text-red-500 mb-8 text-center px-4" id="fitb-question">Yükleniyor...</p>
+
+        <input type="text" id="fitb-input" placeholder="Cevabınızı buraya yazın..." class="p-3 border-2 border-teal-500 rounded-lg w-full max-w-sm text-center text-xl focus:border-red-500 transition duration-300">
+
+        <button class="w-full max-w-sm p-3 mt-4 bg-teal-500 text-white font-bold rounded-lg btn-action shadow-teal-700" onclick="checkFillInTheBlanksAnswer()">
+            Cevabı Kontrol Et
+        </button>
+
+        <div id="fitb-feedback" class="mt-6 h-6 font-bold text-center"></div>
+    </div>
+
+    <!-- EBEVEYN EKRANI -->
+    <div id="screen-parent" class="screen hidden flex-col items-center">
+        <button class="text-gray-500 mb-6 self-start" onclick="showScreen('home')">
+            <span class="text-2xl">⬅️</span> Menüye Dön
+        </button>
+        <h3 class="text-2xl font-bold mb-4 text-gray-800">🔒 Kelime Yönetimi (Ebeveyn)</h3>
+        <div class="w-full max-w-sm bg-gray-100 p-4 rounded-xl space-y-3 shadow-inner">
+            <input type="text" id="new-eng" placeholder="İngilizce Kelime" class="p-2 border rounded-lg w-full">
+            <input type="text" id="new-tr" placeholder="Türkçe Anlamı" class="p-2 border rounded-lg w-full">
+            <button class="w-full p-2 bg-gray-600 text-white font-semibold rounded-lg btn-action shadow-gray-800" onclick="addWord()">
+                + Yeni Kelime Ekle
+            </button>
+        </div>
+
+        <h4 class="text-xl font-semibold mt-6 mb-2">Ekli Kelimeler (<span id="word-count">0</span>)</h4>
+        <div class="w-full max-w-sm h-48 overflow-y-auto border rounded-lg p-2 bg-white shadow-md">
+            <ul id="word-list-display">
+                <!-- Kelimeler buraya gelecek -->
+            </ul>
+        </div>
+        <p class="text-sm text-gray-500 mt-2">Bu ekranda harcanan süre sayılmaz.</p>
+    </div>
+
+    <!-- ÖDÜL EKRANI -->
+    <div id="screen-reward" class="screen hidden flex-col items-center justify-center h-full">
+        <h2 class="text-3xl font-extrabold text-red-600 mb-4 animate-bounce">🎉 TEBRİKLER ADA! 🎉</h2>
+        <p class="text-xl text-gray-700 mb-8">10 Günlük muhteşem seriyi tamamladın!</p>
+        <p class="text-2xl font-semibold text-teal-600 mb-6">Şimdi hediye paketini seç:</p>
+        <div class="flex space-x-6">
+            <!-- Her kutuya specific ödül atadık -->
+            <div class="text-6xl cursor-pointer hover:scale-110 transition-transform gift-box" data-gift="1" onclick="openGift(1)">🎁</div>
+            <div class="text-6xl cursor-pointer hover:scale-110 transition-transform gift-box" data-gift="2" onclick="openGift(2)">🎁</div>
+            <div class="text-6xl cursor-pointer hover:scale-110 transition-transform gift-box" data-gift="3" onclick="openGift(3)">🎁</div>
+        </div>
+        <div id="gift-reveal" class="mt-8 p-4 bg-yellow-100 text-gray-900 rounded-lg shadow-inner text-center text-xl font-bold transition-all duration-500 opacity-0">
+            <!-- Ödül Buraya Gelecek -->
+        </div>
+        <button id="claim-button" class="mt-10 p-4 bg-teal-500 text-white font-bold rounded-xl btn-action shadow-teal-700 hidden" onclick="claimReward()">
+            Ödülü Aldım, Menüye Dön
+        </button>
+    </div>
+</div>
+</div>
+
+<!-- Custom Modal for Notifications (No alert()) -->
+<div id="modal-backdrop" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden items-center justify-center z-50">
+<div id="custom-modal" class="bg-white p-6 rounded-xl shadow-2xl w-11/12 max-w-sm text-center transform scale-90 transition-transform duration-300">
+<h3 id="modal-title" class="text-xl font-bold mb-3 text-red-500">Bildirim</h3>
+<p id="modal-message" class="text-gray-700 mb-5"></p>
+<button id="modal-ok-button" class="p-2 bg-teal-500 text-white rounded-lg w-full font-semibold" onclick="closeModal()">Tamam</button>
+</div>
+</div>
+<script type="module">
+// --- 1. FIREBASE KONFİGÜRASYONU ---
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, collection, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+// Firebase config (senin verdiğin bilgiler)
+const firebaseConfig = {
+  apiKey: "AIzaSyAp3ywA8mWCKOH3fA7JACPfx3Ko_7VaD00",
+  authDomain: "ada-vocabulary-world.firebaseapp.com",
+  projectId: "ada-vocabulary-world",
+  storageBucket: "ada-vocabulary-world.firebasestorage.app",
+  messagingSenderId: "358916729594",
+  appId: "1:358916729594:web:a5da6a37d9bafbf9d47743"
+};
+
+// Başlat
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+
+// --- 2. ANONİM GİRİŞ ---
+async function startApp() {
+    try {
+        const userCredential = await signInAnonymously(auth);
+        userId = userCredential.user.uid;
+        console.log("Anonim giriş başarılı, User ID:", userId);
+        setupWordListener();
+    } catch (err) {
+        console.error("Giriş hatası:", err);
+        showModal("Hata", "Firebase girişinde bir sorun oluştu.");
+    }
+}
+
+// --- TEMEL AYARLAR ---
+const TARGET_TIME = 15 * 60; // 15 dakika (saniye)
+const STREAK_GOAL = 10;
+const APP_ID = typeof __app_id !== 'undefined' ? __app_id : 'default-ada-voc-app-v1';
+
+let userId = null;
+let appData = null;
+let timerInterval = null;
+let isStudying = false;
+let words = []; // Kelime listesi
+let isAuthReady = false;
+
+// FITB için değişkenler
+let currentStudyWord = null;
+let expectedAnswer = null;
+
+// --- 2. FIREBASE VE AUTHENTICATION ---
+
+async function startApp() {
+    try {
+        document.getElementById('loading-screen').classList.remove('hidden');
+
+        if (initialAuthToken) {
+            const userCredential = await signInWithCustomToken(auth, initialAuthToken);
+            userId = userCredential.user.uid;
+            console.log("Firebase özel token ile giriş başarılı. User ID:", userId);
+        } else {
+            const userCredential = await signInAnonymously(auth);
+            userId = userCredential.user.uid;
+            console.log("Firebase anonim giriş başarılı. User ID:", userId);
+        }
+
+        isAuthReady = true;
+
+        setupDataListeners();
+
+    } catch (error) {
+        console.error("Firebase başlatılırken hata:", error);
+        showModal("Bağlantı Hatası", "Uygulamaya bağlanılamadı. Lütfen konsolu kontrol edin.");
+    } finally {
+        document.getElementById('loading-screen').classList.add('hidden');
+    }
+}
+
+const getUserDataRef = () => doc(db, 'artifacts', APP_ID, 'users', userId, 'profile', 'meta');
+const getWordsRef = () => collection(db, 'artifacts', APP_ID, 'users', userId, 'words');
+
+async function setupDataListeners() {
+    if (!isAuthReady) return;
+
+    // 1. Profil ve Seri Takibi Verilerini Dinleme
+    onSnapshot(getUserDataRef(), (docSnapshot) => {
+        if (docSnapshot.exists()) {
+            appData = docSnapshot.data();
+        } else {
+            appData = {
+                streak: 0,
+                todayTime: 0,
+                dayCompleted: false,
+                lastActiveDate: null,
+                lastCompletedDate: null,
+                rewardClaimed: true
+            };
+            setDoc(getUserDataRef(), appData);
+        }
+        checkDayReset();
+        updateUI();
     });
 
-    // Quiz mantığı
-    let currentIndex = 0;
-    function startQuiz() {
-      document.getElementById("word-list").style.display = "none";
-      document.getElementById("quiz").style.display = "block";
-      currentIndex = 0;
-      showQuestion();
+    // 2. Kelimeleri Dinleme
+    onSnapshot(getWordsRef(), (snapshot) => {
+        words = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        updateWordListUI();
+    });
+}
+
+function checkDayReset() {
+    if (!appData) return;
+    const todayStr = new Date().toDateString();
+
+    if (appData.lastActiveDate !== todayStr) {
+        appData.todayTime = 0;
+        appData.dayCompleted = false;
+        appData.lastActiveDate = todayStr;
+
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toDateString();
+
+        if (appData.lastCompletedDate !== null && appData.lastCompletedDate !== yesterdayStr) {
+             appData.streak = 0;
+        }
+
+        updateDoc(getUserDataRef(), {
+            todayTime: appData.todayTime,
+            dayCompleted: appData.dayCompleted,
+            lastActiveDate: appData.lastActiveDate,
+            streak: appData.streak
+        });
+    }
+}
+
+// --- 3. AKILLI ZAMANLAYICI MANTIĞI ---
+
+function startTimer() {
+    if (appData.dayCompleted) {
+         document.getElementById('completion-msg').classList.remove('hidden');
+         return;
     }
 
-    function showQuestion() {
-      if(currentIndex >= words.length) {
-        document.getElementById("quiz-result").textContent = "Quiz tamamlandı!";
-        saveProgress();
+    isStudying = true;
+
+    if (timerInterval) clearInterval(timerInterval);
+
+    timerInterval = setInterval(() => {
+        if (!isStudying) return;
+
+        appData.todayTime++;
+        updateUI();
+
+        if (appData.todayTime >= TARGET_TIME && !appData.dayCompleted) {
+            completeDay();
+        }
+    }, 1000);
+}
+
+function stopTimer() {
+    isStudying = false;
+    if (timerInterval) clearInterval(timerInterval);
+}
+
+async function completeDay() {
+    appData.dayCompleted = true;
+    appData.streak++;
+    appData.lastCompletedDate = new Date().toDateString();
+
+    showModal("Tebrikler!", "Bugünkü 15 dakikalık hedefini tamamladın! Seriye 1 gün eklendi.");
+
+    await updateDoc(getUserDataRef(), {
+        dayCompleted: true,
+        streak: appData.streak,
+        lastCompletedDate: appData.lastCompletedDate
+    });
+
+    checkRewardStatus();
+    stopTimer();
+}
+
+// --- 4. ÖDÜL VE SERİ TAKİBİ ---
+
+function checkRewardStatus() {
+    const rewardNotif = document.getElementById('reward-notification');
+
+    if (appData && appData.streak > 0 && appData.streak % STREAK_GOAL === 0 && appData.rewardClaimed === true) {
+         appData.rewardClaimed = false;
+         updateDoc(getUserDataRef(), { rewardClaimed: false });
+    }
+
+    if (appData && appData.rewardClaimed === false) {
+        rewardNotif.classList.remove('hidden');
+        rewardNotif.onclick = () => showScreen('reward');
+    } else {
+        rewardNotif.classList.add('hidden');
+        rewardNotif.onclick = null;
+    }
+}
+
+// Kullanıcının istediği spesifik ödül seçenekleri
+const REWARD_OPTIONS = {
+    1: "🍔 Büyük Boy Hamburger Menüsü!",
+    2: "🍕 Aile Boyu Pizza Ismarlama Hakkı!",
+    3: "💰 300 TL Harçlık Kazanma Hakkı!",
+    4: "🎉 Sürpriz Ödül!"
+};
+
+window.openGift = function(boxNum) {
+    if (appData.rewardClaimed) {
+        showModal("Hata", "Şu an aktif bir ödül hakkın yok. Yeni seri için çalışmaya devam!");
         return;
-      }
-      document.getElementById("quiz-question").textContent = `Bu kelimenin anlamı nedir: ${words[currentIndex].word}?`;
-      document.getElementById("answer").value = "";
-      document.getElementById("quiz-result").textContent = "";
     }
 
-    function submitAnswer() {
-      const ans = document.getElementById("answer").value.trim().toLowerCase();
-      const correct = words[currentIndex].meaning.toLowerCase();
-      const resultDiv = document.getElementById("quiz-result");
-      if(ans === correct) {
-        resultDiv.textContent = "Doğru!";
-      } else {
-        resultDiv.textContent = `Yanlış! Doğru cevap: ${correct}`;
-      }
-      currentIndex++;
-      setTimeout(showQuestion, 1000);
+    const reveal = document.getElementById('gift-reveal');
+
+    const rewardText = REWARD_OPTIONS[boxNum] || REWARD_OPTIONS[4];
+
+    reveal.innerText = rewardText;
+    reveal.classList.remove('opacity-0');
+    reveal.classList.add('bg-yellow-300', 'shadow-2xl');
+
+    document.querySelectorAll('.gift-box').forEach(box => {
+        if (parseInt(box.dataset.gift) !== boxNum) {
+            box.style.opacity = '0.3';
+        } else {
+            box.classList.remove('animate-bounce');
+        }
+        box.onclick = null; // Tüm kutuları tıklanamaz yap
+    });
+    document.getElementById('claim-button').classList.remove('hidden');
+}
+
+window.claimReward = function() {
+    if (appData.rewardClaimed === false) {
+         updateDoc(getUserDataRef(), { rewardClaimed: true });
+    }
+    document.getElementById('gift-reveal').classList.add('opacity-0');
+    document.getElementById('claim-button').classList.add('hidden');
+
+    // Kutuları tekrar tıklanabilir yap
+    document.querySelectorAll('.gift-box').forEach(box => {
+        box.onclick = () => openGift(parseInt(box.dataset.gift));
+        box.style.opacity = '1.0';
+    });
+
+    showScreen('home');
+}
+
+// --- 5. KELİME YÖNETİMİ (EBEVEYN) ---
+
+window.addWord = async function() {
+    const en = document.getElementById('new-eng').value.trim();
+    const tr = document.getElementById('new-tr').value.trim();
+
+    if (!en || !tr) {
+        showModal("Uyarı", "Lütfen hem İngilizce kelimeyi hem de Türkçe anlamını girin.");
+        return;
     }
 
-    // Firebase’e kaydetme
-    function saveProgress() {
-      const dateKey = new Date().toISOString().split('T')[0];
-      db.collection("userProgress").doc(dateKey).set({
-        completedWords: words.map(w => w.word),
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      })
-      .then(() => console.log("Progress saved!"))
-      .catch(err => console.error(err));
+    try {
+        await setDoc(doc(getWordsRef()), {
+            en: en,
+            tr: tr,
+            createdAt: new Date()
+        });
+        document.getElementById('new-eng').value = "";
+        document.getElementById('new-tr').value = "";
+        showModal("Başarılı", Kelime: "${en}" başarıyla eklendi!);
+    } catch (error) {
+        console.error("Kelime eklenirken hata:", error);
+        showModal("Hata", "Kelime eklenirken bir sorun oluştu.");
     }
-  </script>
+}
+
+function updateWordListUI() {
+    const list = document.getElementById('word-list-display');
+    const count = document.getElementById('word-count');
+    list.innerHTML = "";
+    count.innerText = words.length;
+
+    if (words.length === 0) {
+        list.innerHTML = <li class="p-2 text-center text-gray-400">Henüz kelime yok. Lütfen yukarıdan ekleyin.</li>;
+        return;
+    }
+
+    words.forEach(w => {
+        const li = document.createElement('li');
+        li.className = 'flex justify-between items-center p-2 border-b last:border-b-0 text-gray-700 text-sm';
+        li.innerHTML = <span><strong class="text-teal-600">${w.en}</strong> - ${w.tr}</span>;
+        list.appendChild(li);
+    });
+}
+
+// --- 6. ÖĞRENME MODÜLLERİ ---
+
+window.startStudy = function(mode) {
+    if (words.length === 0) {
+        showModal("Uyarı", "Lütfen önce kelime ekleyin.");
+        return;
+    }
+
+    isStudying = true;
+    startTimer();
+
+    if (mode === 'flashcard') {
+        showScreen('flashcard');
+        loadFlashcard();
+    } else if (mode === 'quiz') {
+        if (words.length < 3) {
+            showModal("Uyarı", "Çoktan Seçmeli Quiz için en az 3 kelime eklemelisin!");
+            isStudying = false; stopTimer(); return;
+        }
+        showScreen('quiz');
+        loadQuiz();
+    } else if (mode === 'fillInTheBlanks') {
+        showScreen('fillInTheBlanks');
+        loadFillInTheBlanks();
+    }
+}
+
+window.stopStudy = function() {
+    isStudying = false;
+    stopTimer();
+    showScreen('home');
+}
+
+// FLASHCARD MANTIĞI
+function loadFlashcard() {
+    currentStudyWord = words[Math.floor(Math.random() * words.length)];
+
+    const card = document.getElementById('active-card');
+    card.classList.remove('flipped');
+
+    setTimeout(() => {
+        document.querySelector('#active-card .card-front').innerText = currentStudyWord.en;
+        document.querySelector('#active-card .card-back').innerText = currentStudyWord.tr;
+    }, 300);
+}
+
+window.flipCard = function() {
+    document.getElementById('active-card').classList.toggle('flipped');
+}
+
+window.nextCard = function(known) {
+    loadFlashcard();
+}
+
+// QUIZ MANTIĞI (Çoktan Seçmeli)
+
+/**
+ * Doğru kelime ve rastgele seçilmiş 2 yanlış kelimeyi (çeldiricileri) döndürür.
+ */
+function getShuffledOptions(correctWord, allWords) {
+    // Doğru kelime dışındaki tüm kelimeleri al
+    const decoys = allWords.filter(w => w.en !== correctWord.en);
+
+    // Rastgele 2 yanlış kelime seç
+    const shuffledDecoys = decoys.sort(() => 0.5 - Math.random());
+    // En az 2 çeldirici olduğundan emin olmak için kontrol ediyoruz
+    const incorrectOptions = shuffledDecoys.slice(0, Math.min(2, decoys.length)).map(w => ({ en: w.en, isCorrect: false }));
+
+    // Doğru kelimeyi ekle
+    const correctOption = { en: correctWord.en, isCorrect: true };
+    let options = [...incorrectOptions, correctOption];
+
+    // Seçenekleri karıştır
+    return options.sort(() => 0.5 - Math.random());
+}
+
+window.loadQuiz = function() {
+    // Kelime listesi yeterli değilse hata mesajı göster (startStudy'de kontrol edildi, ama yine de güvenliğe alalım)
+    if (words.length < 3) {
+        document.getElementById('quiz-question-mc').innerText = "Quiz için en az 3 farklı kelime ekleyin!";
+        document.getElementById('answer-options-mc').innerHTML = "";
+        return;
+    }
+
+    // Rastgele kelimeyi seç
+    currentStudyWord = words[Math.floor(Math.random() * words.length)];
+
+    document.getElementById('quiz-question-mc').innerText = currentStudyWord.tr;
+    const optionsContainer = document.getElementById('answer-options-mc');
+    optionsContainer.innerHTML = "";
+    document.getElementById('quiz-feedback-mc').innerText = "";
+
+    const options = getShuffledOptions(currentStudyWord, words);
+
+    options.forEach(option => {
+        const button = document.createElement('button');
+        button.className = 'w-full p-3 bg-white text-gray-800 font-semibold rounded-lg border-2 border-teal-500 hover:bg-teal-100 transition duration-150 shadow-md quiz-option-btn';
+        button.innerText = option.en;
+        button.dataset.isCorrect = option.isCorrect;
+        button.onclick = () => checkAnswer(button);
+        optionsContainer.appendChild(button);
+    });
+}
+
+window.checkAnswer = function(selectedButton) {
+    const optionsContainer = document.getElementById('answer-options-mc');
+    const feedback = document.getElementById('quiz-feedback-mc');
+
+    // Tüm butonları devre dışı bırak
+    Array.from(optionsContainer.children).forEach(btn => btn.onclick = null);
+
+    if (selectedButton.dataset.isCorrect === 'true') {
+        selectedButton.classList.remove('bg-white', 'border-teal-500', 'hover:bg-teal-100');
+        selectedButton.classList.add('bg-green-500', 'text-white', 'border-green-700');
+        feedback.innerText = "🎉 Doğru Cevap!";
+        feedback.className = "mt-6 h-6 font-bold text-green-600";
+    } else {
+        selectedButton.classList.remove('bg-white', 'border-teal-500', 'hover:bg-teal-100');
+        selectedButton.classList.add('bg-red-500', 'text-white', 'border-red-700');
+        feedback.innerText = "❌ Yanlış Cevap.";
+        feedback.className = "mt-6 h-6 font-bold text-red-600";
+
+        // Doğru cevabı vurgula
+        const correctButton = Array.from(optionsContainer.children).find(btn => btn.dataset.isCorrect === 'true');
+        if (correctButton) {
+             correctButton.classList.remove('bg-white', 'border-teal-500', 'shadow-md', 'quiz-option-btn');
+             correctButton.classList.add('bg-green-200', 'border-green-500', 'text-gray-800', 'shadow-lg');
+        }
+    }
+
+    // Yeni soruyu yükle
+    setTimeout(() => {
+        loadQuiz();
+    }, 1500); // 1.5 saniye sonra yeni soruya geç
+}
+
+// QUIZ MANTIĞI (Boşluk Doldurma)
+
+window.loadFillInTheBlanks = function() {
+    currentStudyWord = words[Math.floor(Math.random() * words.length)];
+
+    // %50 ihtimalle EN->TR, %50 ihtimalle TR->EN
+    const isEnToTr = Math.random() < 0.5;
+
+    const questionText = document.getElementById('fitb-question');
+    const inputField = document.getElementById('fitb-input');
+    const feedback = document.getElementById('fitb-feedback');
+    const checkButton = document.querySelector('#screen-fillInTheBlanks button[onclick="checkFillInTheBlanksAnswer()"]');
+
+    inputField.value = "";
+    feedback.innerText = "";
+    inputField.disabled = false;
+    checkButton.disabled = false;
+
+    if (isEnToTr) {
+        questionText.innerText = "${currentStudyWord.en}" kelimesinin Türkçe karşılığı nedir?;
+        expectedAnswer = currentStudyWord.tr;
+        inputField.placeholder = "Türkçe Anlamı...";
+    } else {
+        questionText.innerText = "${currentStudyWord.tr}" kelimesinin İngilizce karşılığı nedir?;
+        expectedAnswer = currentStudyWord.en;
+        inputField.placeholder = "English Word...";
+    }
+
+    inputField.focus();
+}
+
+window.checkFillInTheBlanksAnswer = function() {
+    const userInput = document.getElementById('fitb-input').value.trim().toLowerCase();
+    const feedback = document.getElementById('fitb-feedback');
+    const inputField = document.getElementById('fitb-input');
+    const checkButton = document.querySelector('#screen-fillInTheBlanks button[onclick="checkFillInTheBlanksAnswer()"]');
+
+    const expected = expectedAnswer.toLowerCase();
+
+    const isCorrect = userInput === expected;
+
+    inputField.disabled = true; // Cevaplandıktan sonra girişi kitle
+    checkButton.disabled = true;
+
+    if (isCorrect) {
+        feedback.innerText = "🎉 Doğru! Harikasın.";
+        feedback.className = "mt-6 h-6 font-bold text-green-600";
+        inputField.classList.add('bg-green-100');
+    } else {
+        feedback.innerText = ❌ Yanlış. Doğru cevap: "${expectedAnswer}";
+        feedback.className = "mt-6 h-6 font-bold text-red-600";
+        inputField.classList.add('bg-red-100');
+    }
+
+    // Yeni soruyu yükle
+    setTimeout(() => {
+        inputField.classList.remove('bg-green-100', 'bg-red-100');
+        loadFillInTheBlanks();
+    }, 2000); // 2 saniye sonra yeni soruya geç
+}
+
+// --- 7. UI GÜNCELLEME VE GENEL FONKSİYONLAR ---
+
+function updateUI() {
+    if (!appData) return;
+
+    // Süre ve Progress Bar
+    const mins = Math.floor(appData.todayTime / 60);
+    const secs = appData.todayTime % 60;
+    document.getElementById('timer-display').innerText =
+        ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')};
+
+    const percent = Math.min((appData.todayTime / TARGET_TIME) * 100, 100);
+    document.getElementById('progress-bar').style.width = percent + "%";
+
+    // Seri
+    document.getElementById('streak-count').innerText = appData.streak;
+
+    // Gün tamamlandı mesajı
+    const completionMsg = document.getElementById('completion-msg');
+    if (appData.dayCompleted) {
+        completionMsg.classList.remove('hidden');
+    } else {
+        completionMsg.classList.add('hidden');
+    }
+
+    // Ödül durumu kontrolü
+    checkRewardStatus();
+}
+
+window.showScreen = function(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+    document.getElementById('screen-' + screenId).classList.remove('hidden');
+
+    if (screenId === 'home' || screenId === 'parent' || screenId === 'reward') {
+        stopTimer();
+        if (screenId === 'reward') {
+            document.getElementById('gift-reveal').classList.add('opacity-0');
+            document.getElementById('claim-button').classList.add('hidden');
+        }
+    }
+}
+
+window.showModal = function(title, message) {
+    document.getElementById('modal-title').innerText = title;
+    document.getElementById('modal-message').innerText = message;
+    document.getElementById('modal-backdrop').classList.remove('hidden');
+    document.getElementById('custom-modal').classList.add('scale-100');
+}
+
+window.closeModal = function() {
+    document.getElementById('custom-modal').classList.remove('scale-100');
+    document.getElementById('modal-backdrop').classList.add('hidden');
+}
+
+// Uygulama başlatma
+window.onload = startApp;
+</script>
 </body>
 </html>
