@@ -243,9 +243,10 @@
 
 <script type="module">
     // Firebase modüllerini içe aktarma
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged, EmailAuthProvider, linkWithCredential } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, collection, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    // ✨ DÜZELTME: Sürüm 11.6.1'den daha stabil olan 10.8.0'a geçirildi
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged, EmailAuthProvider, linkWithCredential } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, collection, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     // --- 1. FIREBASE KONFİGÜRASYONU VE BAŞLATMA ---
     const firebaseConfig = {
@@ -276,7 +277,7 @@
     let currentStudyWord = null;
     let expectedAnswer = null; 
 
-    // --- HESAP BAĞLAMA FONKSİYONLARI (Form gizleme mantığı dahil) ---
+    // --- HESAP BAĞLAMA FONKSİYONLARI ---
 
     async function saveAccountWithEmail(email, password) {
         const user = auth.currentUser; 
@@ -565,14 +566,14 @@
         showScreen('home');
     }
 
-    // FLASHCARD MANTIĞI (Düzeltildi: Kesintisiz Akış)
+    // FLASHCARD MANTIĞI (Kesintisiz Akış)
     function loadFlashcard() {
         // Yeni bir kelime seç
         currentStudyWord = words[Math.floor(Math.random() * words.length)];
         
         const card = document.getElementById('active-card');
         
-        // ✨ DÜZELTME: Kartı geri döndürerek İngilizce yüzüyle başlamasını sağla
+        // Kartı geri döndürerek İngilizce yüzüyle başlamasını sağla
         card.classList.remove('flipped');
         
         // Kartın dönme animasyonu tamamlandıktan sonra yeni kelimeyi yükle
@@ -587,7 +588,6 @@
     }
 
     window.nextCard = function(known) {
-        // ✨ DÜZELTME: Kartı geçtikten sonra yeni kelimeyi yükle
         loadFlashcard();
     }
 
@@ -755,7 +755,7 @@
         // Hata kontrolü
         if (!targetScreen) {
              console.error(`Hata: 'screen-${screenId}' ID'li ekran bulunamadı.`);
-             showModal("Kritik Hata", "Uygulama ekranlarından biri yüklenemedi. Lütfen kodunuzu kontrol edin.");
+             showModal("Kritik Hata", "Uygulama ekranlarından biri yüklenemedi.");
              return;
         }
         
