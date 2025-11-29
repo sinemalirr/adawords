@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="tr">
-    <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ada'nın Başarı Dünyası (Vocabulary)</title>
     
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
@@ -245,7 +245,7 @@
 
 <script type="module">
     // Firebase modüllerini içe aktarma
-    // ✨ DÜZELTME: Sürüm 11.6.1'den daha stabil olan 10.8.0'a geçirildi
+    // Stabil olan 10.8.0 sürümü kullanıldı
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInAnonymously, onAuthStateChanged, EmailAuthProvider, linkWithCredential } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, collection, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -282,10 +282,21 @@
     // --- HESAP BAĞLAMA FONKSİYONLARI ---
 
     async function saveAccountWithEmail(email, password) {
+        // ✨ DÜZELTME: Temel doğrulama eklendi
+        if (!email || !password) {
+            showModal("Uyarı", "Lütfen e-posta ve şifre alanlarını boş bırakmayın.");
+            return;
+        }
+        
+        if (password.length < 6) {
+             showModal("Hata", "Şifre en az 6 karakter olmalıdır.");
+             return;
+        }
+
         const user = auth.currentUser; 
         try {
             if (!user) {
-                showModal("Hata", "Önce oturum açılmalıdır.");
+                showModal("Hata", "Önce oturum açılmalıdır."); // Anonim girişin başarısız olması durumunda
                 return;
             }
             const credential = EmailAuthProvider.credential(email, password);
@@ -311,8 +322,13 @@
                 if (form) {
                     form.classList.add('hidden');
                 }
+            } else if (error.code === 'auth/weak-password') {
+                 showModal("Hata", "Şifre çok zayıf. Lütfen en az 6 karakter uzunluğunda bir şifre seçin.");
+            } else if (error.code === 'auth/invalid-email') {
+                 showModal("Hata", "Geçersiz e-posta formatı. Lütfen kontrol edin.");
             } else {
-                 showModal("Hata", "Hesap bağlama sırasında bir sorun oluştu.");
+                 // ✨ DÜZELTME: Diğer hatalar için hata kodunu göster
+                 showModal("Hata", `Hesap bağlama sırasında beklenmeyen bir sorun oluştu. Hata Kodu: ${error.code}`);
             }
         }
     }
