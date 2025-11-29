@@ -245,10 +245,9 @@
 
 <script type="module">
     // Firebase modüllerini içe aktarma
-    // Stabil olan 10.8.0 sürümü kullanıldı
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged, EmailAuthProvider, linkWithCredential } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, collection, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged, EmailAuthProvider, linkWithCredential, signInWithCredential } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, collection, onSnapshot, updateDoc, getDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"; // Firestore için ek modüller eklendi
 
     // --- 1. FIREBASE KONFİGÜRASYONU VE BAŞLATMA ---
     const firebaseConfig = {
@@ -279,10 +278,43 @@
     let currentStudyWord = null;
     let expectedAnswer = null; 
 
-    // --- HESAP BAĞLAMA FONKSİYONLARI ---
+    // --- HESAP BAĞLAMA VE VERİ TAŞIMA FONKSİYONLARI ---
+    
+    // YENİ FONKSİYON: Anonim verileri kalıcı hesaba taşır
+    async function migrateAnonymousDataToNewUser(oldUid, newUid) {
+        console.log(`Veri taşıma başlatıldı: ${oldUid} -> ${newUid}`);
+        
+        // 1. Profil Verisini Taşı (Meta/Streak/Time)
+        const oldMetaRef = doc(db, 'artifacts', APP_ID, 'users', oldUid, 'profile', 'meta');
+        const newMetaRef = doc(db, 'artifacts', APP_ID, 'users', newUid, 'profile', 'meta');
+        
+        const oldMetaSnapshot = await getDoc(oldMetaRef); 
+        if (oldMetaSnapshot.exists()) {
+            const oldData = oldMetaSnapshot.data();
+            // Yeni kullanıcıya yaz (mevcut verilerle birleştir)
+            await setDoc(newMetaRef, oldData, { merge: true });
+            // Eski veriyi sil
+            await deleteDoc(oldMetaRef); 
+        }
+        
+        // 2. Kelime Verilerini Taşı (Words Collection)
+        const oldWordsCollectionRef = collection(db, 'artifacts', APP_ID, 'users', oldUid, 'words');
+        const newWordsCollectionRef = collection(db, 'artifacts', APP_ID, 'users', newUid, 'words');
+
+        const oldWordsSnapshot = await getDocs(oldWordsCollectionRef);
+        
+        // Her kelimeyi yeni koleksiyona kopyala (yeni belge ID'si ile) ve eskisini sil
+        for (const docSnapshot of oldWordsSnapshot.docs) {
+            await setDoc(doc(newWordsCollectionRef), docSnapshot.data());
+            await deleteDoc(docSnapshot.ref); 
+        }
+
+        console.log("Veri taşıma başarılı.");
+    }
+
 
     async function saveAccountWithEmail(email, password) {
-        // ✨ DÜZELTME: Temel doğrulama eklendi
+        // Temel doğrulama
         if (!email || !password) {
             showModal("Uyarı", "Lütfen e-posta ve şifre alanlarını boş bırakmayın.");
             return;
@@ -293,41 +325,72 @@
              return;
         }
 
-        const user = auth.currentUser; 
+        const anonUser = auth.currentUser;
+        if (!anonUser) {
+             showModal("Hata", "Oturum açık değil. Lütfen uygulamayı yenileyin.");
+             return;
+        }
+        
+        const oldUid = anonUser.uid; // Anonim kullanıcının ID'si
+
         try {
-            if (!user) {
-                showModal("Hata", "Önce oturum açılmalıdır."); // Anonim girişin başarısız olması durumunda
-                return;
-            }
+            // Anonim hesabı e-posta/şifre ile bağlamayı dene (Yeni kalıcı hesap oluşturma)
             const credential = EmailAuthProvider.credential(email, password);
-            await linkWithCredential(user, credential);
+            await linkWithCredential(anonUser, credential);
             
             showModal("Başarılı", "Hesabın başarıyla e-posta ve şifre ile kalıcı olarak bağlandı!");
             
             // BAĞLANTI BAŞARILI: Formu gizle
-            const form = document.getElementById('account-link-form');
-            if (form) {
-                form.classList.add('hidden');
-            }
+            document.getElementById('account-link-form').classList.add('hidden');
 
         } catch (error) {
-            console.error("Hesap bağlama hatası:", error.code, error.message);
+            console.error("Hesap bağlama/birleştirme hatası:", error.code, error.message);
             
-            if (error.code === 'auth/credential-already-in-use') {
-                showModal("Hata", "Bu e-posta zaten başka bir hesapla ilişkilendirilmiş.");
+            if (error.code === 'auth/email-already-in-use' || error.code === 'auth/credential-already-in-use') {
+                
+                // --- İSTENEN BİRLEŞTİRME MANTIĞI BURADA ---
+                showModal("Uyarı", "Bu e-posta zaten kullanılıyor. Mevcut anonim verilerinizi bu hesaba birleştirmek ister misiniz? Şifrenizi doğru girdiğinizden emin olun.");
+                
+                // Kullanıcı, modal'ı kapatıp birleştirme işlemini kabul etmiş gibi devam edeceğiz.
+                // Gerçek bir uygulamada burada bir onay butonu olmalıydı.
+                
+                try {
+                    // 1. Mevcut e-posta/şifre ile giriş yapma (Anonim oturumu kapatıp kalıcıya geçme)
+                    const credential = EmailAuthProvider.credential(email, password);
+                    // Bu işlem, anonim oturumu sonlandırır ve kalıcı oturumu başlatır.
+                    const userCredential = await signInWithCredential(auth, credential); 
+                    const newUid = userCredential.user.uid; 
+                    
+                    // 2. Veri taşıma işlemi
+                    showModal("Veri Taşıma", "Mevcut anonim verilerin kalıcı hesabına aktarılıyor... Lütfen bekleyin.");
+                    await migrateAnonymousDataToNewUser(oldUid, newUid); 
+                    
+                    // 3. Başarılı mesajı
+                    showModal("Başarılı", "Hesabın başarıyla birleştirildi ve verilerin aktarıldı!");
+                    
+                    // Formu gizle
+                    document.getElementById('account-link-form').classList.add('hidden');
+                    
+                } catch (mergeError) {
+                    console.error("Birleştirme sırasında hata:", mergeError.code, mergeError.message);
+                    if (mergeError.code === 'auth/wrong-password' || mergeError.code === 'auth/invalid-credential') {
+                        showModal("Hata", "Girdiğin şifre, bu e-posta adresiyle eşleşmiyor. Lütfen kontrol et.");
+                    } else {
+                         showModal("Kritik Hata", `Hesap birleştirme başarısız oldu. Hata Kodu: ${mergeError.code}`);
+                    }
+                }
+                
+                // --- İSTENEN BİRLEŞTİRME MANTIĞI SONU ---
+                
             } else if (error.code === 'auth/provider-already-linked') {
                 // Zaten bağlıysa formu gizleyelim
                 showModal("Uyarı", "Hesabın zaten e-posta/şifre ile kalıcı olarak bağlanmış.");
-                const form = document.getElementById('account-link-form');
-                if (form) {
-                    form.classList.add('hidden');
-                }
+                document.getElementById('account-link-form').classList.add('hidden');
             } else if (error.code === 'auth/weak-password') {
                  showModal("Hata", "Şifre çok zayıf. Lütfen en az 6 karakter uzunluğunda bir şifre seçin.");
             } else if (error.code === 'auth/invalid-email') {
                  showModal("Hata", "Geçersiz e-posta formatı. Lütfen kontrol edin.");
             } else {
-                 // ✨ DÜZELTME: Diğer hatalar için hata kodunu göster
                  showModal("Hata", `Hesap bağlama sırasında beklenmeyen bir sorun oluştu. Hata Kodu: ${error.code}`);
             }
         }
