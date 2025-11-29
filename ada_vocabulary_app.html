@@ -248,7 +248,8 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 
 <script>
-  const firebaseConfig = {
+  // Firebase config
+  var firebaseConfig = {
     apiKey: "AIzaSyAp3ywA8mWCKOH3fA7JACPfx3Ko_7VaD00",
     authDomain: "ada-vocabulary-world.firebaseapp.com",
     projectId: "ada-vocabulary-world",
@@ -259,9 +260,11 @@
 
   // Firebase başlatma
   firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const auth = firebase.auth();
+  var db = firebase.firestore();
+  var auth = firebase.auth();
     
+<script>
+     
     // --- TEMEL AYARLAR ---
     const TARGET_TIME = 15 * 60; // 15 dakika (saniye)
     const STREAK_GOAL = 10;
