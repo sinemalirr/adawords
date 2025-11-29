@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ada'nın Başarı Dünyası (Vocabulary)</title>
+    <title>Ada Word World</title>
     
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 
@@ -88,12 +88,12 @@
 <div id="app-container" class="bg-white flex flex-col">
     
     <header class="bg-gradient-to-br from-red-400 to-teal-400 text-white p-4 rounded-b-xl shadow-lg">
-        <h1 class="text-2xl font-bold text-center">Ada'nın Başarı Dünyası 🌟</h1>
+        <h1 class="text-2xl font-bold text-center">Ada Words World 🌟</h1>
         <div class="flex justify-around items-center mt-2 text-sm font-semibold">
             <span>🔥 Seri: <span id="streak-count">0</span> Gün</span>
             <span>⏱️ <span id="timer-display">00:00</span> / 15:00</span>
         </div>
-        <p id="streak-goal-msg" class="text-center text-xs mt-1 italic opacity-90">10 gün üst üste seri yap, ödül kazan!</p>
+        <p id="streak-goal-msg" class="text-center text-xs mt-1 italic opacity-90">Complete a 10-day streak and earn a reward!</p>
         <div class="w-full bg-white bg-opacity-30 rounded-full h-2 mt-2">
             <div id="progress-bar" class="bg-yellow-300 h-2 rounded-full transition-all duration-500" style="width: 0%;"></div>
         </div>
@@ -109,9 +109,9 @@
 
         <div id="screen-home" class="screen flex flex-col items-center space-y-5">
             <div class="text-center my-8">
-                <h3 class="text-3xl font-extrabold text-gray-800">Hoşgeldin Ada!</h3>
-                <p id="completion-msg" class="text-green-600 font-bold mt-2 hidden">BUGÜN TAMAMLANDI! ✅</p>
-                <p id="reward-notification" class="text-red-500 font-bold mt-2 text-lg animate-pulse hidden">🎁 ÖDÜL KAZANDIN! Tıkla!</p>
+                <h3 class="text-3xl font-extrabold text-gray-800">Welcome Ada!</h3>
+                <p id="completion-msg" class="text-green-600 font-bold mt-2 hidden">Completed today! ✅</p>
+                <p id="reward-notification" class="text-red-500 font-bold mt-2 text-lg animate-pulse hidden">🎁 You earned a reward! Tap to claim!</p>
             </div>
 
             <div id="account-link-form" class="w-11/12 bg-blue-100 p-4 rounded-xl space-y-3 shadow-inner">
@@ -129,21 +129,21 @@
                 </button>
             </div>
             <button class="w-11/12 p-4 bg-teal-500 text-white font-bold rounded-xl btn-action shadow-teal-700" onclick="startStudy('flashcard')">
-                🃏 KARTLARLA ÖĞREN
+                🃏 CARDS
             </button>
             <button class="w-11/12 p-4 bg-red-500 text-white font-bold rounded-xl btn-action shadow-red-700" onclick="startStudy('quiz')">
-                ✍️ ÇOKTAN SEÇMELİ SINAV
+                ✍️ QUIZ
             </button>
             <button class="w-11/12 p-4 bg-yellow-500 text-white font-bold rounded-xl btn-action shadow-yellow-700" onclick="startStudy('fillInTheBlanks')">
-                ✏️ BOŞLUK DOLDURMA SINAVI
+                ✏️ FILL THE BLANKS
             </button>
             <button class="w-11/12 p-4 bg-gray-600 text-white font-bold rounded-xl btn-action shadow-gray-800" onclick="showScreen('parent')">
-                🔒 EBEVEYN KELİME YÖNETİMİ
+                🔒 WORDS
             </button>
         </div>
         <div id="screen-flashcard" class="screen hidden flex-col items-center">
             <button class="text-gray-500 mb-4 self-start" onclick="stopStudy()">
-                <span class="text-2xl">⬅️</span> Menüye Dön
+                <span class="text-2xl">⬅️</span> Back to Menu
             </button>
             <div class="flashcard-container mb-6" onclick="flipCard()">
                 <div class="flashcard" id="active-card">
@@ -163,10 +163,10 @@
 
         <div id="screen-quiz" class="screen hidden flex-col items-center">
             <button class="text-gray-500 mb-4 self-start" onclick="stopStudy()">
-                <span class="text-2xl">⬅️</span> Menüye Dön
+                <span class="text-2xl">⬅️</span> Back to Menu
             </button>
             
-            <h3 class="text-xl font-semibold mb-6 text-gray-700">Aşağıdaki kelimelerden doğru olanı seç:</h3>
+            <h3 class="text-xl font-semibold mb-6 text-gray-700">Choose the correct word from the options below:</h3>
             
             <p class="text-3xl font-bold text-red-500 mb-8 text-center px-4" id="quiz-question-mc">Yükleniyor...</p>
 
@@ -178,17 +178,17 @@
 
         <div id="screen-fillInTheBlanks" class="screen hidden flex-col items-center">
             <button class="text-gray-500 mb-4 self-start" onclick="stopStudy()">
-                <span class="text-2xl">⬅️</span> Menüye Dön
+                <span class="text-2xl">⬅️</span> Back to Menu
             </button>
             
-            <h3 class="text-xl font-semibold mb-6 text-gray-700">Lütfen doğru çeviriyi yazın:</h3>
+            <h3 class="text-xl font-semibold mb-6 text-gray-700">Please type the correct translation:</h3>
             
             <p class="text-3xl font-bold text-red-500 mb-8 text-center px-4" id="fitb-question">Yükleniyor...</p>
 
             <input type="text" id="fitb-input" placeholder="Cevabınızı buraya yazın..." class="p-3 border-2 border-teal-500 rounded-lg w-full max-w-sm text-center text-xl focus:border-red-500 transition duration-300">
             
             <button class="w-full max-w-sm p-3 mt-4 bg-teal-500 text-white font-bold rounded-lg btn-action shadow-teal-700" onclick="checkFillInTheBlanksAnswer()">
-                Cevabı Kontrol Et
+                Check the answer
             </button>
             
             <div id="fitb-feedback" class="mt-6 h-6 font-bold text-center"></div>
@@ -197,18 +197,18 @@
 
         <div id="screen-parent" class="screen hidden flex-col items-center">
             <button class="text-gray-500 mb-6 self-start" onclick="showScreen('home')">
-                <span class="text-2xl">⬅️</span> Menüye Dön
+                <span class="text-2xl">⬅️</span> Back to Menu
             </button>
-            <h3 class="text-2xl font-bold mb-4 text-gray-800">🔒 Kelime Yönetimi (Ebeveyne Özel)</h3>
+            <h3 class="text-2xl font-bold mb-4 text-gray-800">🔒 Word Insert</h3>
             <div class="w-full max-w-sm bg-gray-100 p-4 rounded-xl space-y-3 shadow-inner">
                 <input type="text" id="new-eng" placeholder="İngilizce Kelime" class="p-2 border rounded-lg w-full">
                 <input type="text" id="new-tr" placeholder="Türkçe Anlamı" class="p-2 border rounded-lg w-full">
                 <button class="w-full p-2 bg-gray-600 text-white font-semibold rounded-lg btn-action shadow-gray-800" onclick="addWord()">
-                    + Yeni Kelime Ekle
+                    + Add New Word
                 </button>
             </div>
 
-            <h4 class="text-xl font-semibold mt-6 mb-2">Ekli Kelimeler (<span id="word-count">0</span>)</h4>
+            <h4 class="text-xl font-semibold mt-6 mb-2">Added Words (<span id="word-count">0</span>)</h4>
             <div class="w-full max-w-sm h-48 overflow-y-auto border rounded-lg p-2 bg-white shadow-md">
                 <ul id="word-list-display">
                     </ul>
@@ -217,9 +217,9 @@
         </div>
 
         <div id="screen-reward" class="screen hidden flex-col items-center justify-center h-full">
-            <h2 class="text-3xl font-extrabold text-red-600 mb-4 animate-bounce">🎉 TEBRİKLER ADA! 🎉</h2>
-            <p class="text-xl text-gray-700 mb-8">10 Günlük muhteşem seriyi tamamladın!</p>
-            <p class="text-2xl font-semibold text-teal-600 mb-6">Şimdi hediye paketini seç:</p>
+            <h2 class="text-3xl font-extrabold text-red-600 mb-4 animate-bounce">🎉 CONGRATULATIONS ADA! 🎉</h2>
+            <p class="text-xl text-gray-700 mb-8">You’ve completed an amazing 10-day streak!</p>
+            <p class="text-2xl font-semibold text-teal-600 mb-6">Now choose your gift box:</p>
             <div class="flex space-x-6">
                 <div class="text-6xl cursor-pointer hover:scale-110 transition-transform gift-box" data-gift="1" onclick="openGift(1)">🎁</div>
                 <div class="text-6xl cursor-pointer hover:scale-110 transition-transform gift-box" data-gift="2" onclick="openGift(2)">🎁</div>
@@ -228,7 +228,7 @@
             <div id="gift-reveal" class="mt-8 p-4 bg-yellow-100 text-gray-900 rounded-lg shadow-inner text-center text-xl font-bold transition-all duration-500 opacity-0">
                 </div>
             <button id="claim-button" class="mt-10 p-4 bg-teal-500 text-white font-bold rounded-xl btn-action shadow-teal-700 hidden" onclick="claimReward()">
-                Ödülü Aldım, Menüye Dön
+                You received the reward, Return to Menu
             </button>
         </div>
     </div>
@@ -522,10 +522,9 @@
     }
 
     const REWARD_OPTIONS = {
-        1: "🍔 Büyük Boy Hamburger Menüsü!",
-        2: "🍕 Aile Boyu Pizza Ismarlama Hakkı!",
-        3: "💰 300 TL Harçlık Kazanma Hakkı!",
-        4: "🎉 Sürpriz Ödül!" 
+        1: "🍔 Whopperrrr!",
+        2: "🍕 Pizzaaaa!",
+        3: "💰 300 TL Trendyol Kuponu!",
     };
 
     window.openGift = function(boxNum) {
