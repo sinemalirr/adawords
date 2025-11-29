@@ -105,12 +105,27 @@
             </div>
         </div>
 
-        <div id="screen-home" class="screen flex flex-col items-center space-y-5">
-            <div class="text-center my-8">
-                <h3 class="text-3xl font-extrabold text-gray-800">Hoşgeldin Ada!</h3>
-                <p id="completion-msg" class="text-green-600 font-bold mt-2 hidden">BUGÜN TAMAMLANDI! ✅</p>
-                <p id="reward-notification" class="text-red-500 font-bold mt-2 text-lg animate-pulse hidden">🎁 ÖDÜL KAZANDIN! Tıkla!</p>
-            </div>
+    <div class="text-center my-8">
+        <h3 class="text-3xl font-extrabold text-gray-800">Hoşgeldin Ada!</h3>
+        <p id="completion-msg" class="text-green-600 font-bold mt-2 hidden">BUGÜN TAMAMLANDI! ✅</p>
+        <p id="reward-notification" class="text-red-500 font-bold mt-2 text-lg animate-pulse hidden">🎁 ÖDÜL KAZANDIN! Tıkla!</p>
+    </div>
+    
+    <div id="account-link-form" class="w-11/12 bg-blue-100 p-4 rounded-xl space-y-3 shadow-inner">
+        <h4 class="text-lg font-bold text-blue-700">Kalıcı Hesap Bağlama</h4>
+        <p class="text-sm text-gray-600">Verilerini kaybetmemek ve her cihazda görmek için anonim hesabı e-posta ile bağla.</p>
+        
+        <input type="email" id="emailInput" placeholder="Kullanılacak E-posta" 
+               class="p-2 border rounded-lg w-full focus:ring-blue-500 focus:border-blue-500">
+        <input type="password" id="passwordInput" placeholder="Yeni Şifre Oluştur" 
+               class="p-2 border rounded-lg w-full focus:ring-blue-500 focus:border-blue-500">
+        
+        <button id="registerButton" 
+                class="w-full p-2 bg-blue-600 text-white font-semibold rounded-lg btn-action shadow-blue-800">
+            Hesabı E-posta ile Bağla
+        </button>
+    </div>
+    <button class="w-11/12 p-4 bg-teal-500 text-white font-bold rounded-xl btn-action shadow-teal-700" onclick="startStudy('flashcard')">
             
             <button class="w-11/12 p-4 bg-teal-500 text-white font-bold rounded-xl btn-action shadow-teal-700" onclick="startStudy('flashcard')">
                 🃏 KARTLARLA ÖĞREN
