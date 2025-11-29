@@ -11,12 +11,12 @@ import {
 
 // Firebase config
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyAp3ywA8mWCKOH3fA7JACPfx3Ko_7VaD00",
+  authDomain: "ada-vocabulary-world.firebaseapp.com",
+  projectId: "ada-vocabulary-world",
+  storageBucket: "ada-vocabulary-world.firebasestorage.app",
+  messagingSenderId: "358916729594",
+  appId: "1:358916729594:web:a5da6a37d9bafbf9d47743"
 };
 
 const app = initializeApp(firebaseConfig);
