@@ -248,7 +248,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 
 <script>
-  // Firebase config
+  // 1️⃣ Firebase config
   var firebaseConfig = {
     apiKey: "AIzaSyAp3ywA8mWCKOH3fA7JACPfx3Ko_7VaD00",
     authDomain: "ada-vocabulary-world.firebaseapp.com",
@@ -258,11 +258,22 @@
     appId: "1:358916729594:web:a5da6a37d9bafbf9d47743"
   };
 
-  // Firebase başlatma
+  // 2️⃣ Firebase başlat
   firebase.initializeApp(firebaseConfig);
+
   var db = firebase.firestore();
   var auth = firebase.auth();
-    
+
+  // 3️⃣ Eğer initialAuthToken gerekiyorsa
+  var initialAuthToken = null;
+
+  // 4️⃣ Uygulama başlatma fonksiyonu
+  function startApp() {
+    console.log("Firebase başlatıldı");
+    // Buraya auth ve db işlemleri
+  }
+
+  startApp();
 <script>
      
     // --- TEMEL AYARLAR ---
