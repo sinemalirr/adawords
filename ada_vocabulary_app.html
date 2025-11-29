@@ -246,17 +246,21 @@
 <script type="module">
     // Firebase modüllerini içe aktarma
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, collection, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, setPersistence, inMemoryPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, collection, onSnapshot, updateDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // Hata ayıklama için log seviyesini ayarla
+    setLogLevel('debug'); 
 
     // --- 1. FIREBASE KONFİGÜRASYONU VE BAŞLATMA ---
     const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
     const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
     
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
-    
+    // Global değişkenler - initializeApp burada yapmıyoruz, startApp'te yapıyoruz.
+    let app = null;
+    let db = null;
+    let auth = null;
+
     // --- TEMEL AYARLAR ---
     const TARGET_TIME = 15 * 60; // 15 dakika (saniye)
     const STREAK_GOAL = 10;
@@ -276,14 +280,26 @@
     // --- 2. FIREBASE VE AUTHENTICATION ---
 
     async function startApp() {
+        document.getElementById('loading-screen').classList.remove('hidden');
+
         try {
-            document.getElementById('loading-screen').classList.remove('hidden');
-            
+            // Firestore başlatma (Hata burada giderildi)
+            if (!firebaseConfig || !firebaseConfig.projectId) {
+                throw new Error("Firebase configuration is missing Project ID.");
+            }
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            // Kimlik doğrulama
             if (initialAuthToken) {
+                // Custom Token ile giriş yap ve kalıcılığı memory'de tut
+                await setPersistence(auth, inMemoryPersistence);
                 const userCredential = await signInWithCustomToken(auth, initialAuthToken);
                 userId = userCredential.user.uid;
                 console.log("Firebase özel token ile giriş başarılı. User ID:", userId);
             } else {
+                // Anonim giriş yap
                 const userCredential = await signInAnonymously(auth);
                 userId = userCredential.user.uid;
                 console.log("Firebase anonim giriş başarılı. User ID:", userId);
@@ -294,8 +310,8 @@
             setupDataListeners();
             
         } catch (error) {
-            console.error("Firebase başlatılırken hata:", error);
-            showModal("Bağlantı Hatası", "Uygulamaya bağlanılamadı. Lütfen konsolu kontrol edin.");
+            console.error("Firebase başlatılırken veya bağlanılırken hata:", error);
+            showModal("Bağlantı Hatası", `Uygulamaya bağlanılamadı. Hata: ${error.message}`);
         } finally {
             document.getElementById('loading-screen').classList.add('hidden');
         }
@@ -305,13 +321,14 @@
     const getWordsRef = () => collection(db, 'artifacts', APP_ID, 'users', userId, 'words');
 
     async function setupDataListeners() {
-        if (!isAuthReady) return;
+        if (!isAuthReady || !db) return;
 
         // 1. Profil ve Seri Takibi Verilerini Dinleme
         onSnapshot(getUserDataRef(), (docSnapshot) => {
             if (docSnapshot.exists()) {
                 appData = docSnapshot.data();
             } else {
+                // Eğer veri yoksa, varsayılan değerleri oluştur ve kaydet
                 appData = {
                     streak: 0,
                     todayTime: 0,
@@ -324,12 +341,16 @@
             }
             checkDayReset();
             updateUI();
+        }, (error) => {
+            console.error("User Data Snapshot Error:", error);
         });
 
         // 2. Kelimeleri Dinleme
         onSnapshot(getWordsRef(), (snapshot) => {
             words = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             updateWordListUI();
+        }, (error) => {
+            console.error("Words Snapshot Error:", error);
         });
     }
 
@@ -338,33 +359,39 @@
         const todayStr = new Date().toDateString();
         
         if (appData.lastActiveDate !== todayStr) {
-            appData.todayTime = 0;
-            appData.dayCompleted = false;
-            appData.lastActiveDate = todayStr;
             
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
             const yesterdayStr = yesterday.toDateString();
 
-            if (appData.lastCompletedDate !== null && appData.lastCompletedDate !== yesterdayStr) {
-                 appData.streak = 0;
+            let newStreak = appData.streak;
+
+            // Eğer bugün aktif olunan ilk günse ve dün tamamlanmadıysa, seriyi sıfırla.
+            if (appData.lastCompletedDate !== todayStr && appData.lastCompletedDate !== yesterdayStr) {
+                newStreak = 0;
             }
             
+            // Veritabanını güncelle
             updateDoc(getUserDataRef(), {
-                todayTime: appData.todayTime,
-                dayCompleted: appData.dayCompleted,
-                lastActiveDate: appData.lastActiveDate,
-                streak: appData.streak
+                todayTime: 0,
+                dayCompleted: false,
+                lastActiveDate: todayStr,
+                streak: newStreak
             });
+            
+            appData.todayTime = 0;
+            appData.dayCompleted = false;
+            appData.lastActiveDate = todayStr;
+            appData.streak = newStreak;
         }
     }
 
     // --- 3. AKILLI ZAMANLAYICI MANTIĞI ---
 
     function startTimer() {
-        if (appData.dayCompleted) {
-             document.getElementById('completion-msg').classList.remove('hidden');
-             return;
+        if (appData && appData.dayCompleted) {
+            document.getElementById('completion-msg').classList.remove('hidden');
+            return;
         }
 
         isStudying = true;
@@ -386,12 +413,28 @@
     function stopTimer() {
         isStudying = false;
         if (timerInterval) clearInterval(timerInterval);
+        // Çalışma süresi durduğunda, güncel süreyi anında kaydet
+        if (appData && !appData.dayCompleted && appData.todayTime > 0) {
+            updateDoc(getUserDataRef(), { todayTime: appData.todayTime });
+        }
     }
 
     async function completeDay() {
         appData.dayCompleted = true;
-        appData.streak++;
-        appData.lastCompletedDate = new Date().toDateString();
+        
+        const lastCompletedDate = new Date().toDateString();
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toDateString();
+
+        // Seri artışı sadece art arda günlerde tamamlandıysa gerçekleşir
+        if (appData.lastCompletedDate === lastCompletedDate) {
+            // Zaten bugün tamamlanmış, streak artmaz.
+        } else if (appData.lastCompletedDate === yesterdayStr || appData.lastCompletedDate === null) {
+            appData.streak++;
+        }
+        
+        appData.lastCompletedDate = lastCompletedDate;
         
         showModal("Tebrikler!", "Bugünkü 15 dakikalık hedefini tamamladın! Seriye 1 gün eklendi.");
         
@@ -408,14 +451,19 @@
     // --- 4. ÖDÜL VE SERİ TAKİBİ ---
     
     function checkRewardStatus() {
+        if (!appData) return;
+        
         const rewardNotif = document.getElementById('reward-notification');
         
-        if (appData && appData.streak > 0 && appData.streak % STREAK_GOAL === 0 && appData.rewardClaimed === true) {
+        // Ödül Hakkı Kazanma Kontrolü
+        if (appData.streak > 0 && appData.streak % STREAK_GOAL === 0 && appData.rewardClaimed === true) {
+             // Sadece 10'un katları ilk kez vurulduğunda ödül hakkını sıfırla
              appData.rewardClaimed = false;
              updateDoc(getUserDataRef(), { rewardClaimed: false });
         }
         
-        if (appData && appData.rewardClaimed === false) {
+        // Bildirim Görüntüleme Kontrolü
+        if (appData.rewardClaimed === false) {
             rewardNotif.classList.remove('hidden');
             rewardNotif.onclick = () => showScreen('reward');
         } else {
@@ -433,7 +481,7 @@
     };
 
     window.openGift = function(boxNum) {
-        if (appData.rewardClaimed) {
+        if (!appData || appData.rewardClaimed) {
             showModal("Hata", "Şu an aktif bir ödül hakkın yok. Yeni seri için çalışmaya devam!");
             return;
         }
@@ -458,7 +506,7 @@
     }
 
     window.claimReward = function() {
-        if (appData.rewardClaimed === false) {
+        if (appData && appData.rewardClaimed === false) {
              updateDoc(getUserDataRef(), { rewardClaimed: true });
         }
         document.getElementById('gift-reveal').classList.add('opacity-0');
@@ -484,11 +532,18 @@
             return;
         }
 
+        if (!db || !userId) {
+            showModal("Hata", "Veritabanı bağlantısı henüz hazır değil.");
+            return;
+        }
+
         try {
+            // Kelime eklemek için setDoc kullanmak yerine addDoc kullanıyoruz.
+            // setDoc yerine addDoc kullanırsak otomatik id alarak her zaman yeni kelime ekleriz.
             await setDoc(doc(getWordsRef()), { 
                 en: en, 
                 tr: tr, 
-                createdAt: new Date() 
+                createdAt: new Date().toISOString() 
             });
             document.getElementById('new-eng').value = "";
             document.getElementById('new-tr').value = "";
@@ -553,11 +608,16 @@
 
     // FLASHCARD MANTIĞI
     function loadFlashcard() {
-        currentStudyWord = words[Math.floor(Math.random() * words.length)];
+        // Kelimeleri karıştırarak seçmek daha iyi bir öğrenme akışı sağlar
+        const availableWords = [...words];
+        if (availableWords.length === 0) return;
+
+        currentStudyWord = availableWords[Math.floor(Math.random() * availableWords.length)];
         
         const card = document.getElementById('active-card');
         card.classList.remove('flipped');
         
+        // Kartı çevirmeden önce metni yüklemek için kısa bir gecikme
         setTimeout(() => {
             document.querySelector('#active-card .card-front').innerText = currentStudyWord.en;
             document.querySelector('#active-card .card-back').innerText = currentStudyWord.tr;
@@ -569,6 +629,7 @@
     }
 
     window.nextCard = function(known) {
+        // known parametresini şimdilik kullanmıyoruz, sadece bir sonraki karta geçiyoruz.
         loadFlashcard();
     }
 
@@ -657,6 +718,7 @@
     // QUIZ MANTIĞI (Boşluk Doldurma)
 
     window.loadFillInTheBlanks = function() {
+        if (words.length === 0) return;
         currentStudyWord = words[Math.floor(Math.random() * words.length)];
         
         // %50 ihtimalle EN->TR, %50 ihtimalle TR->EN
@@ -671,6 +733,8 @@
         feedback.innerText = "";
         inputField.disabled = false;
         checkButton.disabled = false;
+        
+        inputField.classList.remove('bg-green-100', 'bg-red-100');
         
         if (isEnToTr) {
             questionText.innerText = `"${currentStudyWord.en}" kelimesinin Türkçe karşılığı nedir?`;
@@ -710,7 +774,6 @@
         
         // Yeni soruyu yükle
         setTimeout(() => {
-            inputField.classList.remove('bg-green-100', 'bg-red-100');
             loadFillInTheBlanks();
         }, 2000); // 2 saniye sonra yeni soruya geç
     }
@@ -750,7 +813,7 @@
         document.getElementById('screen-' + screenId).classList.remove('hidden');
         
         if (screenId === 'home' || screenId === 'parent' || screenId === 'reward') {
-            stopTimer();
+            stopTimer(); // Eğitim dışındaki ekranlarda zamanlayıcıyı durdur
             if (screenId === 'reward') {
                 document.getElementById('gift-reveal').classList.add('opacity-0');
                 document.getElementById('claim-button').classList.add('hidden');
