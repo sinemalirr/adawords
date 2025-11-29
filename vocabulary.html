@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ada'nın Başarı Dünyası (Vocabulary)</title>
+    <title>Ada Vocabulary World (Vocabulary)</title>
     
     <!-- Tailwind CSS (Aesthetics & Responsiveness) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -118,16 +118,16 @@
             </div>
             
             <button class="w-11/12 p-4 bg-teal-500 text-white font-bold rounded-xl btn-action shadow-teal-700" onclick="startStudy('flashcard')">
-                🃏 KARTLARLA ÖĞREN
+                🃏 CARDS
             </button>
             <button class="w-11/12 p-4 bg-red-500 text-white font-bold rounded-xl btn-action shadow-red-700" onclick="startStudy('quiz')">
-                ✍️ ÇOKTAN SEÇMELİ SINAV
+                ✍️ QUIZ
             </button>
             <button class="w-11/12 p-4 bg-yellow-500 text-white font-bold rounded-xl btn-action shadow-yellow-700" onclick="startStudy('fillInTheBlanks')">
-                ✏️ BOŞLUK DOLDURMA SINAVI
+                ✏️ FILL THE BLANKS
             </button>
             <button class="w-11/12 p-4 bg-gray-600 text-white font-bold rounded-xl btn-action shadow-gray-800" onclick="showScreen('parent')">
-                🔒 EBEVEYN KELİME YÖNETİMİ
+                🔒 WORDS
             </button>
         </div>
 
@@ -158,7 +158,7 @@
                 <span class="text-2xl">⬅️</span> Menüye Dön
             </button>
             
-            <h3 class="text-xl font-semibold mb-6 text-gray-700">Aşağıdaki kelimelerden doğru olanı seç:</h3>
+            <h3 class="text-xl font-semibold mb-6 text-gray-700">Choose the correct one:</h3>
             
             <p class="text-3xl font-bold text-red-500 mb-8 text-center px-4" id="quiz-question-mc">Yükleniyor...</p>
 
@@ -172,7 +172,7 @@
         <!-- BOŞLUK DOLDURMA EKRANI -->
         <div id="screen-fillInTheBlanks" class="screen hidden flex-col items-center">
             <button class="text-gray-500 mb-4 self-start" onclick="stopStudy()">
-                <span class="text-2xl">⬅️</span> Menüye Dön
+                <span class="text-2xl">⬅️</span> Go to Menu
             </button>
             
             <h3 class="text-xl font-semibold mb-6 text-gray-700">Lütfen doğru çeviriyi yazın:</h3>
@@ -214,9 +214,9 @@
 
         <!-- ÖDÜL EKRANI -->
         <div id="screen-reward" class="screen hidden flex-col items-center justify-center h-full">
-            <h2 class="text-3xl font-extrabold text-red-600 mb-4 animate-bounce">🎉 TEBRİKLER ADA! 🎉</h2>
-            <p class="text-xl text-gray-700 mb-8">10 Günlük muhteşem seriyi tamamladın!</p>
-            <p class="text-2xl font-semibold text-teal-600 mb-6">Şimdi hediye paketini seç:</p>
+            <h2 class="text-3xl font-extrabold text-red-600 mb-4 animate-bounce">🎉 CONGRATULATIONS ADA! 🎉</h2>
+            <p class="text-xl text-gray-700 mb-8">10 DAYS SERIE IS DONE!</p>
+            <p class="text-2xl font-semibold text-teal-600 mb-6">Choose your gift:</p>
             <div class="flex space-x-6">
                 <!-- Her kutuya specific ödül atadık -->
                 <div class="text-6xl cursor-pointer hover:scale-110 transition-transform gift-box" data-gift="1" onclick="openGift(1)">🎁</div>
@@ -227,7 +227,7 @@
                 <!-- Ödül Buraya Gelecek -->
             </div>
             <button id="claim-button" class="mt-10 p-4 bg-teal-500 text-white font-bold rounded-xl btn-action shadow-teal-700 hidden" onclick="claimReward()">
-                Ödülü Aldım, Menüye Dön
+                Take The Gift, Go Menu
             </button>
         </div>
     </div>
