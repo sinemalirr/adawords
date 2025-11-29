@@ -243,24 +243,24 @@
 </div>
 
 
-<script type="module">
-    // Firebase modüllerini içe aktarma
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, collection, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 
-    // --- 1. FIREBASE KONFİGÜRASYONU VE BAŞLATMA ---
-    const firebaseConfig = {
+<script>
+  const firebaseConfig = {
     apiKey: "AIzaSyAp3ywA8mWCKOH3fA7JACPfx3Ko_7VaD00",
     authDomain: "ada-vocabulary-world.firebaseapp.com",
     projectId: "ada-vocabulary-world",
     storageBucket: "ada-vocabulary-world.firebasestorage.app",
     messagingSenderId: "358916729594",
     appId: "1:358916729594:web:a5da6a37d9bafbf9d47743"
-    
-    const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const auth = getAuth(app);
+  };
+
+  // Firebase başlatma
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
     
     // --- TEMEL AYARLAR ---
     const TARGET_TIME = 15 * 60; // 15 dakika (saniye)
