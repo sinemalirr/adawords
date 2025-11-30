@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📐 Matematik Dersi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; min-height: 100vh; }
+        .modul-karti { transition: transform 0.2s; }
+        .modul-karti:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+
+<div class="w-full max-w-6xl mx-auto p-4 md:p-8">
+
+<header class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 pb-4 border-b-2 border-indigo-200">
+    
+    <div class="flex items-center mb-4 lg:mb-0">
+        <a href="dersler.html" class="text-indigo-600 hover:text-indigo-800 text-xl mr-4">← Ders Seçimi</a>
+        <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight">📐 Matematik Dersi</h1>
+    </div>
+    
+    <div class="text-right flex flex-col items-end w-full lg:w-auto">
+        <p id="user-email-display" class="text-xs text-gray-400 mb-2"></p>
+        
+        <div class="flex flex-wrap justify-end gap-x-6 gap-y-2 p-3 bg-white rounded-xl shadow-md border border-indigo-100">
+            <div class="flex items-center space-x-2">
+                <span class="text-xs font-medium text-gray-600">Toplam Süre:</span>
+                <div id="sure-sayac" class="text-xl font-bold text-indigo-600">00:00:00</div>
+            </div>
+            
+            <div class="flex items-center space-x-2 border-l pl-3 border-gray-200">
+                <span class="text-xs font-medium text-gray-600">Seri:</span>
+                <p class="text-xl font-bold text-red-600">🔥 <span id="streak-container">0 Gün</span></p>
+            </div>
+            
+            <div id="daily-progress" class="flex items-center space-x-2 border-l pl-3 border-gray-200">
+                <span class="text-xs font-medium text-gray-600">Bugünkü Hedef:</span>
+                <div class="text-lg font-semibold text-green-600">00:00 / 15:00</div>
+            </div>
+        </div>
+    </div>
+</header>
+    
+    <main class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+
+        <section id="konu-anlatimi-bolumu">
+            <h2 class="text-3xl font-bold text-gray-700 mb-6 border-l-4 border-indigo-600 pl-3">📚 Konu & Taktikler</h2>
+            
+            <div class="space-y-6">
+                
+                <a href="matematik_ic/flashcard.html?tur=flashcard" class="modul-karti block bg-white p-6 rounded-xl shadow-lg border border-indigo-100 hover:bg-indigo-50">
+                    <h3 class="text-xl font-semibold text-indigo-600 mb-1">Konu Bazlı Flashcardlar</h3>
+                    <p class="text-sm text-gray-600">Hızlı formül tekrarı ve kavramlar.</p>
+                </a>
+
+                <a href="matematik_ic/flashcard.html?tur=taktik" class="modul-karti block bg-white p-6 rounded-xl shadow-lg border border-indigo-100 hover:bg-indigo-50">
+                    <h3 class="text-xl font-semibold text-indigo-600 mb-1">Çözüm Taktikleri</h3>
+                    <p class="text-sm text-gray-600">Soru tiplerine özel çözüm yaklaşımları.</p>
+                </a>
+                
+                <a href="matematik_ic/quiz.html?grup=konu" class="modul-karti block bg-white p-6 rounded-xl shadow-lg border border-indigo-100 hover:bg-indigo-50">
+                    <h3 class="text-xl font-semibold text-indigo-600 mb-1">Konu Bazlı Quizler</h3>
+                    <p class="text-sm text-gray-600">Her konuya özel kısa testler.</p>
+                </a>
+            </div>
+        </section>
+
+        <section id="deneme-bolumu">
+            <h2 class="text-3xl font-bold text-gray-700 mb-6 border-l-4 border-indigo-600 pl-3">📈 Test & Analiz</h2>
+            
+            <div class="space-y-6">
+                
+                <a href="matematik_ic/quiz.html?grup=deneme" class="modul-karti block bg-white p-6 rounded-xl shadow-lg border-2 border-indigo-500 hover:bg-indigo-50">
+                    <h3 class="text-2xl font-bold text-indigo-700 mb-1">🎯 Deneme Sınavları</h3>
+                    <p class="text-sm text-gray-700">LGS formatında tam matematik denemeleri.</p>
+                </a>
+
+                <div class="modul-karti bg-white p-6 rounded-xl shadow-lg border border-indigo-100">
+                    <h3 class="text-xl font-semibold text-indigo-600 mb-3">📈 Başarı Analizi</h3>
+                    <p class="text-gray-600 mb-4">Tüm sonuçlarınızın gelişim grafiği.</p>
+                    <canvas id="matematikGrafik" class="mt-4"></canvas>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-init.js"></script>
+<script src="js/sure-takip-matematik.js"></script> 
+
+<script>
+    const totalMaxQuestions = 20; // Matematik 20 soru varsayımıyla
+
+    firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+            renderMatematikChart(user.uid);
+        } else {
+            const ctx = document.getElementById('matematikGrafik').getContext('2d');
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.fillStyle = '#6b7280';
+            ctx.font = "14px Inter";
+            ctx.fillText("Grafiği görmek için lütfen giriş yapın.", 10, 50);
+        }
+    });
+
+    async function renderMatematikChart(userId) {
+        const db = firebase.firestore();
+        const results = [];
+        
+        try {
+            // Matematik sonuçları için 'matematikSonuclari' koleksiyonunu kullanıyoruz.
+            const snapshot = await db.collection('matematikSonuclari')
+                .where('userId', '==', userId)
+                .orderBy('timestamp', 'asc')
+                .get();
+
+            snapshot.forEach(doc => {
+                results.push(doc.data());
+            });
+
+            const ctx = document.getElementById('matematikGrafik').getContext('2d');
+            
+            if (results.length === 0) {
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.fillStyle = '#6b7280';
+                ctx.font = "14px Inter";
+                ctx.fillText("Henüz tamamlanmış test sonucu bulunmamaktadır.", 10, 50);
+                return;
+            }
+
+            // Grafik Verilerini Hazırlama
+            const labels = results.map(r => {
+                const prefix = r.quizId >= 11 ? 'DENEME ' : 'KONU ';
+                return prefix + r.quizId; 
+            });
+            const correct = results.map(r => r.correct);
+            const wrong = results.map(r => r.wrong);         
+            const nets = results.map(r => r.net); 
+
+            new Chart(ctx, {
+                type: 'bar', 
+                data: {
+                    labels: labels,
+                    datasets: [
+                    {
+                        label: 'Doğru Sayısı',
+                        data: correct,
+                        backgroundColor: 'rgba(79, 70, 229, 0.7)', // Indigo
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        borderWidth: 1
+                    }, 
+                    {
+                        label: 'Yanlış Sayısı',
+                        data: wrong,
+                        backgroundColor: 'rgba(248, 113, 113, 0.7)', // Kırmızı
+                        borderColor: 'rgba(248, 113, 113, 1)',
+                        borderWidth: 1
+                    }, 
+                    {
+                        type: 'line', 
+                        label: 'Net Sayısı',
+                        data: nets,
+                        borderColor: 'rgb(52, 211, 153)', // Zümrüt Yeşili
+                        backgroundColor: 'rgb(52, 211, 153)',
+                        fill: false,
+                        yAxisID: 'y1' 
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        title: {
+                            display: true,
+                            text: 'Matematik Tüm Testler Başarı Grafiği'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { maxRotation: 90, minRotation: 90 }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: totalMaxQuestions,
+                            title: { display: true, text: 'Soru Sayısı (Doğru/Yanlış)' }
+                        },
+                        y1: { 
+                            type: 'linear',
+                            display: true,
+                            position: 'right', 
+                            grid: { drawOnChartArea: false },
+                            title: { display: true, text: 'Net Sayısı' },
+                            min: 0,
+                            max: totalMaxQuestions
+                        }
+                    }
+                }
+            });
+
+        } catch (error) {
+            console.error("Matematik grafik verisi çekilirken hata oluştu:", error);
+            const ctx = document.getElementById('matematikGrafik').getContext('2d');
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.fillStyle = '#ef4444'; 
+            ctx.font = "14px Inter";
+            ctx.fillText("Veri yüklenirken bir hata oluştu.", 10, 50);
+        }
+    }
+</script>
+
+</body>
+</html>
