@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🇹🇷 Türkçe Dersi</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; min-height: 100vh; }
         .modul-karti { transition: transform 0.2s; }
@@ -101,6 +102,83 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 <script src="js/firebase-init.js"></script>
 <script src="js/sure-takip-turkce.js"></script>
+
+<script>
+    // Gerçek uygulamada, bu fonksiyonun Firebase'den (Firestore) kullanıcıya ait
+    // deneme sınavı sonuçlarını (Doğru, Yanlış, Net sayıları) çekmesi gerekir.
+    // Şimdilik, grafik yapısını göstermek için TAHMİNİ/örnek veriler kullanacağız.
+    function getAnalysisData() {
+        // Örnek: Üç deneme sınavının sonuçları
+        return {
+            labels: ['Deneme 11', 'Deneme 12', 'Deneme 13'], // X ekseni etiketleri
+            correct: [18, 15, 20],    // Doğru sayısı (Bar)
+            wrong: [2, 5, 0],         // Yanlış sayısı (Bar)
+            nets: [17.33, 13.33, 20]  // Net sayısı (Çizgi) - LGS kuralı: D - Y/3
+        };
+    }
+
+    function renderLgsChart() {
+        const data = getAnalysisData();
+        const ctx = document.getElementById('lgsGrafik').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'bar', // Ana görünüm çubuk grafik
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Doğru Sayısı',
+                    data: data.correct,
+                    backgroundColor: 'rgba(52, 211, 153, 0.7)', // Zümrüt Yeşili
+                    borderColor: 'rgba(52, 211, 153, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Yanlış Sayısı',
+                    data: data.wrong,
+                    backgroundColor: 'rgba(248, 113, 113, 0.7)', // Kırmızı
+                    borderColor: 'rgba(248, 113, 113, 1)',
+                    borderWidth: 1
+                }, {
+                    type: 'line', // Netleri çizgi grafik olarak üstte göster
+                    label: 'Net Sayısı',
+                    data: data.nets,
+                    borderColor: 'rgb(244, 72, 186)', // Gül rengi
+                    backgroundColor: 'rgb(244, 72, 186)',
+                    fill: false,
+                    yAxisID: 'y1' // İkinci Y ekseni kullan
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: {
+                        display: true,
+                        text: 'Türkçe Deneme Sınavları Başarı Grafiği'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 20, // Türkçe 20 soru varsayımıyla
+                        title: { display: true, text: 'Soru Sayısı (Doğru/Yanlış)' }
+                    },
+                    y1: { 
+                        type: 'linear',
+                        display: true,
+                        position: 'right', // Sağ tarafta göster
+                        grid: { drawOnChartArea: false },
+                        title: { display: true, text: 'Net Sayısı' },
+                        min: 0,
+                        max: 20
+                    }
+                }
+            }
+        });
+    }
+
+    // Sayfa yüklendiğinde grafiği çiz
+    document.addEventListener('DOMContentLoaded', renderLgsChart);
+</script>
 
 </body>
 </html>
