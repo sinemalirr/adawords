@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Türkçe Konu Anlatımı</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #F8FAFC; 
+            min-height: 100vh; 
+        }
+        .prose h4 { 
+            margin-top: 1.5em; 
+            color: #1e40af; /* Mavi - Tailwind blue-700 */
+            border-bottom: 1px dashed #bfdbfe; /* Açık mavi çizgi */
+            padding-bottom: 0.5em;
+        } 
+        /* Accordion (Buton) stilleri */
+        .accordion-header {
+            background-color: #fce7f3; /* Açık Pembe */
+            border-left: 5px solid #e11d48; /* Kırmızı (Rose 600) */
+            transition: background-color 0.2s, box-shadow 0.2s;
+        }
+        .accordion-header:hover {
+            background-color: #fbcfe8; /* Daha koyu Pembe */
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out;
+            background-color: #ffffff;
+            border: 1px solid #fce7f3;
+            border-top: none;
+        }
+        .accordion-content.active {
+            max-height: 2000px; /* İçerik uzunluğuna göre ayarlanabilir */
+        }
+    </style>
+</head>
+<body>
+
+<div class="w-full max-w-4xl mx-auto p-6 md:p-10 bg-white shadow-xl rounded-xl mt-8">
+    <header class="pb-4 border-b border-gray-200 mb-6">
+        <a href="../turkce.html" class="text-rose-600 hover:text-rose-800 text-xl mb-4 inline-block">← Türkçe Ana Menü</a>
+        <h1 id="konu-baslik" class="text-3xl font-extrabold text-gray-800"></h1>
+        <p class="text-sm text-gray-500 mt-2">Bu sayfada geçirdiğiniz süre Türkçe dersi toplam süresine eklenmektedir.</p>
+    </header>
+
+    <div id="konu-icerik" class="space-y-4">
+        </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<script src="../js/firebase-init.js"></script>
+<script src="../js/sure-takip-turkce.js"></script> 
+
+<script>
+    // 1. Konu Veri Kaynağı (Sizin içerikleriniz HTML formatına çevrildi)
+    const IcerikVerisi = {
+        'dilbilgisi': {
+            baslik: "Temel Dilbilgisi ve Sözcükte Anlam",
+            altKonular: [
+                {
+                    baslik: "A. Fiillerin Anlam Özellikleri (İş, Durum, Oluş)",
+                    icerik: `
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr>
+                                    <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 bg-gray-50">Özellik</th>
+                                    <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 bg-gray-50">Tanım (Derinleştirme)</th>
+                                    <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 bg-gray-50">Örnek Cümle</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 text-sm text-gray-800">
+                                <tr>
+                                    <td class="px-3 py-2 font-medium">İş (Kılış) Fiilleri</td>
+                                    <td class="px-3 py-2">Öznenin yaptığı işten etkilenen bir nesne (neyi/kimi?) bulunur.</td>
+                                    <td class="px-3 py-2">"Kendi varlığımızı anlayabilmek için doğaya bakmalıyız." (Neyi anlamalıyız? Varlığımızı.)</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-3 py-2 font-medium">Durum Fiilleri</td>
+                                    <td class="px-3 py-2">Eylemden etkilenen bir nesne yoktur. Eylemin gerçekleşmesi öznenin iradesine bağlıdır.</td>
+                                    <td class="px-3 py-2">"Her gün erken saatte kalkarak çalışmayı seviyordu." (Kalkmak, nesne almaz.)</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-3 py-2 font-medium">Oluş Fiilleri</td>
+                                    <td class="px-3 py-2">Öznenin iradesi dışında, zaman içinde kendiliğinden gerçekleşir. Nesne almaz.</td>
+                                    <td class="px-3 py-2">"Düzenli okudukça zihnimizde yeni fikirler yeşerir." (Yeşerme eylemi kendiliğinden olur.)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    `
+                },
+                {
+                    baslik: "B. Fiil Çekimi ve Kişi (Haber ve Dilek Kipleri)",
+                    icerik: `
+                        <h4 class="text-blue-700">1. Haber (Bildirme) Kipleri (Zaman Bildirir)</h4>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>**Görülen Geçmiş Zaman:** Yaparsın (2. tekil kişi) - *HATA: Yaparsın geniş zamandır. Doğrusu: Yaptın*</li>
+                            <li>**Duyulan Geçmiş Zaman:** Yedirmiş (3. tekil kişi)</li>
+                            <li>**Gelecek Zaman:** Bitirecekler (3. çoğul kişi)</li>
+                            <li>**Geniş Zaman:** Tüketti (3. tekil kişi) - *HATA: Tüketti görülen geçmiş zamandır. Doğrusu: Tüketir*</li>
+                        </ul>
+                        <h4 class="text-blue-700">2. Dilek (Tasarlama) Kipleri (Niyet, Şart vb. Bildirir)</h4>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>**Gereklilik:** -meli/ -malı (Örn: Yazmalıyım)</li>
+                            <li>**Emir:** (Örn: Durunuz, Bitir)</li>
+                            <li>**İstek:** -e/ -a (Örn: Sağ ola)</li>
+                            <li>**Şart:** -se/ -sa (Örn: Düzenlesek)</li>
+                        </ul>
+                        <blockquote class="border-l-4 border-rose-500 pl-4 py-2 my-4 text-gray-700 bg-rose-50">
+                            **Derinleştirme: Kip Kayması** <br>
+                            Çekimli fiil, ait olduğu zaman/niyet dışında bir kiple ifade edilirse kip kayması (anlam kayması) olur.
+                        </blockquote>
+                    `
+                },
+                {
+                    baslik: "C. Sözcükte Anlam İlişkileri",
+                    icerik: `
+                        <h4 class="text-blue-700">1. Gerçek ve Mecaz Anlam</h4>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>**Gerçek Anlam:** Sözcüğün sözlükteki ilk, temel anlamıdır. <br> (Örn: "Araştırmacı, konu üzerinde ciddi bir inceleme yapacağını söyledi.")</li>
+                            <li>**Mecaz Anlam:** Gerçek anlamdan tamamen uzaklaşarak kazanılan yeni anlamlardır. <br> (Örn: "Bana böyle **soğuk** baktığında çok üzülüyorum." - Soğuk, burada ilgisiz/mesafeli anlamındadır.)</li>
+                            <li>**Pekiştirme Örneği:** "Annemin **altın kalbi** karşısında ne diyeceğimi şaşırıyorum."</li>
+                        </ul>
+                        <h4 class="text-blue-700">2. Sesteş (Eş Sesli) Sözcükler</h4>
+                        <p>Yazılışları ve okunuşları aynı, anlamları tamamen farklı olan sözcüklerdir.</p>
+                        <blockquote class="border-l-4 border-yellow-500 pl-4 py-2 my-4 text-gray-700 bg-yellow-50">
+                            **Taktik:** Bir sözcüğün mecaz anlamı, onun eş seslisi değildir. Ayrıca düzeltme işareti olan sözcükler (kâr – kar, hâl – hal) sesteş sayılmaz.
+                        </blockquote>
+                        <h4 class="text-blue-700">3. Deyimler ve Atasözleri</h4>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>**Deyimler:** Genellikle mecaz anlamlıdır, öğüt verme amacı taşımaz. Sözcüklerin yeri değiştirilemez. <br> (Örn: **Başa çıkmak** - *Artık ben seninle başa çıkamıyorum.*)</li>
+                            <li>**Atasözleri:** Düşünceyi, ilkeyi kısa ve kesin anlatan özlü sözlerdir. Genellikle öğüt verir. <br> (Örn: *Ağaç, meyvesi olunca başını aşağı salar.*)</li>
+                        </ul>
+                    `
+                },
+            ]
+        },
+        'paragraf': {
+             baslik: "Anlatım Bozuklukları ve Kurallar",
+             altKonular: [
+                {
+                    baslik: "D. Anlatım Bozuklukları",
+                    icerik: `
+                        <h4 class="text-blue-700">1. Sözcüğün Yanlış Yerde Kullanılması</h4>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>**Hata:** "Ağrısız kulak delinir." (Kulak ağrısız anlamı verir.)</li>
+                            <li>**Doğru:** "Kulak, ağrısız delinir." (Delinme eylemi ağrısızdır.)</li>
+                        </ul>
+                        <h4 class="text-blue-700">2. Gereksiz Sözcük Kullanımı (Duruluk İlkesi)</h4>
+                        <p>Aynı anlama gelen iki sözcüğü kullanmaktan kaçınılır.</p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>**Hata:** "Suçunu kendi ağzıyla itiraf etti." ("Kendi ağzıyla" sözü gereksizdir.)</li>
+                        </ul>
+                        <h4 class="text-blue-700">3. Anlamca Çelişen İfadeler</h4>
+                        <p>Cümlede kesinlik (mutlaka) ve ihtimal (getirebilirim) bildiren ifadeler bir arada kullanılamaz.</p>
+                    `
+                },
+                {
+                    baslik: "E. Yazım ve Noktalama Kuralları",
+                    icerik: `
+                        <h4 class="text-blue-700">1. Üç Nokta (...)</h4>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>Anlatım olarak tamamlanmamış cümlelerin sonunda kullanılır.</li>
+                            <li>Alıntılarda alınmayan sözcüklerin yerine konur.</li>
+                            <li>Kaba sayıldığı için açık yazılmak istenmeyen sözcüklerin yerine konur (Örn: Z. . . . köyü).</li>
+                        </ul>
+                        <h4 class="text-blue-700">2. Ünlem İşareti (!)</h4>
+                        <p>Alay, kinaye veya küçümseme anlamı kazandırılmak istenen sözden hemen sonra **yay ayraç içinde** kullanılır. (Örn: "Çok güzel **(!) ** yazıyorsun.")</p>
+                        <h4 class="text-blue-700">3. Soru İşareti (?)</h4>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>Soru eki/sözü içermeyen ifadelerin sonunda da kullanılır (Örn: – Memleketiniz?).</li>
+                            <li>Zaman anlamı taşıyan "mı/mi" edatını alan cümlenin sonuna **konmaz** (Örn: Ayaklarım ağrıdı mı mutsuz oluyorum).</li>
+                        </ul>
+                        <h4 class="text-blue-700">4. Kısa Çizgi (-)</h4>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>"Arasında, ve, ile" anlamlarını vermek için kullanılır (Örn: İstanbul-Ankara).</li>
+                            <li>Sayı adlarının yinelenmesinde araya **konmaz** (Örn: On on beş yıl oldu).</li>
+                        </ul>
+                    `
+                },
+             ]
+        }
+    };
+
+    // 2. Accordion (Akordeon) Fonksiyonu
+    function toggleAccordion(button) {
+        const content = button.nextElementSibling;
+        const isActive = content.classList.contains('active');
+        
+        // Tüm akordeonları kapat
+        document.querySelectorAll('.accordion-content').forEach(item => {
+            item.classList.remove('active');
+            item.previousElementSibling.querySelector('svg').style.transform = 'rotate(0deg)';
+        });
+
+        // Eğer aktif değilse, sadece bu akordeonu aç
+        if (!isActive) {
+            content.classList.add('active');
+            button.querySelector('svg').style.transform = 'rotate(180deg)';
+        }
+    }
+
+    // 3. Sayfayı Yükleme Fonksiyonu
+    function loadContent() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const konuAdi = urlParams.get('konu');
+        
+        const data = IcerikVerisi[konuAdi];
+        const konuBaslikEl = document.getElementById('konu-baslik');
+        const konuIcerikEl = document.getElementById('konu-icerik');
+
+        if (data && data.altKonular) {
+            konuBaslikEl.textContent = data.baslik;
+            konuIcerikEl.innerHTML = ''; // İçeriği temizle
+
+            data.altKonular.forEach((altKonu) => {
+                const accordionHTML = `
+                    <div class="border rounded-lg overflow-hidden shadow-md">
+                        <button 
+                            class="accordion-header w-full flex justify-between items-center p-4 text-left text-lg font-semibold text-gray-800"
+                            onclick="toggleAccordion(this)"
+                        >
+                            <span>${altKonu.baslik}</span>
+                            <svg class="w-6 h-6 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-content prose max-w-none p-4">
+                            ${altKonu.icerik}
+                        </div>
+                    </div>
+                `;
+                konuIcerikEl.insertAdjacentHTML('beforeend', accordionHTML);
+            });
+        } else {
+            konuBaslikEl.textContent = 'İçerik Bulunamadı';
+            konuIcerikEl.innerHTML = '<p class="text-red-500">Lütfen Türkçe Ana Menüden geçerli bir konu seçimi yapın.</p>';
+        }
+    }
+
+    // Sayfa yüklendiğinde içeriği yükle
+    loadContent();
+</script>
+
+</body>
+</html>
