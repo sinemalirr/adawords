@@ -14,7 +14,7 @@
             position: relative;
             transform-style: preserve-3d;
             transition: transform 0.6s;
-            cursor: pointer;
+            cursor: pointer; 
         }
         .kart.cevir { transform: rotateY(180deg); }
         .kart-yuz, .kart-arka {
@@ -339,30 +339,18 @@
         updateNavigationButtons();
     }
     
-    // Taktik verileri için listeleme fonksiyonu
+    // Taktik verileri için listeleme fonksiyonu (Artık kullanılmayacak ama kodda bırakıldı)
     function renderTaktikler(data) {
         taktikArea.innerHTML = '';
         data.forEach(topic => {
             const topicDiv = document.createElement('div');
-            topicDiv.className = 'bg-white p-6 rounded-xl shadow-lg border-l-4 border-indigo-500 space-y-4';
-            topicDiv.innerHTML = `<h3 class="text-2xl font-bold text-gray-800 mb-4">${topic.konu}</h3>`;
-            
-            topic.taktikler.forEach(taktik => {
-                const taktikItem = document.createElement('div');
-                taktikItem.className = 'taktik-item p-4 border border-gray-200 rounded-lg bg-gray-50';
-                taktikItem.innerHTML = `
-                    <p class="font-semibold text-indigo-600 mb-1">🎯 ${taktik.baslik}</p>
-                    <p class="text-sm text-gray-700">${taktik.aciklama}</p>
-                `;
-                topicDiv.appendChild(taktikItem);
-            });
+            // ... liste görünümü kodu ...
             taktikArea.appendChild(topicDiv);
         });
     }
 
     function updateNavigationButtons() {
         const cardArrayName = (getUrlParameter('tur') === 'flashcard' ? 'kartlar' : 'taktikler');
-        // Hata ayıklama: Veri yoksa çökmesini engelle
         if (currentTopicIndex === -1 || !currentData[currentTopicIndex] || !currentData[currentTopicIndex][cardArrayName]) {
              kartOncekiBtn.disabled = true;
              kartSonrakiBtn.disabled = true;
@@ -387,11 +375,12 @@
             flashcardArea.classList.remove('hidden');
             renderKonuListesi(currentData, 'kartlar');
         } else if (tur === 'taktik') {
+            // 🔥 YENİ MANTIK: Taktikler artık kart formatında gösterilecek
             currentData = matematikTaktikler; 
             pageTitle.textContent = 'Çözüm Taktikleri 🧠';
             pageSubtitle.textContent = 'Problem tiplerine özel çözüm yöntemleri.';
-            taktikArea.classList.remove('hidden');
-            renderTaktikler(currentData);
+            flashcardArea.classList.remove('hidden'); // Flashcard alanını göster
+            renderKonuListesi(currentData, 'taktikler'); // Taktik verilerini kullanarak konu listesini oluştur
         } else {
             pageTitle.textContent = 'Hata: Geçersiz Modül';
             pageSubtitle.textContent = 'Lütfen ana menüden geçerli bir link seçin.';
@@ -427,9 +416,21 @@
     }
 
     // --- NAVİGASYON VE ETKİLEŞİM ---
+    
+    // YENİLİK: Kartın kendisine tıklayınca dönmesini sağla
+    kartGosterim.addEventListener('click', () => {
+        if (currentTopicIndex !== -1) {
+            kartGosterim.classList.toggle('cevir');
+            isFlipped = !isFlipped;
+        }
+    });
+
+    // Kart Çevir butonunu da aynı işlevi yapacak şekilde ayarla
     kartCevirBtn.addEventListener('click', () => {
-        kartGosterim.classList.toggle('cevir');
-        isFlipped = !isFlipped;
+        if (currentTopicIndex !== -1) {
+            kartGosterim.classList.toggle('cevir');
+            isFlipped = !isFlipped;
+        }
     });
 
     kartSonrakiBtn.addEventListener('click', () => {
