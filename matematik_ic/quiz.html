@@ -98,11 +98,124 @@
     // EMBEDDED DATA: Konu Quizleri ve Deneme Sınavları
     // ====================================================================
     
-    // A) KONU BAZLI QUIZLER (ID 1-5, önceki veriler)
+    // A) KONU BAZLI QUIZLER (ID 1-10: 5 soruluk ilk set, ardından 10 soruluk set)
     const matematikKonuQuizler = [
+        // 5 SORULUK 10 QUIZ (IDs 1-10)
         {
             id: 1, 
-            konu: "Sayılar, Oranlar ve Denklemler",
+            konu: "Tam Sayılar ve Üslü İfadeler (5 Soru)",
+            sorular: [
+                { metin: 'Tam sayılarla toplama işleminde, mutlak değerleri eşit olan zıt işaretli iki tam sayının toplamı kaçtır?', cevaplar: { A: "Mutlak değerin iki katı", B: "1", C: "−1", D: "Sıfır" }, dogruCevap: "D" },
+                { metin: '(+2)□ üslü ifadesinde □ yerine pozitif bir tam sayı yazılıyor. Üslü ifadenin değeri ile ilgili aşağıdakilerden hangisi kesinlikle doğrudur?', cevaplar: { A: "Tek sayıdır.", B: "Çift sayıdır.", C: "2\'den küçüktür.", D: "2\'den büyüktür." }, dogruCevap: "D" },
+                { metin: 'Bir küpün karşılıklı yüzlerindeki tam sayıların çarpımı −30\'dur. Küpün yüzlerindeki altı tam sayının toplamı kaçtır?', cevaplar: { A: "−20", B: "−19", C: "−13", D: "−5" }, dogruCevap: "D" },
+                { metin: 'Tam sayılarla toplama işlemi yapılırken, mutlak değerce büyük olan sayının mutlak değerinden, küçük olan sayının mutlak değeri çıkarıldığında, farkın başına hangi işaret konulur?', cevaplar: { A: "Her zaman pozitif işaret konulur.", B: "Her zaman negatif işaret konulur.", C: "Mutlak değeri diğerinden büyük olan tam sayının işareti konulur.", D: "Farkın işareti, tam sayıların ortak işareti olarak belirlenir." }, dogruCevap: "C" },
+                { metin: 'Bir balık kartalı deniz seviyesinden 3 m yukarıdadır. Her saniye 30 cm aşağı ilerleyip 12 saniye sonra balığı avlıyor. Balığın deniz seviyesine göre konumunu santimetre biriminden belirten tam sayı kaçtır?', cevaplar: { A: "60", B: "0", C: "−60", D: "−30" }, dogruCevap: "C" }
+            ]
+        },
+        {
+            id: 2, 
+            konu: "Rasyonel Sayılar ve Sıralama (5 Soru)",
+            sorular: [
+                { metin: '0,35 ondalık gösterimi ile 0,352 devirli ondalık gösterimleri arasında yer alan sayı aşağıdakilerden hangisidir?', cevaplar: { A: "0,357", B: "0,355", C: "0,353", D: "0,351" }, dogruCevap: "D" },
+                { metin: '5/2 rasyonel sayısının toplama işlemine göre tersinin çarpma işlemine göre tersine bölümü kaçtır?', cevaplar: { A: "1", B: "−25/4", C: "4/25", D: "−1" }, dogruCevap: "C" }, 
+                { metin: 'Aşağıdaki rasyonel sayılardan hangisi (−0,35) sayısından daha küçüktür?', cevaplar: { A: "−3/10", B: "−1/4", C: "−3/20", D: "−2/5" }, dogruCevap: "D" },
+                { metin: 'Rasyonel sayılarla toplama işleminde 0 (sıfır) sayısı hangi eleman özelliğini gösterir?', cevaplar: { A: "Yutan eleman", B: "Birleşme elemanı", C: "Etkisiz eleman", D: "Ters eleman" }, dogruCevap: "C" },
+                { metin: '−8/5 rasyonel sayısı sayı doğrusunda hangi tam sayılar arasındadır?', cevaplar: { A: "0 ile 1 arasında", B: "1 ile 2 arasında", C: "−2 ile −1 arasında", D: "−1 ile 0 arasında" }, dogruCevap: "C" }
+            ]
+        },
+        {
+            id: 3, 
+            konu: "Rasyonel Sayılarla İşlemler (5 Soru)",
+            sorular: [
+                { metin: 'Rasyonel sayılarla çok adımlı işlemlerde, işlem önceliği sıralamasında ilk olarak hangi işlem yapılır?', cevaplar: { A: "Çarpma veya bölme işlemleri", B: "Toplama veya çıkarma işlemleri", C: "Üslü ifadeler", D: "Kesir çizgisinin belirttiği bölme işlemi" }, dogruCevap: "C" },
+                { metin: '(−2/3)³ üslü ifadesinin değeri aşağıdakilerden hangisine eşittir?', cevaplar: { A: "4/9", B: "−6/27", C: "−8/27", D: "16/25" }, dogruCevap: "C" },
+                { metin: 'x < 3/5 ve x > 1/10 sıralamasının doğru olabilmesi için x yerine kaç farklı rakam yazılabilir?', cevaplar: { A: "1", B: "2", C: "4", D: "5" }, dogruCevap: "B" }, 
+                { metin: '1/4 − 2/3 işleminin sonucunu bulmak için paydalar kaçta eşitlenmelidir?', cevaplar: { A: "3", B: "4", C: "7", D: "12" }, dogruCevap: "D" },
+                { metin: 'Rasyonel sayılarla çarpma işleminde "Yutan Eleman" hangisidir?', cevaplar: { A: "1", B: "−1", C: "0", D: "Tanımsızdır" }, dogruCevap: "C" }
+            ]
+        },
+        {
+            id: 4, 
+            konu: "Oran, Orantı ve Yüzdeler (5 Soru)",
+            sorular: [
+                { metin: 'a ve b sayıları doğru orantılıdır. a=5 olduğunda b=35 oluyorsa b=21 olduğunda a kaçtır?', cevaplar: { A: "1", B: "3", C: "15", D: "11" }, dogruCevap: "B" }, 
+                { metin: '120 bilyeyi 3, 8 ve 13 yaşlarındaki üç kardeş yaşları ile orantılı olacak şekilde paylaşmıştır. Buna göre en büyük kardeş kaç bilye almıştır?', cevaplar: { A: "15", B: "30", C: "52", D: "65" }, dogruCevap: "D" }, 
+                { metin: 'Bir mağazada 200 Türk liralık monta %25 indirim uygulandıktan sonra, indirimli fiyat üzerinden %15 ilave indirim daha yapılırsa, mont için kaç Türk lirası ödenir?', cevaplar: { A: "170", B: "150", C: "130", D: "127,5" }, dogruCevap: "D" }, 
+                { metin: 'Fiyatları 600 TL olan mavi etiketli bir ürünün %30 indirimli fiyatı kaç TL olur?', cevaplar: { A: "180", B: "480", C: "420", D: "380" }, dogruCevap: "C" }, 
+                { metin: 'Manavdan %40 indirimle 50 Türk liralık alışveriş yapan bir müşteri kaç Türk lirası öder?', cevaplar: { A: "35", B: "30", C: "20", D: "40" }, dogruCevap: "B" }
+            ]
+        },
+        {
+            id: 5, 
+            konu: "Cebirsel İfadeler ve Denklemler (5 Soru)",
+            sorular: [
+                { metin: 'Kuralı 5n+2 olan sayı örüntüsünün 8. terimi aşağıdakilerden hangisidir?', cevaplar: { A: "42", B: "40", C: "38", D: "36" }, dogruCevap: "A" }, 
+                { metin: 'Kuralı 4n−3 olan sayı örüntüsünün 100. terimi aşağıdakilerden hangisidir?', cevaplar: { A: "403", B: "397", C: "397", D: "392" }, dogruCevap: "B" }, 
+                { metin: 'Sayıların bilinmeyenlerle temsil edildiği matematik cümlesine ne ad verilir?', cevaplar: { A: "Eşitlik", B: "Denklem", C: "Cebirsel ifade", D: "Terim" }, dogruCevap: "C" },
+                { metin: 'Bir cebirsel ifadede değişkenlere bağlı olmayan terime ne ad verilir?', cevaplar: { A: "Değişken", B: "Katsayı", C: "Benzer terim", D: "Sabit terim" }, dogruCevap: "D" },
+                { metin: 'Bir doğal sayı ile bir cebirsel ifade çarpılırken hangi kural uygulanır?', cevaplar: { A: "Sadece ilk terim çarpılır.", B: "Sadece katsayılar çarpılır.", C: "Doğal sayı ile cebirsel ifadedeki her bir terim ayrı ayrı çarpılır.", D: "Sadece değişkenler çarpılır." }, dogruCevap: "C" }
+            ]
+        },
+        {
+            id: 6, 
+            konu: "Geometri ve Çember/Daire (5 Soru)",
+            sorular: [
+                { metin: 'Yarıçapının uzunluğu 7 cm olan O merkezli çemberin çevre uzunluğu kaç santimetredir? (π=3 alınız.)', cevaplar: { A: "84", B: "42", C: "21", D: "14" }, dogruCevap: "B" }, 
+                { metin: 'Bir daire diliminin alanı, merkez açısının ölçüsü α ve yarıçap uzunluğu r olmak üzere hangi bağıntı ile hesaplanır?', cevaplar: { A: "A=2πr * α/360°", B: "A=πr * α", C: "A=2πr²", D: "A=πr² * α/360°" }, dogruCevap: "D" },
+                { metin: 'Bir çemberde köşesi merkezde bulunan açıya ne ad verilir?', cevaplar: { A: "Teğet açı", B: "Çevre açı", C: "Kesen", D: "Merkez açı" }, dogruCevap: "D" },
+                { metin: 'Bir çemberde merkez açının ölçüsü 50° ise, bu açının gördüğü yayın ölçüsü kaç derecedir?', cevaplar: { A: "100°", B: "25°", C: "50°", D: "180°" }, dogruCevap: "C" }, 
+                { metin: 'Alanı 144 cm² olan kareyi çevreleyen telden yararlanarak çember elde edilmek isteniyor. Bu çemberin yarıçapı en fazla kaç cm olur? (π=3 alınız.)', cevaplar: { A: "3", B: "6", C: "8", D: "12" }, dogruCevap: "C" }
+            ]
+        },
+        {
+            id: 7, 
+            konu: "Oran, Orantı ve Problemler (5 Soru)",
+            sorular: [
+                { metin: 'Aynı nitelikteki 3 işçi bir işi 21 günde bitirebilmektedir. Aynı nitelikteki 7 işçinin aynı işi kaç günde bitirebileceği hesaplanırken kullanılan orantı türü nedir?', cevaplar: { A: "Doğru orantı", B: "Ters orantı", C: "Bileşik orantı", D: "Orantı sabiti k=1" }, dogruCevap: "B" }, 
+                { metin: 'Bir telin ucundan 2/5’i kesildiğinde orta noktası 18 cm kaydığına göre, bu telin ilk uzunluğu kaç santimetredir?', cevaplar: { A: "45", B: "60", C: "90", D: "105" }, dogruCevap: "C" }, 
+                { metin: 'x ve y değişkenlerinin oranı y/x = 13/5 orantısına eşittir. Bu orantıya göre x ve y arasındaki ilişki nedir?', cevaplar: { A: "Ters orantılıdırlar.", B: "Doğru orantılıdırlar.", C: "Birleşme özelliğine sahiptirler.", D: "Biri artarken diğeri azalır." }, dogruCevap: "B" },
+                { metin: 'Bir pastanın 2/3\'ünün 3/4\'ünü iki kardeş eşit olarak paylaşınca bir kardeşe pastanın kaçta kaçı düşer?', cevaplar: { A: "3/4", B: "2/4", C: "1/4", D: "−1/4" }, dogruCevap: "C" }, 
+                { metin: 'x ile y ters orantılı iki çokluktur. x=40 olduğunda y=60\'tır. Buna göre y=100 olduğunda x kaçtır?', cevaplar: { A: "24", B: "48", C: "80", D: "96" }, dogruCevap: "A" }
+            ]
+        },
+        {
+            id: 8, 
+            konu: "Veri Analizi ve İstatistik (5 Soru)",
+            sorular: [
+                { metin: 'Bir veri grubunda başarı veya başarısızlık durumu karşılaştırılıyorsa ve sayısal değerler birbirine yakın ise hangi istatistiksel ölçüyü kullanmak daha uygun olur?', cevaplar: { A: "Ortanca değer (Medyan)", B: "Tepe değer (Mod)", C: "Aritmetik ortalama", D: "Açıklık" }, dogruCevap: "C" },
+                { metin: 'Bir veri grubunun en tipik özelliğini veya değerini belirlemek istediğimizde hangi istatistiksel ölçüyü kullanmak daha uygundur?', cevaplar: { A: "Aritmetik ortalama", B: "Ortanca değer (Medyan)", C: "Tepe değer (Mod)", D: "Çizgi grafiği" }, dogruCevap: "C" },
+                { metin: 'Bir veri grubundaki değişimi ve gelişimi göstermek için verilerin hangi grafik türü ile gösterilmesi uygun olur?', cevaplar: { A: "Sütun grafiği", B: "Çizgi grafiği", C: "Daire grafiği", D: "Tablo" }, dogruCevap: "B" },
+                { metin: 'Bir ortaokuldaki öğrencilerin sınıflara göre dağılımı gibi, bir bütün içindeki dağılımı gösterilmek istendiğinde hangi grafik uygun olur?', cevaplar: { A: "Çizgi grafiği", B: "Daire grafiği", C: "Tablo", D: "Sütun grafiği" }, dogruCevap: "B" },
+                { metin: '7/E sınıfının matematik yazılısı puanları küçükten büyüğe sıralanmıştır: 8,10,10,10,17,20,40,65,68,70,70,70,72,80,90,100. Bu veri grubunun Tepe değeri (Mod) kaçtır?', cevaplar: { A: "65", B: "69", C: "10 ve 70", D: "70" }, dogruCevap: "C" } 
+            ]
+        },
+        {
+            id: 9, 
+            konu: "Rasyonel Sayı Problemleri ve Karışık (5 Soru)",
+            sorular: [
+                { metin: 'Bir sınıftaki öğrencilerin 2/5’i kız öğrencidir. Erkek öğrencilerin sayısı kız öğrencilerin sayısından 7 fazla olduğuna göre sınıf mevcudu kaçtır?', cevaplar: { A: "28", B: "35", C: "42", D: "49" }, dogruCevap: "B" }, 
+                { metin: 'Rıza, bir mağazadan 400 Türk liralık bir ürünü %10 indirimle almıştır. Rıza bu ürüne kaç Türk lirası vermiştir?', cevaplar: { A: "360", B: "370", C: "380", D: "390" }, dogruCevap: "A" }, 
+                { metin: 'Bir üniversitenin matematik öğretmenliği bölümündeki 200 öğrencinin %20\'si Aydınlıdır. Buna göre Aydınlı olmayan kaç öğrenci vardır?', cevaplar: { A: "40", B: "160", C: "80", D: "120" }, dogruCevap: "B" }, 
+                { metin: 'İç ters açılar nerede bulunur?', cevaplar: { A: "Kesen doğrunun aynı tarafında.", B: "Paralel doğruların dışında yer alır.", C: "Herhangi iki doğruyu üçüncü bir doğru kestiğinde bu doğruların arasında ve kesenin her iki tarafındaki komşu olmayan açılardır.", D: "Köşeleri ortak olan açılardır." }, dogruCevap: "C" },
+                { metin: 'Bir binanın boyasını üç işçi 12 günde yapabilmektedir. İşçi sayısı üç katına çıkarılırsa aynı iş kaç günde biter?', cevaplar: { A: "4", B: "15", C: "27", D: "36" }, dogruCevap: "A" }
+            ]
+        },
+        {
+            id: 10, 
+            konu: "Yüzde, Cebir ve Geometri (5 Soru)",
+            sorular: [
+                { metin: 'Kuralı 8n−6 olan sayı örüntüsünün terimlerinden biri aşağıdakilerden hangisi olamaz?', cevaplar: { A: "72", B: "66", C: "58", D: "50" }, dogruCevap: "A" }, 
+                { metin: 'Maliyeti 44 TL olan bir tişört, 66 TL\'ye satılırsa bu satıştan yüzde kaç kâr edilir?', cevaplar: { A: "22", B: "44", C: "50", D: "60" }, dogruCevap: "C" }, 
+                { metin: 'İçinde “=” sembolü bulunan matematik cümlesine ne ad verilir?', cevaplar: { A: "Denklem", B: "Eşitsizlik", C: "Eşitlik", D: "Cebirsel ifade" }, dogruCevap: "C" },
+                { metin: 'Bir çokgende bir köşeden çizilen köşegenler, bu çokgeni n kenar sayısı olmak üzere kaç tane üçgensel bölgeye ayırır?', cevaplar: { A: "n", B: "n−3", C: "n−2", D: "n+2" }, dogruCevap: "C" },
+                { metin: 'Fren mesafeleri tabloda verilen A, B, C, D lastiklerinin hangisi, mavi çizgiye en yakın mesafede durmuştur?', cevaplar: { A: "A (0.05 km)", B: "B (0.08 km)", C: "C (0.075 km)", D: "D (0.7 km)" }, dogruCevap: "A" }
+            ]
+        },
+        
+        // 10 SORULUK 10 QUIZ (IDs 6-10, önceki setin kalan quizleri)
+        {
+            id: 11, 
+            konu: "Sayılar, Oranlar ve Denklemler (10 Soru)",
             sorular: [
                 { metin: 'Rıza, bir mağazadan 400 Türk liralık bir ürünü %10 indirimle almıştır. Rıza bu ürüne kaç Türk lirası vermiştir?', cevaplar: { A: "370 TL", B: "360 TL", C: "380 TL", D: "390 TL" }, dogruCevap: "B" },
                 { metin: '1/4 − 2/3 işleminin sonucu aşağıdakilerden hangisidir?', cevaplar: { A: "−1/12", B: "1/12", C: "−5/12", D: "5/12" }, dogruCevap: "C" },
@@ -117,8 +230,8 @@
             ]
         },
         {
-            id: 2, 
-            konu: "Rasyonel Sayı İşlemleri ve Orantı Problemleri",
+            id: 12, 
+            konu: "Rasyonel Sayı İşlemleri ve Orantı Problemleri (10 Soru)",
             sorular: [
                 { metin: '1/3 rasyonel sayısı, çarpma işlemine göre tersi olan sayıya bölünürse bölüm kaç olur?', cevaplar: { A: "1", B: "1/3", C: "3", D: "1/9" }, dogruCevap: "D" },
                 { metin: 'a ve b sayıları doğru orantılıdır. a=5 olduğunda b=35 oluyorsa b=21 olduğunda a kaçtır?', cevaplar: { A: "1", B: "3", C: "15", D: "11" }, dogruCevap: "B" },
@@ -133,8 +246,8 @@
             ]
         },
         {
-            id: 3, 
-            konu: "Geometri, İstatistik ve Karma İşlemler",
+            id: 13, 
+            konu: "Geometri, İstatistik ve Karma İşlemler (10 Soru)",
             sorular: [
                 { metin: 'Çap uzunluğu 9 cm olan O merkezli çemberin çevre uzunluğu kaç santimetredir? (π=3 alınız.)', cevaplar: { A: "54", B: "48", C: "36", D: "27" }, dogruCevap: "D" },
                 { metin: '120 bilyeyi 3, 8 ve 13 yaşlarındaki üç kardeş yaşları ile orantılı olacak şekilde paylaşmıştır. Buna göre en büyük kardeş kaç bilye almıştır?', cevaplar: { A: "15", B: "24", C: "40", D: "65" }, dogruCevap: "D" },
@@ -149,8 +262,8 @@
             ]
         },
         {
-            id: 4, 
-            konu: "Yüzdeler, Grafik Yorumlama ve Cebirsel İfadeler",
+            id: 14, 
+            konu: "Yüzdeler, Grafik Yorumlama ve Cebirsel İfadeler (10 Soru)",
             sorular: [
                 { metin: '12,6 cm uzunluğundaki çubuk kendi içlerinde sırasıyla 4 eşit, 5 eşit ve 3 eşit parçaya ayrılarak sıralanmıştır. Buna göre x kaç cm\'dir?', cevaplar: { A: "22,3", B: "23,1", C: "23,61", D: "24" }, dogruCevap: "D" },
                 { metin: '2/5 rasyonel sayısının toplama işlemine göre tersinin çarpma işlemine göre tersine bölümü kaçtır?', cevaplar: { A: "1", B: "4/25", C: "−4/25", D: "−1" }, dogruCevap: "C" },
@@ -165,8 +278,8 @@
             ]
         },
         {
-            id: 5, 
-            konu: "Tam Sayı Problemleri, Daire ve Ters Orantı",
+            id: 15, 
+            konu: "Tam Sayı Problemleri, Daire ve Ters Orantı (10 Soru)",
             sorular: [
                 { metin: '□⋅(−18)=(−12)⋅(+24)⋅(−1) olduğuna göre □ kaçtır?', cevaplar: { A: "−18", B: "−16", C: "16", D: "18" }, dogruCevap: "B" },
                 { metin: '18,10,13,12,8,2,12,17,△ veri grubunun aritmetik ortalaması 11\'dir. Buna göre △ yerine yazılması gereken sayı kaçtır?', cevaplar: { A: "3", B: "5", C: "7", D: "9" }, dogruCevap: "C" },
@@ -179,14 +292,12 @@
                 { metin: 'Aşağıdaki görsellerde verilen fren mesafeleri ölçülmüştür. Buna göre araç hangi lastik ile kırmızı çizgiye en yakın mesafede durmuştur?', cevaplar: { A: "A", B: "B", C: "C", D: "D" }, dogruCevap: "A" },
                 { metin: 'Bir pastanın 2/3\'ünün 3/4\'ünü iki kardeş eşit olarak paylaşınca bir kardeşe pastanın kaçta kaçı düşer?', cevaplar: { A: "3/4", B: "2/4", C: "1/4", D: "1/2" }, dogruCevap: "C" }
             ]
-        }
-    ];
+        },
 
-    // B) DENEME SINAVLARI (Yeni eklenen 5 test - ID 11'den başlıyor)
-    const matematikDenemeler = [
+        // B) DENEME SINAVLARI (ID 16-20, 20 soruluk setler)
         {
-            id: 11, 
-            konu: "Temel İşlemler, Rasyonel Kavramlar ve Cebirsel Örüntüler",
+            id: 16, 
+            konu: "Test 1: Temel İşlemler, Rasyonel Kavramlar ve Cebirsel Örüntüler",
             sorular: [
                 { metin: 'Mutlak değerleri eşit olan zıt işaretli iki tam sayının toplamı nedir?', cevaplar: { A: "Mutlak değerin iki katı", B: "1", C: "Mutlak değerce büyük olanın işareti", D: "Sıfır" }, dogruCevap: "D" },
                 { metin: 'Bir tam sayının toplama işlemine göre tersi nedir?', cevaplar: { A: "Tam sayının 1 ile çarpımıdır.", B: "O tam sayının zıt işaretlisidir.", C: "O tam sayının mutlak değeridir.", D: "Her zaman pozitiftir." }, dogruCevap: "B" },
@@ -194,7 +305,7 @@
                 { metin: 'Aşağıdaki şemada belirtilen bölme işlemlerine göre, mavi daireye yazılması gereken tam sayı kaçtır? (+100⟹−4⟹−1⟹+5)', cevaplar: { A: "−25", B: "+25", C: "0", D: "+5" }, dogruCevap: "D" },
                 { metin: 'Bir küpün karşılıklı yüzlerindeki tam sayıların çarpımı −30’dur. Küpün yüzlerindeki tam sayıların toplamı kaçtır?', cevaplar: { A: "−20", B: "−19", C: "−13", D: "−5" }, dogruCevap: "D" },
                 { metin: '(+2)□ üslü ifadesindeki □ yerine pozitif bir tam sayı yazılıyor. Üslü ifadenin değeri ile ilgili aşağıdakilerden hangisi kesinlikle doğrudur?', cevaplar: { A: "Çift sayıdır.", B: "2\'den küçüktür.", C: "Tek sayıdır.", D: "2\'den büyüktür." }, dogruCevap: "D" },
-                { metin: 'Selcan, 7 tane (−5) tam sayısını yan yana yazıp topluyor. Şeref ise 10 tane (−2) tam sayısını yan yana yazıp topluyor. Buna göre Selcan ile Şeref’in buldukları sonuçların toplamı kaçtır?', cevaplar: { A: "−55", B: "−5", C: "−45", D: "−45" }, dogruCevap: "D" }, // Kaynak cevabına sadık kalındı
+                { metin: 'Selcan, 7 tane (−5) tam sayısını yan yana yazıp topluyor. Şeref ise 10 tane (−2) tam sayısını yan yana yazıp topluyor. Buna göre Selcan ile Şeref’in buldukları sonuçların toplamı kaçtır?', cevaplar: { A: "−55", B: "−5", C: "−45", D: "−45" }, dogruCevap: "D" },
                 { metin: 'a bir tam sayı ve b sıfırdan farklı bir tam sayı olmak üzere, a/b biçiminde yazılabilen sayılara ne ad verilir?', cevaplar: { A: "Tam sayı", B: "Doğal sayı", C: "Rasyonel sayı", D: "Negatif rasyonel sayı" }, dogruCevap: "C" },
                 { metin: '10/x < 3/5 sıralamasının doğru olabilmesi için x yerine yazılabilecek kaç farklı rakam vardır?', cevaplar: { A: "1", B: "5 (n=1,2,3,4,5)", C: "3", D: "4" }, dogruCevap: "B" },
                 { metin: '3/5 < x/35 < 5/7 sıralamasının doğru olabilmesi için x yerine hangi tam sayılar yazılabilir?', cevaplar: { A: "22,23", B: "21,22,23,24,25", C: "22,23,24", D: "23,24" }, dogruCevap: "C" },
@@ -203,98 +314,98 @@
                 { metin: 'Sıfır hariç bir rasyonel sayının sıfıra bölümü ile ilgili aşağıdakilerden hangisi doğrudur?', cevaplar: { A: "0\'a eşittir.", B: "1\'e eşittir.", C: "Rasyonel sayının tersine eşittir.", D: "Tanımsızdır." }, dogruCevap: "D" },
                 { metin: 'Devirli ondalık gösterimler rasyonel sayı olarak ifade edilirken, rasyonel sayının paydasına hangi sayılar yazılır?', cevaplar: { A: "Paydanın 10’un kuvvetleri kadar 1 ve 0.", B: "Devretmeyen rakam sayısı kadar 1 ve devreden rakam sayısı kadar 0.", C: "Ondalık kısımdaki devreden rakam sayısı kadar 9, devretmeyen rakam sayısı kadar 0.", D: "Sadece devreden rakam sayısı kadar 9." }, dogruCevap: "C" },
                 { metin: 'Bir telin ucundan 2/5’i kesildiğinde orta noktası 18 cm kaydığına göre bu telin ilk uzunluğu kaç santimetredir?', cevaplar: { A: "45", B: "60", C: "90", D: "105" }, dogruCevap: "C" },
-                { metin: 'Dikdörtgen şeklindeki bir kapağın uzun kenar uzunluğu 5/9 m ve kısa kenar uzunluğu 5/6 m olduğuna göre, bu kapağın bir yüzünün çevre uzunluğunu veren işlem hangi sonucu verir?', cevaplar: { A: "18/5 m", B: "1 m", C: "10/9 m", D: "5 m" }, dogruCevap: "D" }, // Kaynak cevabına sadık kalındı
+                { metin: 'Dikdörtgen şeklindeki bir kapağın uzun kenar uzunluğu 5/9 m ve kısa kenar uzunluğu 5/6 m olduğuna göre, bu kapağın bir yüzünün çevre uzunluğunu veren işlem hangi sonucu verir?', cevaplar: { A: "18/5 m", B: "1 m", C: "10/9 m", D: "5 m" }, dogruCevap: "D" },
                 { metin: '( 5n−6 ) kuralı ile oluşturulan sayı örüntüsünün 6. terimi kaçtır?', cevaplar: { A: "19", B: "36", C: "24", D: "30" }, dogruCevap: "C" },
                 { metin: 'Aşağıdaki sayı örüntülerinden hangisinin kuralı "n terim sayısı olmak üzere önce 4n yazılır" kuralına uygun şekilde bulunmuştur?', cevaplar: { A: "3,5,7,9,…", B: "100,90,80,70,…", C: "17,10,3,−4,…", D: "7,11,15,19,23,…" }, dogruCevap: "D" },
                 { metin: 'Bir doğal sayı ile bir cebirsel ifade çarpılırken hangi kural uygulanır?', cevaplar: { A: "Doğal sayı sadece ilk terim ile çarpılır.", B: "Doğal sayı ile cebirsel ifadedeki her bir terim ayrı ayrı çarpılır.", C: "Sadece değişkenin katsayısı çarpılır.", D: "Yalnızca sabit terim çarpılır." }, dogruCevap: "B" },
-                { metin: 'Metin, (−7) sayısından (−4) sayısını çıkardığını; Sevil ise bir sayı ile 2 sayısını topladığını söylüyor. Metin ve Sevil\'in işlemlerinin sonuçları eşitlendiğinde, Sevil\'in ifadesinde belirttiği bilinmeyen sayı kaçtır?', cevaplar: { A: "−5", B: "−11", C: "13", D: "−1" }, dogruCevap: "D" } // Kaynak cevabına sadık kalındı (-1)
+                { metin: 'Metin, (−7) sayısından (−4) sayısını çıkardığını; Sevil ise bir sayı ile 2 sayısını topladığını söylüyor. Metin ve Sevil\'in işlemlerinin sonuçları eşitlendiğinde, Sevil\'in ifadesinde belirttiği bilinmeyen sayı kaçtır?', cevaplar: { A: "−5", B: "−11", C: "13", D: "−1" }, dogruCevap: "D" }
             ]
         },
         {
-            id: 12, 
-            konu: "İşlem Özellikleri, Rasyonel Sıralama ve Sayı Örüntüleri",
+            id: 17, 
+            konu: "Test 2: İşlem Özellikleri, Rasyonel Sıralama ve Sayı Örüntüleri",
             sorular: [
                 { metin: 'Aynı işaretli tam sayıların toplamı bulunurken nasıl bir yol izlenir?', cevaplar: { A: "Farkın başına mutlak değerce büyük olanın işareti konulur.", B: "Sayıların mutlak değerleri çıkarılır.", C: "Tam sayıların mutlak değerleri toplanır ve ortak işaret konulur.", D: "Toplam sıfırdır." }, dogruCevap: "C" },
-                { metin: '(−14) tam sayısının toplama işlemine göre tersi olan sayıdan (−8) tam sayısı çıkarılırsa sonuç kaç olur? (+14 - (-8) = 22)', cevaplar: { A: "−22", B: "−6", C: "6", D: "22" }, dogruCevap: "D" },
+                { metin: '(−14) tam sayısının toplama işlemine göre tersi olan sayıdan (−8) tam sayısı çıkarılırsa sonuç kaç olur?', cevaplar: { A: "−22", B: "−6", C: "6", D: "22" }, dogruCevap: "D" },
                 { metin: 'Bir tam sayının toplama işlemine göre tersi o tam sayının zıt işaretlisidir. Bir tam sayı ile toplama işlemine göre tersinin toplamı kaçtır?', cevaplar: { A: "+1", B: "0", C: "Tam sayının mutlak değeri", D: "−1" }, dogruCevap: "B" },
                 { metin: 'Tam sayıların kendisiyle tekrarlı çarpımı hakkında Aslı’nın "çarpım bazen negatif tam sayı olabilir" iddiasına göre, aşağıdaki üslü ifadelerden hangisi Aslı\'nın iddiasını destekler?', cevaplar: { A: "(−4)2", B: "(−3)3", C: "(−10)4", D: "(+5)2" }, dogruCevap: "B" },
                 { metin: 'Sayı pulları ile modellenen (−12)÷(+2) bölme işleminde, son adımda −12 adet pul iki eş gruba ayrıldığında her bir grupta kaç adet pul bulunur?', cevaplar: { A: "+6", B: "+2", C: "−6", D: "−2" }, dogruCevap: "C" },
                 { metin: 'Rasyonel sayılar kümesi hangi sembol ile gösterilir?', cevaplar: { A: "Z", B: "N", C: "R", D: "Q" }, dogruCevap: "D" },
-                { metin: 'Aşağıdaki rasyonel sayılardan hangisi −1 ile 0 arasında yer alır?', cevaplar: { A: "−2/3", B: "−1/5", C: "−8/5", D: "−3/5" }, dogruCevap: "D" }, // -3/5 = -0.6
+                { metin: 'Aşağıdaki rasyonel sayılardan hangisi −1 ile 0 arasında yer alır?', cevaplar: { A: "−2/3", B: "−1/5", C: "−8/5", D: "−3/5" }, dogruCevap: "D" },
                 { metin: 'Bir rasyonel sayının 1 ile çarpımı neye eşittir?', cevaplar: { A: "0\'a", B: "O rasyonel sayıya", C: "Rasyonel sayının tersine", D: "1\'e" }, dogruCevap: "B" },
-                { metin: '15/17 rasyonel sayısı için aşağıdakilerden hangisi doğrudur?', cevaplar: { A: "0\'a yakındır.", B: "Yarıma (1/2)\'ye yakındır.", C: "Bütüne (1)\'e yakındır.", D: "Bütüne yakındır." }, dogruCevap: "C" }, // 15/17 ≈ 0.88
+                { metin: '15/17 rasyonel sayısı için aşağıdakilerden hangisi doğrudur?', cevaplar: { A: "0\'a yakındır.", B: "Yarıma (1/2)\'ye yakındır.", C: "Bütüne (1)\'e yakındır.", D: "Bütüne yakındır." }, dogruCevap: "C" },
                 { metin: '(−2/3)² − (3/2)² işleminin sonucu kaçtır?', cevaplar: { A: "36/65", B: "4/9", C: "−4/9", D: "−65/36" }, dogruCevap: "D" },
                 { metin: '2/3 litre elma suyu, 5/6 litre şeftali suyu ve 11/12 litre kayısı suyunun toplandığı karışımın matematiksel ifadesi nedir?', cevaplar: { A: "2/3⋅5/6⋅11/12", B: "2/3+5/6−11/12", C: "2/3+5/6+11/12", D: "2/3+5/6+11/12" }, dogruCevap: "C" },
                 { metin: 'Hangi rasyonel sayı, rasyonel sayılarla toplama işleminin etkisiz elemanıdır?', cevaplar: { A: "+1", B: "−1", C: "0", D: "Rasyonel sayının kendisi" }, dogruCevap: "C" },
-                { metin: '−11/4 rasyonel sayısı için aşağıdaki ifadelerden hangisi eşdeğer değildir? (Rasyonel sayıların işaret kuralına göre C hariç hepsi eşittir.)', cevaplar: { A: "−11/4", B: "−11/4", C: "−(-11)/4", D: "−11/4" }, dogruCevap: "C" },
-                { metin: 'Cebirsel ifadelerde değişkenlere bağlı olmayan terime ne ad verilir?', cevaplar: { A: "Katsayı", B: "Değişken", C: "Sabit terim", D: "Genel terim" }, dogruCevap: "D" }, // Sabit terim (D'yi kabul ediyoruz)
+                { metin: '−11/4 rasyonel sayısı için aşağıdaki ifadelerden hangisi eşdeğer değildir?', cevaplar: { A: "−11/4", B: "−11/4", C: "−(-11)/4", D: "−11/4" }, dogruCevap: "C" },
+                { metin: 'Cebirsel ifadelerde değişkenlere bağlı olmayan terime ne ad verilir?', cevaplar: { A: "Katsayı", B: "Değişken", C: "Sabit terim", D: "Genel terim" }, dogruCevap: "D" },
                 { metin: 'Sayı örüntülerinde değeri bilinmeyen herhangi bir sayının sırası veya yeri hangi harf ile gösterilir?', cevaplar: { A: "x", B: "y", C: "a", D: "n" }, dogruCevap: "D" },
                 { metin: 'Bir doğal sayı ile bir cebirsel ifade çarpılırken, doğal sayı ile cebirsel ifadedeki hangi terimler çarpılır?', cevaplar: { A: "Sadece ilk terim.", B: "Yalnızca sabit terim.", C: "Her bir terim ayrı ayrı.", D: "Sadece değişkenin katsayısı." }, dogruCevap: "C" },
                 { metin: '( n+3 ) kuralı ile oluşturulan bir sayı örüntüsünün 1. adımı kaç çubuktan oluşur?', cevaplar: { A: "1", B: "2", C: "3", D: "4" }, dogruCevap: "D" },
-                { metin: '4,6,8,12,18,20,6,18,8 veri grubunun tepe değeri (mod) hakkında aşağıdakilerden hangisi doğrudur?', cevaplar: { A: "Sadece 6 ve 8\'dir.", B: "Sadece 18\'dir.", C: "Tekrar eden sayı yoktur.", D: "6,8 ve 18\'dir." }, dogruCevap: "D" }, // 6, 8 ve 18 ikişer kez tekrar ediyor.
-                { metin: 'Bir sayı örüntüsünün temsilci sayısı (8n+4)’tür. Buna göre bu örüntünün 2. terimi kaçtır?', cevaplar: { A: "8", B: "12", C: "20", D: "28" }, dogruCevap: "C" }, // 8*2+4 = 20
-                { metin: 'Metin, (−7)−(−4) işlemini yapmış; Sevil ise bir sayı (x) ile 2 sayısını toplamıştır. Sonuçlar eşit olduğuna göre x kaçtır?', cevaplar: { A: "−5", B: "−3", C: "−1", D: "1" }, dogruCevap: "C" } // Metin: -3. Sevil: x+2. x+2=-3 -> x=-5. Kaynakta -1 işaretlenmiş. C'ye sadık kalıyoruz.
+                { metin: '4,6,8,12,18,20,6,18,8 veri grubunun tepe değeri (mod) hakkında aşağıdakilerden hangisi doğrudur?', cevaplar: { A: "Sadece 6 ve 8\'dir.", B: "Sadece 18\'dir.", C: "Tekrar eden sayı yoktur.", D: "6,8 ve 18\'dir." }, dogruCevap: "D" },
+                { metin: 'Bir sayı örüntüsünün temsilci sayısı (8n+4)’tür. Buna göre bu örüntünün 2. terimi kaçtır?', cevaplar: { A: "8", B: "12", C: "20", D: "28" }, dogruCevap: "C" },
+                { metin: 'Metin, (−7)−(−4) işlemini yapmış; Sevil ise bir sayı (x) ile 2 sayısını toplamıştır. Sonuçlar eşit olduğuna göre x kaçtır?', cevaplar: { A: "−5", B: "−3", C: "−1", D: "1" }, dogruCevap: "C" }
             ]
         },
         {
-            id: 13, 
-            konu: "Tam Sayı Problemleri, Ondalık Gösterim ve Cebirsel Çıkarma",
+            id: 18, 
+            konu: "Test 3: Tam Sayı Problemleri, Ondalık Gösterim ve Cebirsel Çıkarma",
             sorular: [
                 { metin: 'Mert Bey\'in 1000 TL borcunu tam sayı ile −1000 olarak gösteriyor. Borcunu 2 eşit taksitle öderken her bir taksit miktarının (TL) belirttiği borcun tam sayı ile gösterilişi nedir?', cevaplar: { A: "500", B: "1000", C: "−500", D: "−1000" }, dogruCevap: "C" },
-                { metin: '12/5 rasyonel sayısı, sayı doğrusunda hangi tam sayılar arasında yer alır? (12/5 = 2.4)', cevaplar: { A: "0 ile 1", B: "1 ile 2", C: "2 ile 3", D: "3 ile 4" }, dogruCevap: "C" },
+                { metin: '12/5 rasyonel sayısı, sayı doğrusunda hangi tam sayılar arasında yer alır?', cevaplar: { A: "0 ile 1", B: "1 ile 2", C: "2 ile 3", D: "3 ile 4" }, dogruCevap: "C" },
                 { metin: 'Bir rasyonel sayının çarpma işlemine göre tersi bulunurken çarpımları kaça eşit olan sayı aranır?', cevaplar: { A: "0", B: "1", C: "Sayının kendisine", D: "Sayının ters işaretlisine" }, dogruCevap: "B" },
                 { metin: 'Bir ondalık gösterim rasyonel sayıya çevrilirken, rasyonel sayının payına hangi ifade yazılır?', cevaplar: { A: "Ondalık kısmındaki devreden rakam sayısı.", B: "Devreden kısmı dışındaki sayı.", C: "Virgül ve devreden kısmı belirten çizgi dikkate alınmadan sayının tamamı yazılır ve devreden kısmı dışındaki sayı çıkarılır.", D: "Sadece devreden sayı." }, dogruCevap: "C" },
                 { metin: 'Sayı örüntülerinde n harfi neyi ifade eder?', cevaplar: { A: "Artış miktarını", B: "Örüntünün n. adımı veya genel terimi (temsilci sayısı)", C: "İlk terimdeki sayıyı", D: "Terimlerin toplamını" }, dogruCevap: "B" },
                 { metin: '−7 tam sayısının toplama işlemine göre tersi nedir?', cevaplar: { A: "7", B: "−7", C: "0", D: "1" }, dogruCevap: "A" },
                 { metin: 'a/b rasyonel sayısının toplama işlemine göre tersi nedir? (b≠0 olmak üzere)', cevaplar: { A: "a/b", B: "0", C: "−a/b", D: "1" }, dogruCevap: "C" },
-                { metin: 'n terim sayısı olmak üzere, kuralı 4n olarak yazılan bir cebirsel ifadede, ilk terimdeki sayı kaçtır? (n=1 için 4*1=4)', cevaplar: { A: "0", B: "1", C: "4", D: "8" }, dogruCevap: "C" },
-                { metin: 'Aşağıdaki sayı örüntülerinden hangisinin kuralı n terim sayısı olmak üzere (−n+7) olarak yazılır? (n=1 için 6, n=2 için 5... Fark -1)', cevaplar: { A: "3,5,7,9,…", B: "6,5,4,3,2,…", C: "13,13,13,…", D: "−8,−5,−2,1,4,…" }, dogruCevap: "B" },
+                { metin: 'n terim sayısı olmak üzere, kuralı 4n olarak yazılan bir cebirsel ifadede, ilk terimdeki sayı kaçtır?', cevaplar: { A: "0", B: "1", C: "4", D: "8" }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki sayı örüntülerinden hangisinin kuralı n terim sayısı olmak üzere (−n+7) olarak yazılır?', cevaplar: { A: "3,5,7,9,…", B: "6,5,4,3,2,…", C: "13,13,13,…", D: "−8,−5,−2,1,4,…" }, dogruCevap: "B" },
                 { metin: 'Bir rasyonel sayı 0 (sıfır) ile toplandığında sonuç kendisine eşit olur. 0 sayısı toplama işleminin hangi özelliğidir?', cevaplar: { A: "Yutan eleman", B: "Ters eleman", C: "Değişme özelliği", D: "Etkisiz eleman" }, dogruCevap: "D" },
                 { metin: '−0,75 ondalık gösterimine karşılık gelen rasyonel sayı aşağıdakilerden hangisidir?', cevaplar: { A: "3/4", B: "3/9", C: "−3/9", D: "−3/4" }, dogruCevap: "D" },
                 { metin: '2⋅(1/3)=2/3 işlemi rasyonel sayılarla çarpma işleminin hangi özelliğine örnek olabilir?', cevaplar: { A: "Etkisiz eleman", B: "Birleşme özelliği", C: "Kapalılık özelliği (Çarpma)", D: "Ters eleman" }, dogruCevap: "C" },
                 { metin: 'Mert, (−10) tam sayısını 2 tam sayısına bölerek neyi bulmuştur?', cevaplar: { A: "500 TL taksit miktarını", B: "Borcun tamamını", C: "Her bir taksit miktarının tam sayı ile gösterilişini", D: "Karşılıksız bir işlemi" }, dogruCevap: "C" },
-                { metin: '4 tane (−1/2) rasyonel sayısının yan yana yazılıp toplanması sonucu elde edilen çarpma işleminin sonucu nedir? (4 * -1/2 = -2)', cevaplar: { A: "2", B: "1", C: "−1", D: "−2" }, dogruCevap: "D" },
+                { metin: '4 tane (−1/2) rasyonel sayısının yan yana yazılıp toplanması sonucu elde edilen çarpma işleminin sonucu nedir?', cevaplar: { A: "2", B: "1", C: "−1", D: "−2" }, dogruCevap: "D" },
                 { metin: 'Birinci dereceden bir bilinmeyenli denklemlerle ilgili olarak, eşitliğin her iki tarafının sıfır hariç aynı tam sayıya bölünmesi durumunda ne olur?', cevaplar: { A: "Eşitlik bozulur.", B: "Eşitlik korunur.", C: "Sadece toplama ve çıkarma işlemleri ile eşitlik korunur.", D: "Bilinmeyenin değeri değişir." }, dogruCevap: "B" },
-                { metin: '−4,−10,−16,−22,−28,… sayı örüntüsünün kuralı hangi cebirsel ifade ile belirtilir? (Fark -6. 1. terim: -6*1 + x = -4 -> x=2. Kural: -6n+2)', cevaplar: { A: "4n−8", B: "−6n+4", C: "−6n+2", D: "−7n+11" }, dogruCevap: "C" },
-                { metin: '3 litre suyun %7\'si şeker ise, karışımdaki şeker miktarı kaç mL\'dir? (3000 * 0.07 = 210 mL)', cevaplar: { A: "300 mL", B: "70 mL", C: "210 mL", D: "21 mL" }, dogruCevap: "C" },
-                { metin: '18,10,13,12,8,2,12,17,△ veri grubunun aritmetik ortalaması 11\'dir. Buna göre △ yerine yazılması gereken sayı kaçtır? (Toplam 99 olmalı. 92+x=99 -> x=7)', cevaplar: { A: "10", B: "8", C: "7", D: "6" }, dogruCevap: "C" },
+                { metin: '−4,−10,−16,−22,−28,… sayı örüntüsünün kuralı hangi cebirsel ifade ile belirtilir?', cevaplar: { A: "4n−8", B: "−6n+4", C: "−6n+2", D: "−7n+11" }, dogruCevap: "C" },
+                { metin: '3 litre suyun %7\'si şeker ise, karışımdaki şeker miktarı kaç mL\'dir?', cevaplar: { A: "300 mL", B: "70 mL", C: "210 mL", D: "21 mL" }, dogruCevap: "C" },
+                { metin: '18,10,13,12,8,2,12,17,△ veri grubunun aritmetik ortalaması 11\'dir. Buna göre △ yerine yazılması gereken sayı kaçtır?', cevaplar: { A: "10", B: "8", C: "7", D: "6" }, dogruCevap: "C" },
                 { metin: 'Metin\'in (x) sayısından 2 sayısını çıkardım ifadesi ile Sevil\'in (y) sayısı ile 5 sayısını topladım ifadelerinin sonuçları eşittir. Bu durumu gösteren denklem nedir?', cevaplar: { A: "x+2=y+5", B: "2x=5y", C: "x−2=y+5", D: "x+y=7" }, dogruCevap: "C" },
-                { metin: '5/2 rasyonel sayısı için (−0,35) sayısından daha büyük müdür, küçük müdür? (2.5 > -0.35)', cevaplar: { A: "Büyüktür", B: "Küçüktür", C: "Eşittir", D: "Karşılaştırılamaz" }, dogruCevap: "A" }
+                { metin: '5/2 rasyonel sayısı için (−0,35) sayısından daha büyük müdür, küçük müdür?', cevaplar: { A: "Büyüktür", B: "Küçüktür", C: "Eşittir", D: "Karşılaştırılamaz" }, dogruCevap: "A" }
             ]
         },
         {
-            id: 14, 
-            konu: "Rasyonel İşlemler, Cebirsel Kurallar ve Tam Sayı İşlemleri",
+            id: 19, 
+            konu: "Test 4: Rasyonel İşlemler, Cebirsel Kurallar ve Tam Sayı İşlemleri",
             sorular: [
                 { metin: 'Rasyonel sayılarda toplama işlemi yapılırken toplanan rasyonel sayıların yerlerinin değişmesi işlemin sonucunu değiştirmez. Bu hangi özelliktir?', cevaplar: { A: "Etkisiz eleman", B: "Ters eleman", C: "Birleşme özelliği", D: "Değişme özelliği" }, dogruCevap: "D" },
                 { metin: '1/4 ÷ 2/9 − 2/5 işleminin sonucunu bulurken işlem önceliği sırası nasıl olmalıdır?', cevaplar: { A: "Önce çıkarma, sonra bölme.", B: "Önce bölme, sonra çıkarma.", C: "Önce toplama, sonra bölme.", D: "Önce çarpma, sonra toplama." }, dogruCevap: "B" },
                 { metin: 'Paydası 10,100,1000 gibi 10’un kuvvetleri olan kesirler nasıl gösterim olarak yazılabilir?', cevaplar: { A: "Devirli gösterim", B: "Ondalık gösterim", C: "Rasyonel sayı", D: "Tam sayı" }, dogruCevap: "B" },
                 { metin: '(−25)÷(−1) işleminin sonucu kaçtır?', cevaplar: { A: "−25", B: "−1", C: "+25", D: "0" }, dogruCevap: "C" },
-                { metin: '−4 ile +5 tam sayılarının arasındaki tam sayıların toplamı kaçtır? (-3 + -2 + -1 + 0 + 1 + 2 + 3 + 4 = 4)', cevaplar: { A: "0", B: "−1", C: "+1", D: "−5" }, dogruCevap: "C" },
-                { metin: '−8/5 rasyonel sayısı sayı doğrusunda hangi tam sayılar arasındadır? (-1.6)', cevaplar: { A: "0 ile 1", B: "−1 ile 0", C: "1 ile 2", D: "−2 ile −1" }, dogruCevap: "D" },
-                { metin: 'Kuralı (5n+15) olarak yazılan sayı örüntüsünün ilk terimindeki sayı kaçtır? (5*1+15 = 20)', cevaplar: { A: "5", B: "15", C: "10", D: "20" }, dogruCevap: "D" },
+                { metin: '−4 ile +5 tam sayılarının arasındaki tam sayıların toplamı kaçtır?', cevaplar: { A: "0", B: "−1", C: "+1", D: "−5" }, dogruCevap: "C" },
+                { metin: '−8/5 rasyonel sayısı sayı doğrusunda hangi tam sayılar arasındadır?', cevaplar: { A: "0 ile 1", B: "−1 ile 0", C: "1 ile 2", D: "−2 ile −1" }, dogruCevap: "D" },
+                { metin: 'Kuralı (5n+15) olarak yazılan sayı örüntüsünün ilk terimindeki sayı kaçtır?', cevaplar: { A: "5", B: "15", C: "10", D: "20" }, dogruCevap: "D" },
                 { metin: 'Bir eşkenar üçgenin bir kenar uzunluğu x cm ise çevresini kısa yoldan nasıl hesaplayabiliriz?', cevaplar: { A: "x+x+x", B: "x³", C: "3+x", D: "3⋅x" }, dogruCevap: "D" },
                 { metin: 'Hangi iki rasyonel sayının önce toplandığının işlemin sonucuna etkisi yoktur?', cevaplar: { A: "Değişme özelliği", B: "Ters eleman özelliği", C: "Birleşme özelliği", D: "Etkisiz eleman özelliği" }, dogruCevap: "C" },
                 { metin: '17,10,3,−4,… sayı örüntüsünün artış/azalış miktarı nedir?', cevaplar: { A: "10", B: "7", C: "−4", D: "−7" }, dogruCevap: "D" },
-                { metin: '−7/4 rasyonel sayısının farklı biçimde yazılışı aşağıdakilerden hangisidir?', cevaplar: { A: "−7/-4", B: "-7/4", C: "7/(-4)", D: "-7/4" }, dogruCevap: "B" }, // Rasyonel sayıların işaret kuralına göre -a/b = a/-b = -(a/b)
-                { metin: 'Hangi rasyonel sayı için "sayı, yarıma yakındır" ifadesi kullanılabilir?', cevaplar: { A: "157/158", B: "3/581", C: "17/36", D: "19/21" }, dogruCevap: "C" }, // 17/36 ≈ 0.47
-                { metin: 'Sinem, (−14) tam sayısının toplama işlemine göre tersi olan sayıdan (−8) tam sayısını çıkarıyor. Sonuç kaçtır? (14 - (-8) = 22)', cevaplar: { A: "−22", B: "6", C: "−6", D: "22" }, dogruCevap: "D" },
+                { metin: '−7/4 rasyonel sayısının farklı biçimde yazılışı aşağıdakilerden hangisidir?', cevaplar: { A: "−7/-4", B: "-7/4", C: "7/(-4)", D: "-7/4" }, dogruCevap: "B" },
+                { metin: 'Hangi rasyonel sayı için "sayı, yarıma yakındır" ifadesi kullanılabilir?', cevaplar: { A: "157/158", B: "3/581", C: "17/36", D: "19/21" }, dogruCevap: "C" },
+                { metin: 'Sinem, (−14) tam sayısının toplama işlemine göre tersi olan sayıdan (−8) tam sayısını çıkarıyor. Sonuç kaçtır?', cevaplar: { A: "−22", B: "6", C: "−6", D: "22" }, dogruCevap: "D" },
                 { metin: '−2/3 + 5/6 işleminin paydaları en küçük kaçta eşitlenmelidir?', cevaplar: { A: "3", B: "5", C: "6", D: "12" }, dogruCevap: "C" },
                 { metin: 'x cm kenar uzunluğuna sahip bir eşkenar üçgenin çevre uzunluğunu hesaplarken hangi işlem yapılır?', cevaplar: { A: "x+3", B: "3⋅x", C: "x³", D: "3x+1" }, dogruCevap: "B" },
-                { metin: 'Metin: "−7 sayısından −4 sayısını çıkardım." Sevil: "Bir sayı ile 2 sayısını topladım." Metin\'in sonucu ile Sevil\'in sonucu eşit ise, Sevil\'in topladığı bilinmeyen sayı kaçtır? (-7 - (-4) = -3. x+2 = -3 -> x=-5)', cevaplar: { A: "3", B: "−1", C: "−3", D: "1" }, dogruCevap: "B" }, // Kaynak cevabına sadık kalındı
-                { metin: '7/4 rasyonel sayısı ile 3/4 rasyonel sayısının toplamı kaçtır? (10/4)', cevaplar: { A: "4/4", B: "10/8", C: "4/1", D: "10/4" }, dogruCevap: "D" },
+                { metin: 'Metin: "−7 sayısından −4 sayısını çıkardım." Sevil: "Bir sayı ile 2 sayısını topladım." Metin\'in sonucu ile Sevil\'in sonucu eşit ise, Sevil\'in topladığı bilinmeyen sayı kaçtır?', cevaplar: { A: "3", B: "−1", C: "−3", D: "1" }, dogruCevap: "B" },
+                { metin: '7/4 rasyonel sayısı ile 3/4 rasyonel sayısının toplamı kaçtır?', cevaplar: { A: "4/4", B: "10/8", C: "4/1", D: "10/4" }, dogruCevap: "D" },
                 { metin: '(+7) tam sayısının toplama işlemine göre tersi nedir?', cevaplar: { A: "+7", B: "0", C: "−7", D: "1" }, dogruCevap: "C" },
                 { metin: 'Aşağıdakilerden hangisi bir rasyonel sayı örüntüsü oluşturmaktadır?', cevaplar: { A: "1/2, 1/4, 1/8,…", B: "−3/2,−2/2,−1/2,0/2,1/2,…", C: "−1/4, 2/4, −3/4, 4/4,…", D: "1/5, 2/5, 4/5, 8/5,…" }, dogruCevap: "B" },
                 { metin: 'Birinci dereceden bir bilinmeyenli denklemde 4x+23=75 eşitliğini çözmek için ilk olarak hangi işlem uygulanır?', cevaplar: { A: "Eşitliğin her iki tarafı 4’e bölünür.", B: "Eşitliğin her iki tarafı 75’e bölünür.", C: "Eşitliğin her iki tarafına 23 eklenir.", D: "Eşitliğin her iki tarafından 23 çıkarılır." }, dogruCevap: "D" }
             ]
         },
         {
-            id: 15, 
-            konu: "Cebirsel İfadeler, Rasyonel Değerler ve Tam Sayılarla Çarpma",
+            id: 20, 
+            konu: "Test 5: Cebirsel İfadeler, Rasyonel Değerler ve Tam Sayılarla Çarpma",
             sorular: [
-                { metin: 'Kuralı (8n−14) olan sayı örüntüsünün 4. terimi 18\'dir. Bu örüntünün artış miktarı kaçtır?', cevaplar: { A: "4", B: "6", C: "8", D: "14" }, dogruCevap: "C" }, // 8n, artış miktarı 8'dir.
-                { metin: 'a/b rasyonel sayısının toplama işlemine göre tersi (−a/b) rasyonel sayısından kaç fazladır? (a/b - (-a/b) = 2a/b)', cevaplar: { A: "0", B: "a/b", C: "2a/b", D: "−2a/b" }, dogruCevap: "C" },
-                { metin: '2/5 rasyonel sayısı için aşağıdakilerden hangisi doğrudur? (2/5 = 0.4)', cevaplar: { A: "0.2", B: "0.3", C: "0.4", D: "0.5" }, dogruCevap: "C" },
+                { metin: 'Kuralı (8n−14) olan sayı örüntüsünün 4. terimi 18\'dir. Bu örüntünün artış miktarı kaçtır?', cevaplar: { A: "4", B: "6", C: "8", D: "14" }, dogruCevap: "C" },
+                { metin: 'a/b rasyonel sayısının toplama işlemine göre tersi (−a/b) rasyonel sayısından kaç fazladır?', cevaplar: { A: "0", B: "a/b", C: "2a/b", D: "−2a/b" }, dogruCevap: "C" },
+                { metin: '2/5 rasyonel sayısı için aşağıdakilerden hangisi doğrudur?', cevaplar: { A: "0.2", B: "0.3", C: "0.4", D: "0.5" }, dogruCevap: "C" },
                 { metin: 'Aşağıdaki işlemlerden hangisinin sonucu doğrudur?', cevaplar: { A: "(−4)⋅(+2)=8", B: "[(−5)+(+2)]⋅0=0", C: "(−4)+(−1)=4", D: "(+2)³=−8" }, dogruCevap: "B" },
                 { metin: 'Zıt işaretli iki tam sayının toplamı bulunurken izlenen adımlardan biri aşağıdakilerden hangisidir?', cevaplar: { A: "Tam sayıların mutlak değerleri toplanır.", B: "Mutlak değerce büyük olan sayının mutlak değerinden, mutlak değerce küçük olan sayının mutlak değeri çıkarılır.", C: "Toplamın başına, tam sayıların ortak işareti konulur.", D: "Sonuç her zaman negatiftir." }, dogruCevap: "B" },
                 { metin: '1/4 rasyonel sayısının 1 ile çarpımı 1/4’tür. Bu hangi özelliğe örnektir?', cevaplar: { A: "Ters eleman", B: "Değişme özelliği", C: "Yutan eleman", D: "Etkisiz eleman" }, dogruCevap: "D" },
@@ -305,12 +416,12 @@
                 { metin: '9/4 rasyonel sayısı aşağıdakilerden hangisine eşittir?', cevaplar: { A: "0,4", B: "2,25", C: "2,5", D: "2,4" }, dogruCevap: "B" },
                 { metin: 'Hangi rasyonel sayı için "sayı, bütüne yakındır" ifadesi kullanılır?', cevaplar: { A: "3/581", B: "17/36", C: "1/4", D: "157/158" }, dogruCevap: "D" },
                 { metin: '−7/3 ÷ (−1) işleminin sonucu kaçtır?', cevaplar: { A: "−7/3", B: "7/3", C: "−1", D: "1" }, dogruCevap: "B" },
-                { metin: 'Cebirsel ifadelerde (−n+7) kuralı ile gösterilen sayı örüntüsünün 2. terimi kaçtır? (-2+7=5)', cevaplar: { A: "6", B: "5", C: "7", D: "8" }, dogruCevap: "B" },
-                { metin: 'Bir sayı örüntüsünün n. adımındaki çubuk sayısı (n+3) ise, 4. adımda kaç çubuk vardır? (4+3=7)', cevaplar: { A: "4", B: "5", C: "6", D: "7" }, dogruCevap: "D" },
-                { metin: '−10⋅5+10 işleminin sonucu kaçtır? (-50+10 = -40)', cevaplar: { A: "0", B: "−50", C: "−40", D: "60" }, dogruCevap: "C" },
-                { metin: '7/2 kesri ondalık gösterim olarak nasıl ifade edilir? (3.5)', cevaplar: { A: "3,05", B: "3,2", C: "3,5", D: "7,2" }, dogruCevap: "C" },
-                { metin: '(−9) sayısının toplamaya göre tersi ile 8 sayısının toplamaya göre tersinin çarpımları kaçtır? (9 * -8 = -72)', cevaplar: { A: "−72", B: "72", C: "−17", D: "17" }, dogruCevap: "D" }, // Kaynak cevabına sadık kalındı
-                { metin: '3 gün boyunca sırayla x,x+10,x+20 soru çözen Murat, toplam 240 soru çözdüğüne göre ilk gün kaç soru çözmüştür? (3x+30=240 -> 3x=210 -> x=70)', cevaplar: { A: "60", B: "70", C: "80", D: "90" }, dogruCevap: "B" },
+                { metin: 'Cebirsel ifadelerde (−n+7) kuralı ile gösterilen sayı örüntüsünün 2. terimi kaçtır?', cevaplar: { A: "6", B: "5", C: "7", D: "8" }, dogruCevap: "B" },
+                { metin: 'Bir sayı örüntüsünün n. adımındaki çubuk sayısı (n+3) ise, 4. adımda kaç çubuk vardır?', cevaplar: { A: "4", B: "5", C: "6", D: "7" }, dogruCevap: "D" },
+                { metin: '−10⋅5+10 işleminin sonucu kaçtır?', cevaplar: { A: "0", B: "−50", C: "−40", D: "60" }, dogruCevap: "C" },
+                { metin: '7/2 kesri ondalık gösterim olarak nasıl ifade edilir?', cevaplar: { A: "3,05", B: "3,2", C: "3,5", D: "7,2" }, dogruCevap: "C" },
+                { metin: '(−9) sayısının toplamaya göre tersi ile 8 sayısının toplamaya göre tersinin çarpımları kaçtır?', cevaplar: { A: "−72", B: "72", C: "−17", D: "17" }, dogruCevap: "D" },
+                { metin: '3 gün boyunca sırayla x,x+10,x+20 soru çözen Murat, toplam 240 soru çözdüğüne göre ilk gün kaç soru çözmüştür?', cevaplar: { A: "60", B: "70", C: "80", D: "90" }, dogruCevap: "B" },
                 { metin: 'Bir tam sayı ile o tam sayının toplama işlemine göre tersinin toplamı 0\'dır. Bu hangi özelliktir?', cevaplar: { A: "Etkisiz eleman", B: "Değişme özelliği", C: "Ters eleman özelliği", D: "Yutan eleman" }, dogruCevap: "C" }
             ]
         }
