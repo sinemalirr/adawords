@@ -95,12 +95,12 @@
 
 <script>
     // ====================================================================
-    // EMBEDDED DATA: Konu Quizleri ve Deneme Sınavları
+    // EMBEDDED DATA: Konu Quizleri (ID 1-15) ve Deneme Sınavları (ID 16-20)
     // ====================================================================
     
-    // A) KONU BAZLI QUIZLER (ID 1-10: 5 soruluk ilk set, ardından 10 soruluk set)
+    // A) KONU BAZLI QUIZLER (ID 1-15: 10 adet 5 soruluk, ardından 5 adet 10 soruluk)
     const matematikKonuQuizler = [
-        // 5 SORULUK 10 QUIZ (IDs 1-10)
+        // ID 1: 5 SORULUK
         {
             id: 1, 
             konu: "Tam Sayılar ve Üslü İfadeler (5 Soru)",
@@ -112,6 +112,7 @@
                 { metin: 'Bir balık kartalı deniz seviyesinden 3 m yukarıdadır. Her saniye 30 cm aşağı ilerleyip 12 saniye sonra balığı avlıyor. Balığın deniz seviyesine göre konumunu santimetre biriminden belirten tam sayı kaçtır?', cevaplar: { A: "60", B: "0", C: "−60", D: "−30" }, dogruCevap: "C" }
             ]
         },
+        // ID 2: 5 SORULUK
         {
             id: 2, 
             konu: "Rasyonel Sayılar ve Sıralama (5 Soru)",
@@ -123,6 +124,7 @@
                 { metin: '−8/5 rasyonel sayısı sayı doğrusunda hangi tam sayılar arasındadır?', cevaplar: { A: "0 ile 1 arasında", B: "1 ile 2 arasında", C: "−2 ile −1 arasında", D: "−1 ile 0 arasında" }, dogruCevap: "C" }
             ]
         },
+        // ID 3: 5 SORULUK
         {
             id: 3, 
             konu: "Rasyonel Sayılarla İşlemler (5 Soru)",
@@ -134,6 +136,7 @@
                 { metin: 'Rasyonel sayılarla çarpma işleminde "Yutan Eleman" hangisidir?', cevaplar: { A: "1", B: "−1", C: "0", D: "Tanımsızdır" }, dogruCevap: "C" }
             ]
         },
+        // ID 4: 5 SORULUK
         {
             id: 4, 
             konu: "Oran, Orantı ve Yüzdeler (5 Soru)",
@@ -145,6 +148,7 @@
                 { metin: 'Manavdan %40 indirimle 50 Türk liralık alışveriş yapan bir müşteri kaç Türk lirası öder?', cevaplar: { A: "35", B: "30", C: "20", D: "40" }, dogruCevap: "B" }
             ]
         },
+        // ID 5: 5 SORULUK
         {
             id: 5, 
             konu: "Cebirsel İfadeler ve Denklemler (5 Soru)",
@@ -156,6 +160,7 @@
                 { metin: 'Bir doğal sayı ile bir cebirsel ifade çarpılırken hangi kural uygulanır?', cevaplar: { A: "Sadece ilk terim çarpılır.", B: "Sadece katsayılar çarpılır.", C: "Doğal sayı ile cebirsel ifadedeki her bir terim ayrı ayrı çarpılır.", D: "Sadece değişkenler çarpılır." }, dogruCevap: "C" }
             ]
         },
+        // ID 6: 5 SORULUK
         {
             id: 6, 
             konu: "Geometri ve Çember/Daire (5 Soru)",
@@ -167,6 +172,7 @@
                 { metin: 'Alanı 144 cm² olan kareyi çevreleyen telden yararlanarak çember elde edilmek isteniyor. Bu çemberin yarıçapı en fazla kaç cm olur? (π=3 alınız.)', cevaplar: { A: "3", B: "6", C: "8", D: "12" }, dogruCevap: "C" }
             ]
         },
+        // ID 7: 5 SORULUK
         {
             id: 7, 
             konu: "Oran, Orantı ve Problemler (5 Soru)",
@@ -178,6 +184,7 @@
                 { metin: 'x ile y ters orantılı iki çokluktur. x=40 olduğunda y=60\'tır. Buna göre y=100 olduğunda x kaçtır?', cevaplar: { A: "24", B: "48", C: "80", D: "96" }, dogruCevap: "A" }
             ]
         },
+        // ID 8: 5 SORULUK
         {
             id: 8, 
             konu: "Veri Analizi ve İstatistik (5 Soru)",
@@ -189,6 +196,7 @@
                 { metin: '7/E sınıfının matematik yazılısı puanları küçükten büyüğe sıralanmıştır: 8,10,10,10,17,20,40,65,68,70,70,70,72,80,90,100. Bu veri grubunun Tepe değeri (Mod) kaçtır?', cevaplar: { A: "65", B: "69", C: "10 ve 70", D: "70" }, dogruCevap: "C" } 
             ]
         },
+        // ID 9: 5 SORULUK
         {
             id: 9, 
             konu: "Rasyonel Sayı Problemleri ve Karışık (5 Soru)",
@@ -200,6 +208,7 @@
                 { metin: 'Bir binanın boyasını üç işçi 12 günde yapabilmektedir. İşçi sayısı üç katına çıkarılırsa aynı iş kaç günde biter?', cevaplar: { A: "4", B: "15", C: "27", D: "36" }, dogruCevap: "A" }
             ]
         },
+        // ID 10: 5 SORULUK
         {
             id: 10, 
             konu: "Yüzde, Cebir ve Geometri (5 Soru)",
@@ -212,7 +221,7 @@
             ]
         },
         
-        // 10 SORULUK 10 QUIZ (IDs 6-10, önceki setin kalan quizleri)
+        // ID 11-15: 10 SORULUK 5 QUIZ
         {
             id: 11, 
             konu: "Sayılar, Oranlar ve Denklemler (10 Soru)",
@@ -292,12 +301,14 @@
                 { metin: 'Aşağıdaki görsellerde verilen fren mesafeleri ölçülmüştür. Buna göre araç hangi lastik ile kırmızı çizgiye en yakın mesafede durmuştur?', cevaplar: { A: "A", B: "B", C: "C", D: "D" }, dogruCevap: "A" },
                 { metin: 'Bir pastanın 2/3\'ünün 3/4\'ünü iki kardeş eşit olarak paylaşınca bir kardeşe pastanın kaçta kaçı düşer?', cevaplar: { A: "3/4", B: "2/4", C: "1/4", D: "1/2" }, dogruCevap: "C" }
             ]
-        },
+        }
+    ];
 
-        // B) DENEME SINAVLARI (ID 16-20, 20 soruluk setler)
+    // B) DENEME SINAVLARI (ID 16-20: 20 soruluk setler)
+    const matematikDenemeler = [
         {
             id: 16, 
-            konu: "Test 1: Temel İşlemler, Rasyonel Kavramlar ve Cebirsel Örüntüler",
+            konu: "Deneme 1: Temel İşlemler, Rasyonel Kavramlar ve Cebirsel Örüntüler (20 Soru)",
             sorular: [
                 { metin: 'Mutlak değerleri eşit olan zıt işaretli iki tam sayının toplamı nedir?', cevaplar: { A: "Mutlak değerin iki katı", B: "1", C: "Mutlak değerce büyük olanın işareti", D: "Sıfır" }, dogruCevap: "D" },
                 { metin: 'Bir tam sayının toplama işlemine göre tersi nedir?', cevaplar: { A: "Tam sayının 1 ile çarpımıdır.", B: "O tam sayının zıt işaretlisidir.", C: "O tam sayının mutlak değeridir.", D: "Her zaman pozitiftir." }, dogruCevap: "B" },
@@ -323,7 +334,7 @@
         },
         {
             id: 17, 
-            konu: "Test 2: İşlem Özellikleri, Rasyonel Sıralama ve Sayı Örüntüleri",
+            konu: "Deneme 2: İşlem Özellikleri, Rasyonel Sıralama ve Sayı Örüntüleri (20 Soru)",
             sorular: [
                 { metin: 'Aynı işaretli tam sayıların toplamı bulunurken nasıl bir yol izlenir?', cevaplar: { A: "Farkın başına mutlak değerce büyük olanın işareti konulur.", B: "Sayıların mutlak değerleri çıkarılır.", C: "Tam sayıların mutlak değerleri toplanır ve ortak işaret konulur.", D: "Toplam sıfırdır." }, dogruCevap: "C" },
                 { metin: '(−14) tam sayısının toplama işlemine göre tersi olan sayıdan (−8) tam sayısı çıkarılırsa sonuç kaç olur?', cevaplar: { A: "−22", B: "−6", C: "6", D: "22" }, dogruCevap: "D" },
@@ -349,7 +360,7 @@
         },
         {
             id: 18, 
-            konu: "Test 3: Tam Sayı Problemleri, Ondalık Gösterim ve Cebirsel Çıkarma",
+            konu: "Deneme 3: Tam Sayı Problemleri, Ondalık Gösterim ve Cebirsel Çıkarma (20 Soru)",
             sorular: [
                 { metin: 'Mert Bey\'in 1000 TL borcunu tam sayı ile −1000 olarak gösteriyor. Borcunu 2 eşit taksitle öderken her bir taksit miktarının (TL) belirttiği borcun tam sayı ile gösterilişi nedir?', cevaplar: { A: "500", B: "1000", C: "−500", D: "−1000" }, dogruCevap: "C" },
                 { metin: '12/5 rasyonel sayısı, sayı doğrusunda hangi tam sayılar arasında yer alır?', cevaplar: { A: "0 ile 1", B: "1 ile 2", C: "2 ile 3", D: "3 ile 4" }, dogruCevap: "C" },
@@ -375,7 +386,7 @@
         },
         {
             id: 19, 
-            konu: "Test 4: Rasyonel İşlemler, Cebirsel Kurallar ve Tam Sayı İşlemleri",
+            konu: "Deneme 4: Rasyonel İşlemler, Cebirsel Kurallar ve Tam Sayı İşlemleri (20 Soru)",
             sorular: [
                 { metin: 'Rasyonel sayılarda toplama işlemi yapılırken toplanan rasyonel sayıların yerlerinin değişmesi işlemin sonucunu değiştirmez. Bu hangi özelliktir?', cevaplar: { A: "Etkisiz eleman", B: "Ters eleman", C: "Birleşme özelliği", D: "Değişme özelliği" }, dogruCevap: "D" },
                 { metin: '1/4 ÷ 2/9 − 2/5 işleminin sonucunu bulurken işlem önceliği sırası nasıl olmalıdır?', cevaplar: { A: "Önce çıkarma, sonra bölme.", B: "Önce bölme, sonra çıkarma.", C: "Önce toplama, sonra bölme.", D: "Önce çarpma, sonra toplama." }, dogruCevap: "B" },
@@ -401,7 +412,7 @@
         },
         {
             id: 20, 
-            konu: "Test 5: Cebirsel İfadeler, Rasyonel Değerler ve Tam Sayılarla Çarpma",
+            konu: "Deneme 5: Cebirsel İfadeler, Rasyonel Değerler ve Tam Sayılarla Çarpma (20 Soru)",
             sorular: [
                 { metin: 'Kuralı (8n−14) olan sayı örüntüsünün 4. terimi 18\'dir. Bu örüntünün artış miktarı kaçtır?', cevaplar: { A: "4", B: "6", C: "8", D: "14" }, dogruCevap: "C" },
                 { metin: 'a/b rasyonel sayısının toplama işlemine göre tersi (−a/b) rasyonel sayısından kaç fazladır?', cevaplar: { A: "0", B: "a/b", C: "2a/b", D: "−2a/b" }, dogruCevap: "C" },
@@ -429,10 +440,7 @@
 
     // TARTIŞMA: Quiz sayfalarında tek bir diziden ID ile arama yapmak için birleştirilmiş dizi.
     const tumMatematikQuizler = [...matematikKonuQuizler, ...matematikDenemeler];
-</script>
 
-
-<script>
     // Matematik Quiz verileri (Gömülü dizilerden çekilir)
     const quizListContainer = document.getElementById('quiz-list');
     const quizSelectionArea = document.getElementById('quiz-selection-area');
@@ -473,6 +481,7 @@
         let quizzesToDisplay = [];
         let headerText = 'Test Seçimi';
         
+        // Hata alınan kısım artık aynı script bloğu içinde olduğu için ReferenceError çözüldü.
         if (groupFilter === 'deneme') {
             quizzesToDisplay = matematikDenemeler;
             headerText = '🏆 Deneme Sınavları (Tarama Testleri)';
@@ -507,6 +516,7 @@
 
     // --- QUIZ AKIŞI FONKSİYONLARI ---
     function startQuiz(quizId) {
+        // tumMatematikQuizler dizisini her iki diziyi de içerdiği için kullanıyoruz.
         currentQuiz = tumMatematikQuizler.find(q => q.id === quizId);
         currentQuestionIndex = 0;
         userAnswers = {};
