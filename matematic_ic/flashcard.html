@@ -135,28 +135,33 @@
         isFlipped = false;
         kartGosterim.classList.remove('cevir');
         
-        const topic = currentData[currentTopicIndex];
-        const card = topic.kartlar[currentCardIndex];
+        // Flashcardlar matematikFlashcards dizisini kullanır, Taktikler matematikTaktikler dizisini kullanır.
+        const topic = currentData[currentTopicIndex]; 
         
-        flashcardTopicTitle.textContent = `${topic.konu} (${currentCardIndex + 1} / ${topic.kartlar.length})`;
+        // Flashcardlar 'kartlar' dizisini kullanırken, Taktikler 'taktikler' dizisini kullanır.
+        const cardArrayName = (getUrlParameter('tur') === 'flashcard' ? 'kartlar' : 'taktikler');
+        const card = topic[cardArrayName][currentCardIndex];
         
-        // Kartın Ön Yüzü (Soru/Kural)
+        flashcardTopicTitle.textContent = `${topic.konu} (${currentCardIndex + 1} / ${topic[cardArrayName].length})`;
+        
+        // Kartın Ön Yüzü (Soru/Kural/Taktik Başlığı)
+        const onYuzMetni = card.on || card.baslik; // Flashcard'da 'on', Taktik'te 'baslik' kullanılır
         kartYuz.innerHTML = `
-            <h3 class="text-xl font-bold text-indigo-700 mb-3">ÖN YÜZ (Kavram)</h3>
-            <p class="text-xl text-gray-800">${card.on}</p>
+            <h3 class="text-xl font-bold text-indigo-700 mb-3">ÖN YÜZ (${getUrlParameter('tur') === 'flashcard' ? 'Kavram/Soru' : 'Taktik Kuralı'})</h3>
+            <p class="text-xl text-gray-800">${onYuzMetni}</p>
         `;
 
         // Kartın Arka Yüzü (Açıklama/Çözüm)
-        // Markdown içindeki $...$ veya $\frac{...}{...}$ gibi ifadeleri LaTeX'e dönüştürmek için MathJax gerekebilir, 
-        // şimdilik MathJax kütüphanesini dahil etmiyoruz, ancak metni olduğu gibi yüklüyoruz.
+        const arkaYuzMetni = card.arka || card.aciklama; // Flashcard'da 'arka', Taktik'te 'aciklama' kullanılır
         kartArka.innerHTML = `
-            <h3 class="text-xl font-bold text-indigo-700 mb-3">ARKA YÜZ (Açıklama)</h3>
-            <p class="text-base whitespace-pre-line text-gray-800">${card.arka}</p>
+            <h3 class="text-xl font-bold text-indigo-700 mb-3">ARKA YÜZ (Açıklama/Uygulama)</h3>
+            <p class="text-base whitespace-pre-line text-gray-800">${arkaYuzMetni}</p>
         `;
         
         updateNavigationButtons();
     }
-
+    
+    // Taktik verileri için ayrı bir render fonksiyonu (listeleme tarzı)
     function renderTaktikler(data) {
         taktikArea.innerHTML = '';
         data.forEach(topic => {
@@ -167,6 +172,8 @@
             topic.taktikler.forEach(taktik => {
                 const taktikItem = document.createElement('div');
                 taktikItem.className = 'taktik-item p-4 border border-gray-200 rounded-lg bg-gray-50';
+                // Matematiksel formüller için latex formatı kullanılırsa MathJax kütüphanesi entegre edilmelidir.
+                // Şimdilik denklemler düz metin olarak görünecektir.
                 taktikItem.innerHTML = `
                     <p class="font-semibold text-indigo-600 mb-1">🎯 ${taktik.baslik}</p>
                     <p class="text-sm text-gray-700">${taktik.aciklama}</p>
@@ -178,7 +185,9 @@
     }
 
     function updateNavigationButtons() {
-        const totalCards = currentData[currentTopicIndex].kartlar.length;
+        const cardArrayName = (getUrlParameter('tur') === 'flashcard' ? 'kartlar' : 'taktikler');
+        const totalCards = currentData[currentTopicIndex][cardArrayName].length;
+        
         kartOncekiBtn.disabled = currentCardIndex === 0;
         kartSonrakiBtn.disabled = currentCardIndex === totalCards - 1;
     }
@@ -186,15 +195,18 @@
     // --- SAYFA BAŞLATMA ---
     function initialize() {
         const tur = getUrlParameter('tur');
-
+        konuListesiContainer.innerHTML = ''; // Konu listesini temizle
+        
         if (tur === 'flashcard') {
             currentData = matematikFlashcards;
             pageTitle.textContent = 'Konu Bazlı Flashcardlar 💡';
             pageSubtitle.textContent = 'Kavramları ve kuralları hızlıca tekrar edin.';
             flashcardArea.classList.remove('hidden');
-            renderKonuListesi(currentData);
+            // Flashcardlar için kart listeleme mantığını kullan
+            renderKonuListesi(currentData, 'kartlar');
         } else if (tur === 'taktik') {
-            currentData = matematikTaktikler;
+            // Taktikler, flashcard yapısını kullanmaz, doğrudan listelenir
+            currentData = matematikTaktikler; 
             pageTitle.textContent = 'Çözüm Taktikleri 🧠';
             pageSubtitle.textContent = 'Problem tiplerine özel çözüm yöntemleri.';
             taktikArea.classList.remove('hidden');
@@ -205,15 +217,21 @@
         }
     }
 
-    function renderKonuListesi(data) {
+    // Flashcard ve Taktik listelemeyi tek fonksiyonda birleştirme
+    function renderKonuListesi(data, cardArrayName) {
         konuListesiContainer.innerHTML = '';
-        data.forEach((topic, index) => {
+        
+        data.forEach((topic, topicIndex) => {
             const button = document.createElement('button');
             button.className = 'w-full text-left p-3 bg-white border border-indigo-300 rounded-lg text-gray-700 hover:bg-indigo-100 transition duration-150 font-medium';
-            button.textContent = topic.konu;
+            
+            // Eğer veriler flashcard yapısındaysa (kartlar), kart sayısını göster.
+            const cardCount = topic[cardArrayName] ? topic[cardArrayName].length : 0;
+            button.textContent = `${topic.konu} (${cardCount} kart)`;
+
             button.onclick = () => {
                 // Konu seçildiğinde ilk kartı göster
-                displayFlashcard(index, 0);
+                displayFlashcard(topicIndex, 0);
                 
                 // Seçili butonu vurgula
                 konuListesiContainer.querySelectorAll('button').forEach(btn => {
@@ -239,8 +257,11 @@
     });
 
     kartSonrakiBtn.addEventListener('click', () => {
-        if (currentTopicIndex !== -1 && currentCardIndex < currentData[currentTopicIndex].kartlar.length - 1) {
-            displayFlashcard(currentTopicIndex, currentCardIndex + 1);
+        if (currentTopicIndex !== -1) {
+            const cardArrayName = (getUrlParameter('tur') === 'flashcard' ? 'kartlar' : 'taktikler');
+            if (currentCardIndex < currentData[currentTopicIndex][cardArrayName].length - 1) {
+                displayFlashcard(currentTopicIndex, currentCardIndex + 1);
+            }
         }
     });
 
