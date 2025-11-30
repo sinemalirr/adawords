@@ -1,5 +1,6 @@
+// js/firebase-init.js
 
-// 1. Firebase Yapılandırması (Sizin Verileriniz)
+// 1. Firebase Yapılandırması
 const firebaseConfig = {
     apiKey: "AIzaSyB3FGM38oeHMjFhjncqfaw430vv3YAtqTw",
     authDomain: "ada-dersler.firebaseapp.com",
@@ -17,9 +18,8 @@ const db = app.firestore(); // Firestore veritabanını kullanacağız
 // Veri depolamak için kullanacağımız ana koleksiyon adı:
 const DERS_TAKIP_COLLECTION = "lgs_ders_takip";
 
-// 2. DOM Öğeleri
-const derslerButton = document.getElementById('dersler-btn');
-const mainContent = document.querySelector('.w-full.max-w-lg');
+// 2. DOM Öğeleri (index.html'den)
+const derslerBtn = document.getElementById('dersler-btn-placeholder');
 
 // 3. Giriş/Kayıt Modal HTML'i oluşturma ve ekleme
 function setupAuthModal() {
@@ -39,7 +39,11 @@ function setupAuthModal() {
     `;
     document.body.insertAdjacentHTML('beforeend', authModalHTML);
 }
-setupAuthModal();
+
+// SADECE index.html'deyken modalı kur
+if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
+    setupAuthModal();
+}
 
 const authModal = document.getElementById('auth-modal-backdrop');
 const authEmail = document.getElementById('auth-email');
@@ -64,56 +68,66 @@ function displayError(message) {
     authError.classList.remove('hidden');
 }
 
-// 4. Kimlik Doğrulama İşlevleri
-loginBtn.addEventListener('click', () => {
-    const email = authEmail.value;
-    const password = authPassword.value;
-    auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-            hideAuthModal();
-            // Başarılı girişten sonra Dersler sayfasına yönlendir.
-            window.location.href = 'dersler.html';
-        })
-        .catch(error => {
-            displayError("Giriş Başarısız: " + error.message);
-        });
-});
+// 4. Kimlik Doğrulama İşlevleri (Yönlendirmesiz)
+if (loginBtn && registerBtn) {
+    loginBtn.addEventListener('click', () => {
+        const email = authEmail.value;
+        const password = authPassword.value;
+        auth.signInWithEmailAndPassword(email, password)
+            .then(() => {
+                hideAuthModal();
+                // onAuthStateChanged (aşağıdaki) yönlendirmeyi halledecek
+            })
+            .catch(error => {
+                displayError("Giriş Başarısız: " + error.message);
+            });
+    });
 
-registerBtn.addEventListener('click', () => {
-    const email = authEmail.value;
-    const password = authPassword.value;
-    auth.createUserWithEmailAndPassword(email, password)
-        .then(() => {
-            hideAuthModal();
-            alert("Kayıt Başarılı! Otomatik giriş yapıldı.");
-            // Başarılı kayıttan sonra Dersler sayfasına yönlendir.
-            window.location.href = 'dersler.html';
-        })
-        .catch(error => {
-            displayError("Kayıt Başarısız: " + error.message);
-        });
-});
-
-// 5. 'Dersler' Butonunun İşlevini Ayarlama
-// Mevcut onclick fonksiyonunu kaldırıp kendi işlevimizi ekliyoruz.
-const derslerContainer = document.querySelector('button[onclick*="showCustomModal"]');
-if (derslerContainer) {
-    // Mevcut butonun bağlantısını kesip yeni bir elemente saralım
-    const derslerBtn = derslerContainer.cloneNode(true);
-    derslerBtn.removeAttribute('onclick');
-    derslerBtn.id = 'dersler-btn'; // Yeni ID verdik
-    
-    derslerContainer.parentNode.replaceChild(derslerBtn, derslerContainer);
-
-    // Butona tıklama olayını ekle
-    derslerBtn.addEventListener('click', () => {
-        // Kullanıcı oturumu kontrol et
-        if (auth.currentUser) {
-            // Oturum varsa direkt dersler sayfasına git
-            window.location.href = 'dersler.html';
-        } else {
-            // Oturum yoksa giriş modalını göster
-            showAuthModal();
-        }
+    registerBtn.addEventListener('click', () => {
+        const email = authEmail.value;
+        const password = authPassword.value;
+        auth.createUserWithEmailAndPassword(email, password)
+            .then(() => {
+                hideAuthModal();
+                alert("Kayıt Başarılı! Otomatik giriş yapıldı.");
+                // onAuthStateChanged (aşağıdaki) yönlendirmeyi halledecek
+            })
+            .catch(error => {
+                displayError("Kayıt Başarısız: " + error.message);
+            });
     });
 }
+
+
+// 5. Oturum Durumu Takipçisi ve Buton Kontrolü (GÜVENLİ YÖNLENDİRME)
+auth.onAuthStateChanged(user => {
+    if (derslerBtn) {
+        if (user) {
+            // Oturum AÇIK: Buton işlevi direkt dersler sayfasına gitmek
+            derslerBtn.onclick = () => {
+                // Sadece index.html'deysek yönlendir
+                if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
+                    window.location.href = 'dersler.html';
+                }
+            };
+        } else {
+            // Oturum KAPALI: Buton işlevi modalı göstermek
+            derslerBtn.onclick = () => {
+                showAuthModal();
+            };
+        }
+    }
+
+    // Ek Güvenlik: dersler.html'deysek ve oturum kapalıysa geri at
+    if (window.location.pathname.endsWith('dersler.html')) {
+        if (!user) {
+            window.location.href = 'index.html';
+        } else {
+             // Kullanıcı bilgisini güncelle
+            const userInfoElement = document.getElementById('user-info');
+            if (userInfoElement) {
+                userInfoElement.textContent = user.email;
+            }
+        }
+    }
+});
