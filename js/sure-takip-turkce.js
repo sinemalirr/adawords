@@ -54,6 +54,7 @@ function updateDailyProgressUI() {
     if (isStreakCompletedToday && bugunCalisilanSure >= MIN_SURE_SERI_SAYACI) {
         dailyProgressContainer.querySelector('.text-green-600').textContent += ' ✅';
 
+    }
 }
 
 // 2. Seri (Streak) Kontrolü
