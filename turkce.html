@@ -20,18 +20,29 @@
         <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight">🇹🇷 Türkçe Dersi</h1>
     </div>
     
-    <div class="text-right w-full lg:w-auto">
+    <<div class="text-right flex flex-col items-end w-full lg:w-auto">
+    
+    <p id="user-email-display" class="text-xs text-gray-400 mb-2"></p>
+    
+    <div class="flex flex-wrap justify-end gap-x-6 gap-y-2 p-3 bg-white rounded-xl shadow-md border border-rose-100">
         
-        <div id="sure-sayac" class="text-3xl font-bold text-rose-600">00:00:00</div>
-        <p class="text-sm text-gray-500 mt-1">Geçirilen Toplam Süre</p>
+        <div class="flex items-center space-x-2">
+            <span class="text-xs font-medium text-gray-600">Toplam Süre:</span>
+            <div id="sure-sayac" class="text-xl font-bold text-rose-600">00:00:00</div>
+        </div>
         
-        <div id="daily-progress" class="mt-4 p-3 bg-white rounded-lg border border-gray-100 shadow-sm">
-            </div>
-
-        <p class="text-xl font-bold text-indigo-600 mt-3">🔥 <span id="streak-container">0 Gün</span> Seri</p>
+        <div class="flex items-center space-x-2 border-l pl-3 border-gray-200">
+            <span class="text-xs font-medium text-gray-600">Seri:</span>
+            <p class="text-xl font-bold text-indigo-600">🔥 <span id="streak-container">0 Gün</span></p>
+        </div>
         
-        <p id="user-email-display" class="text-xs text-gray-400 mt-2"></p>
+        <div id="daily-progress" class="flex items-center space-x-2 border-l pl-3 border-gray-200">
+            <span class="text-xs font-medium text-gray-600">Bugünkü Hedef:</span>
+            <div class="text-lg font-semibold text-green-600">00:00 / 15:00</div>
+        </div>
+        
     </div>
+</div>
 </header>
     
     <main class="grid grid-cols-1 lg:grid-cols-2 gap-10">
