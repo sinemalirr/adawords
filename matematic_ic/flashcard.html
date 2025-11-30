@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matematik - Flashcard & Taktikler</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; min-height: 100vh; }
+        .kart-container { perspective: 1000px; height: 250px; }
+        .kart {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+        .kart.cevir { transform: rotateY(180deg); }
+        .kart-yuz, .kart-arka {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .kart-yuz { background-color: #f1f5f9; /* slate-100 */ }
+        .kart-arka { 
+            background-color: #e0e7ff; /* indigo-100 */
+            transform: rotateY(180deg); 
+        }
+        .taktik-item { transition: background-color 0.1s; }
+        .taktik-item:hover { background-color: #eef2ff; }
+        /* MathJax ile gelen denklemler için stil düzeltmeleri (Gerekirse) */
+        .kart-arka math { font-size: 1.1em; }
+    </style>
+</head>
+<body>
+
+<div class="w-full max-w-4xl mx-auto p-6 md:p-10 mt-8">
+    <header class="pb-4 border-b border-gray-200 mb-6">
+        <a href="../matematik.html" class="text-indigo-600 hover:text-indigo-800 text-xl mb-4 inline-block">← Matematik Ana Menü</a>
+        <h1 id="page-title" class="text-3xl font-extrabold text-gray-800 tracking-tight"></h1>
+        <p id="page-subtitle" class="text-sm text-gray-500 mt-2"></p>
+    </header>
+
+    <div id="content-container">
+        <div id="flashcard-area" class="hidden">
+            <h2 id="flashcard-topic-title" class="text-2xl font-semibold mb-6 text-indigo-700 border-b pb-2"></h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div id="konu-listesi-container" class="space-y-3 h-96 overflow-y-auto pr-2">
+                    </div>
+
+                <div id="kart-gosterim-alani" class="kart-container">
+                    <div id="kart-gosterim" class="kart">
+                        <div class="kart-yuz">
+                            <h3 class="text-lg font-medium text-gray-700">Kartı görmek için soldan bir konu seçin.</h3>
+                        </div>
+                        <div class="kart-arka text-gray-800">
+                             </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="navigasyon-btn-container" class="flex justify-center space-x-4 mt-8">
+                <button id="kart-onceki" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-150" disabled>
+                    ← Önceki Kart
+                </button>
+                <button id="kart-cevir" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition duration-150">
+                    Kartı Çevir
+                </button>
+                <button id="kart-sonraki" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition duration-150" disabled>
+                    Sonraki Kart →
+                </button>
+            </div>
+        </div>
+        
+        <div id="taktik-area" class="space-y-8 hidden">
+             </div>
+
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<script src="../js/firebase-init.js"></script>
+<script src="../js/sure-takip-matematik.js"></script> 
+<script src="../js/matematik_data.js"></script> 
+
+<script>
+    // URL Parametre Okuyucu
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    };
+
+    // DOM Elementleri
+    const pageTitle = document.getElementById('page-title');
+    const pageSubtitle = document.getElementById('page-subtitle');
+    const flashcardArea = document.getElementById('flashcard-area');
+    const taktikArea = document.getElementById('taktik-area');
+    const konuListesiContainer = document.getElementById('konu-listesi-container');
+    const flashcardTopicTitle = document.getElementById('flashcard-topic-title');
+    const kartGosterim = document.getElementById('kart-gosterim');
+    const kartYuz = kartGosterim.querySelector('.kart-yuz');
+    const kartArka = kartGosterim.querySelector('.kart-arka');
+    const kartCevirBtn = document.getElementById('kart-cevir');
+    const kartOncekiBtn = document.getElementById('kart-onceki');
+    const kartSonrakiBtn = document.getElementById('kart-sonraki');
+
+    // Global Durum
+    let currentData = []; // matematikFlashcards veya matematikTaktikler
+    let currentTopicIndex = -1;
+    let currentCardIndex = 0;
+    let isFlipped = false;
+
+    // --- FLASHCARD/TAKTİK GÖRÜNTÜLEME İŞLEVLERİ ---
+
+    function displayFlashcard(topicIndex, cardIndex) {
+        if (topicIndex === -1) return;
+        
+        currentTopicIndex = topicIndex;
+        currentCardIndex = cardIndex;
+        isFlipped = false;
+        kartGosterim.classList.remove('cevir');
+        
+        const topic = currentData[currentTopicIndex];
+        const card = topic.kartlar[currentCardIndex];
+        
+        flashcardTopicTitle.textContent = `${topic.konu} (${currentCardIndex + 1} / ${topic.kartlar.length})`;
+        
+        // Kartın Ön Yüzü (Soru/Kural)
+        kartYuz.innerHTML = `
+            <h3 class="text-xl font-bold text-indigo-700 mb-3">ÖN YÜZ (Kavram)</h3>
+            <p class="text-xl text-gray-800">${card.on}</p>
+        `;
+
+        // Kartın Arka Yüzü (Açıklama/Çözüm)
+        // Markdown içindeki $...$ veya $\frac{...}{...}$ gibi ifadeleri LaTeX'e dönüştürmek için MathJax gerekebilir, 
+        // şimdilik MathJax kütüphanesini dahil etmiyoruz, ancak metni olduğu gibi yüklüyoruz.
+        kartArka.innerHTML = `
+            <h3 class="text-xl font-bold text-indigo-700 mb-3">ARKA YÜZ (Açıklama)</h3>
+            <p class="text-base whitespace-pre-line text-gray-800">${card.arka}</p>
+        `;
+        
+        updateNavigationButtons();
+    }
+
+    function renderTaktikler(data) {
+        taktikArea.innerHTML = '';
+        data.forEach(topic => {
+            const topicDiv = document.createElement('div');
+            topicDiv.className = 'bg-white p-6 rounded-xl shadow-lg border-l-4 border-indigo-500 space-y-4';
+            topicDiv.innerHTML = `<h3 class="text-2xl font-bold text-gray-800 mb-4">${topic.konu}</h3>`;
+            
+            topic.taktikler.forEach(taktik => {
+                const taktikItem = document.createElement('div');
+                taktikItem.className = 'taktik-item p-4 border border-gray-200 rounded-lg bg-gray-50';
+                taktikItem.innerHTML = `
+                    <p class="font-semibold text-indigo-600 mb-1">🎯 ${taktik.baslik}</p>
+                    <p class="text-sm text-gray-700">${taktik.aciklama}</p>
+                `;
+                topicDiv.appendChild(taktikItem);
+            });
+            taktikArea.appendChild(topicDiv);
+        });
+    }
+
+    function updateNavigationButtons() {
+        const totalCards = currentData[currentTopicIndex].kartlar.length;
+        kartOncekiBtn.disabled = currentCardIndex === 0;
+        kartSonrakiBtn.disabled = currentCardIndex === totalCards - 1;
+    }
+
+    // --- SAYFA BAŞLATMA ---
+    function initialize() {
+        const tur = getUrlParameter('tur');
+
+        if (tur === 'flashcard') {
+            currentData = matematikFlashcards;
+            pageTitle.textContent = 'Konu Bazlı Flashcardlar 💡';
+            pageSubtitle.textContent = 'Kavramları ve kuralları hızlıca tekrar edin.';
+            flashcardArea.classList.remove('hidden');
+            renderKonuListesi(currentData);
+        } else if (tur === 'taktik') {
+            currentData = matematikTaktikler;
+            pageTitle.textContent = 'Çözüm Taktikleri 🧠';
+            pageSubtitle.textContent = 'Problem tiplerine özel çözüm yöntemleri.';
+            taktikArea.classList.remove('hidden');
+            renderTaktikler(currentData);
+        } else {
+            pageTitle.textContent = 'Hata: Geçersiz Modül';
+            pageSubtitle.textContent = 'Lütfen ana menüden geçerli bir link seçin.';
+        }
+    }
+
+    function renderKonuListesi(data) {
+        konuListesiContainer.innerHTML = '';
+        data.forEach((topic, index) => {
+            const button = document.createElement('button');
+            button.className = 'w-full text-left p-3 bg-white border border-indigo-300 rounded-lg text-gray-700 hover:bg-indigo-100 transition duration-150 font-medium';
+            button.textContent = topic.konu;
+            button.onclick = () => {
+                // Konu seçildiğinde ilk kartı göster
+                displayFlashcard(index, 0);
+                
+                // Seçili butonu vurgula
+                konuListesiContainer.querySelectorAll('button').forEach(btn => {
+                    btn.classList.remove('bg-indigo-600', 'text-white');
+                    btn.classList.add('bg-white', 'text-gray-700');
+                });
+                button.classList.remove('bg-white', 'text-gray-700');
+                button.classList.add('bg-indigo-600', 'text-white');
+            };
+            konuListesiContainer.appendChild(button);
+        });
+
+        // Eğer veri varsa ilk konuyu otomatik seç
+        if (data.length > 0) {
+            konuListesiContainer.querySelector('button').click();
+        }
+    }
+
+    // --- NAVİGASYON VE ETKİLEŞİM ---
+    kartCevirBtn.addEventListener('click', () => {
+        kartGosterim.classList.toggle('cevir');
+        isFlipped = !isFlipped;
+    });
+
+    kartSonrakiBtn.addEventListener('click', () => {
+        if (currentTopicIndex !== -1 && currentCardIndex < currentData[currentTopicIndex].kartlar.length - 1) {
+            displayFlashcard(currentTopicIndex, currentCardIndex + 1);
+        }
+    });
+
+    kartOncekiBtn.addEventListener('click', () => {
+        if (currentCardIndex > 0) {
+            displayFlashcard(currentTopicIndex, currentCardIndex - 1);
+        }
+    });
+
+    // Başlat
+    document.addEventListener('DOMContentLoaded', initialize);
+</script>
+
+</body>
+</html>
