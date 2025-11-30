@@ -62,6 +62,13 @@
             <h2 class="text-2xl font-bold">SOSYAL</h2>
             <p class="text-sm opacity-80 mt-1">Hafıza Teknikleri</p>
         </a>
+        
+        <a href="agis.html" class="ders-karti bg-fuchsia-600 hover:bg-fuchsia-700 active:bg-fuchsia-800 p-6 text-white rounded-xl text-center cursor-pointer">
+            <div class="text-5xl mb-2">📊</div>
+            <h2 class="text-2xl font-bold">AGİS</h2>
+            <p class="text-sm opacity-80 mt-1">Gelişim Takip Sistemi</p>
+        </a>
+        
     </main>
 </div>
 
@@ -72,8 +79,14 @@
 <script>
     // dersler.html için özel JavaScript
 
+    // Firebase Auth nesnesinin tanımlı olduğunu varsayarak işlem yapılır.
+    // Kullanıcı bilgisi yüklenmesi burada yok, ancak logout butonu çalışacaktır.
+
     // Çıkış yap butonu
     document.getElementById('logout-btn').addEventListener('click', () => {
+        // auth nesnesinin global veya firebase-init.js'de tanımlı olması gerekir.
+        // Genellikle window.auth veya sadece auth olarak erişilebilir.
+        // firebase-init.js dosyanızdaki tanıma göre "auth.signOut()" kullanılır.
         auth.signOut().then(() => {
             // Çıkış yapıldıktan sonra index.html'ye yönlendir
             window.location.href = 'index.html';
