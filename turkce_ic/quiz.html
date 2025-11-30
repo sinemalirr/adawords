@@ -75,7 +75,8 @@
     <div id="result-area" class="hidden quiz-card text-center">
         <h2 class="text-3xl font-bold mb-4 text-rose-600">Quiz Sonuçları 🎉</h2>
         <p class="text-xl text-gray-700 mb-2">Doğru Sayısı: <span id="correct-count" class="font-extrabold text-emerald-600"></span></p>
-        <p class="text-xl text-gray-700 mb-6">Yanlış Sayısı: <span id="wrong-count" class="font-extrabold text-red-600"></span></p>
+        <p class="text-xl text-gray-700 mb-2">Yanlış Sayısı: <span id="wrong-count" class="font-extrabold text-red-600"></span></p>
+        <p class="text-xl text-gray-700 mb-6">Boş Sayısı: <span id="empty-count" class="font-extrabold text-gray-500"></span></p> 
         <button id="restart-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition duration-150">
             Yeni Test Seç
         </button>
@@ -220,7 +221,7 @@
                 { metin: '(1) İnsanlar, saygı ve sevgiyi çocuk yaşta öğrenirler. (2) Büyüdükçe de bu duyguları iç dünyalarında zenginleştirirler. (3) **Bu yüzden çocukların eğitimi ailede başlar.** (4) Ailede bir çocuğa insanlara karşı sevgi duyması öğretildiyse bu çocuk, hayatı boyunca insanlara sevgi ve saygıyla davranır. Bu parçadaki numaralanmış cümlelerin hangisi **ana düşünceyi destekleyen bir yargı değildir**?', cevaplar: { A: "1", B: "2", C: "**3**", D: "4" }, dogruCevap: "A" },
                 { metin: 'Aşağıdaki dizelerde kullanılan söz sanatlarından hangisi **Abartma (Mübalağa)** sanatına örnektir?', cevaplar: { A: "Bir sel gibi fenerler. (Benzetme)", B: "Düşünür ağaçlar aylarca gelecek baharı. (Kişileştirme)", C: "Bir gül açtı gönlümde, hiç solmayacak. (Kişileştirme)", D: "**Gözümde yaşlar sel olup akacak.**" }, dogruCevap: "D" },
                 { metin: '"Aydede, bütün minik yıldızları etrafına toplamış, onlarla güzelce sohbet ediyordu." Bu metinde aşağıdaki sanatların hangisi vardır?', cevaplar: { A: "Benzetme ve Konuşturma", B: "**Kişileştirme** (Aydede\'nin toplaması ve sohbet etmesi)", C: "Abartma ve Benzetme", D: "Sadece Konuşturma" }, dogruCevap: "B" },
-                { metin: '“Sadece paragraf soruları...” cümlesindeki "**sadece**" kelimesinin eş anlamlısı aşağıdaki cümlelerin hangisinde kullanılmıştır?', cevaplar: { A: "Ben de bugün size katılırım.", B: "**Yalnız** bu konuda çalışmak yeterli.", C: "Hep birlikte gelmeliyiz.", D: "Bugün bile dersimiz vardı." }, dogruCevap: "B" },
+                { metin: '“Sadece paragraf soruları...” cümlesindeki "**sadece**" kelimesinin eş anlamlısı aşağıdaki cümlelerin hangisinde kullanılmıştır?', cevaplar: { A: "Ben de bugün size katılırım.", B: "**Yalnız** bu konuda çalışmak yeterli.", C: "Hep birlikte gelmeliyız.", D: "Bugün bile dersimiz vardı." }, dogruCevap: "B" },
                 { metin: 'Aşağıdaki cümlelerden hangisi bir **anı** metninden alınmış olabilir?', cevaplar: { A: "Tiyatro, gelecekle bugün arasında bir köprüdür.", B: "Denizin üstündeki hava hâlâ sıcaktır.", C: "**Çocukluğum ve gençliğim**, yeşille mavinin en güzel tonlarının bütün canlılığıyla yaşandığı Karadeniz\'de geçti.", D: "Gelin görün ki konu gıda olunca merceğimizi evde unutuyoruz." }, dogruCevap: "C" },
                 { metin: '(I) İnsan, doğar. (II) Sonra beyninde bir sürü bilgi biriktirir. (III) Öğrendiği bilgiler, beyninde bir süzgeçten geçer, sonra yeni bir fikir ortaya çıkar. (IV) Öğrendiği her şey, onun yeni şeyler üretmesini sağlar. Yukarıdaki söz gruplarıyla anlamlı ve kurallı bir cümle oluşturulduğunda sıralama aşağıdakilerin hangisi olur?', cevaplar: { A: "I - II - III - IV", B: "I - IV - II - III", C: "II - III - IV - I", D: "IV - I - III - II" }, dogruCevap: "B" },
                 { metin: '"Bir yazar, eserlerini verirken nelere dikkat etmelidir?" Bu soruya karşılık gelebilecek paragrafın anlatımında aşağıdaki anlatım türlerinden hangisi ağır basmalıdır?', cevaplar: { A: "Öyküleme", B: "Betimleme", C: "**Tartışma** (Yazarın görüşlerini savunduğu)", D: "Açıklama" }, dogruCevap: "C" },
@@ -360,6 +361,7 @@
     const prevBtn = document.getElementById('prev-btn');
     const correctCountDisplay = document.getElementById('correct-count');
     const wrongCountDisplay = document.getElementById('wrong-count');
+    const emptyCountDisplay = document.getElementById('empty-count'); // Yeni eklenen alan
     const restartBtn = document.getElementById('restart-btn');
     const answerReviewContainer = document.getElementById('answer-review');
     const listTitleElement = document.getElementById('list-title'); 
@@ -420,7 +422,7 @@
     // --- QUIZ AKIŞI FONKSİYONLARI ---
 
     function startQuiz(quizId) {
-        // Artık arama tumQuizler dizisinde yapılmalı
+        // Arama tumQuizler dizisinde yapılmalı
         currentQuiz = tumQuizler.find(q => q.id === quizId);
         currentQuestionIndex = 0;
         userAnswers = {};
@@ -466,9 +468,13 @@
     function updateNavigationButtons() {
         prevBtn.disabled = currentQuestionIndex === 0;
         
+        // Son sorunun cevaplanmış olup olmadığını kontrol et
+        const isLastQuestionAnswered = userAnswers[currentQuestionIndex] !== undefined;
+
         if (currentQuestionIndex === currentQuiz.sorular.length - 1) {
             nextBtn.textContent = 'Quizi Bitir';
-            nextBtn.disabled = userAnswers[currentQuestionIndex] === undefined;
+            // Son soru cevaplanmışsa bitirilebilir, aksi halde buton devre dışı kalır
+            nextBtn.disabled = false; // Kullanıcı boş bırakıp bitirmek isteyebilir.
             nextBtn.onclick = finishQuiz;
         } else {
             nextBtn.textContent = 'Sonraki →';
@@ -491,42 +497,74 @@
         }
     }
     
+    // --- ÖNEMLİ DÜZELTME: Net Hesaplaması ve Firestore Kaydı ---
     function finishQuiz() {
-        if (userAnswers[currentQuestionIndex] === undefined) {
-             alert('Lütfen son soruyu cevaplayın.');
-             return;
-        }
-
         quizArea.classList.add('hidden');
         resultArea.classList.remove('hidden');
         
         let correctCount = 0;
-        answerReviewContainer.innerHTML = '<h3 class="text-xl font-semibold border-b pb-2 text-gray-700">Cevap İncelemesi:</h3>';
+        let wrongCountActual = 0; // Neti götürecek olan yanlışlar (Yanlış işaretlenen)
+        let emptyCount = 0;       // Neti götürmeyecek olan boşlar (İşaretlenmeyen)
         
+        // Doğru, Yanlış ve Boşları hesapla
         currentQuiz.sorular.forEach((question, index) => {
             const userAnswer = userAnswers[index];
-            const isCorrect = userAnswer === question.dogruCevap;
+            const isAnswered = userAnswer !== undefined && userAnswer !== null;
             
-            if (isCorrect) {
-                correctCount++;
+            if (isAnswered) {
+                const isCorrect = userAnswer === question.dogruCevap;
+                if (isCorrect) {
+                    correctCount++;
+                } else {
+                    wrongCountActual++; // Yanlış cevapları say
+                }
+            } else {
+                emptyCount++; // Boşları say
             }
             
+            // Cevap İnceleme kartı oluşturma
             const reviewItem = document.createElement('div');
-            reviewItem.className = `p-3 rounded-lg border-2 ${isCorrect ? 'border-emerald-500 bg-emerald-50' : 'border-red-500 bg-red-50'}`;
+            const isCorrect = userAnswer === question.dogruCevap; // Sadece renklendirme için
+
+            reviewItem.className = `p-3 rounded-lg border-2 ${isCorrect ? 'border-emerald-500 bg-emerald-50' : (isAnswered ? 'border-red-500 bg-red-50' : 'border-gray-400 bg-gray-100')}`;
             const formattedQuestionText = question.metin.replace(/\\n/g, '<br>');
 
             reviewItem.innerHTML = `
                 <p class="font-bold text-gray-800 mb-1">Soru ${index + 1}:</p>
                 <p class="whitespace-pre-line text-sm mb-2">${formattedQuestionText}</p>
-                <p class="text-sm">Senin Cevabın: <span class="font-bold ${isCorrect ? 'text-emerald-700' : 'text-red-700'}">${userAnswer || 'Boş'}</span></p>
+                <p class="text-sm">Senin Cevabın: <span class="font-bold ${isCorrect ? 'text-emerald-700' : (isAnswered ? 'text-red-700' : 'text-gray-700')}">${userAnswer || 'Boş'}</span></p>
                 <p class="text-sm">Doğru Cevap: <span class="font-bold text-emerald-700">${question.dogruCevap}</span></p>
             `;
             answerReviewContainer.appendChild(reviewItem);
         });
 
-        const wrongCount = currentQuiz.sorular.length - correctCount;
+        // LGS Net Hesaplama: Net = Doğru - (Yanlış / 3)
+        const netCount = (correctCount - (wrongCountActual / 3)).toFixed(2);
+        
+        // Ekranda gösterilen sonuçları güncelle
         correctCountDisplay.textContent = correctCount;
-        wrongCountDisplay.textContent = wrongCount;
+        wrongCountDisplay.textContent = wrongCountActual; 
+        emptyCountDisplay.textContent = emptyCount; // Boş sayısını göster
+        
+        // --- Sonuçları Firestore'a Kaydet ---
+        if (firebase.auth().currentUser) {
+            const db = firebase.firestore();
+            db.collection('turkceSonuclari').add({
+                userId: firebase.auth().currentUser.uid,
+                quizId: currentQuiz.id,
+                quizName: currentQuiz.konu,
+                total: currentQuiz.sorular.length,
+                correct: correctCount,
+                wrong: wrongCountActual, // Sadece neti götüren yanlışlar kaydedildi
+                empty: emptyCount,       // Boş sayısı kaydedildi
+                net: parseFloat(netCount), // Hesaplanan Net kaydedildi
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                console.log("Quiz sonucu Firestore'a kaydedildi!");
+            }).catch((error) => {
+                console.error("Quiz sonucu kaydedilirken hata oluştu: ", error);
+            });
+        }
     }
 
     // Baştan Başlat
