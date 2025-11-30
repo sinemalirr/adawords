@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Türkçe Flashcard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Kartın 3D Dönüşüm Stilleri */
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; min-height: 100vh; }
+        .flashcard {
+            width: 100%;
+            height: 320px; /* Kart Yüksekliği biraz artırıldı */
+            perspective: 1000px;
+            margin: 2rem auto;
+            cursor: pointer;
+        }
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            border-radius: 12px;
+        }
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px; /* Padding ayarlandı */
+            font-size: 1.1rem; /* Font boyutu optimize edildi */
+            text-align: center;
+            overflow-y: auto; /* Çok uzun metinler için kaydırma */
+        }
+        .flashcard-front {
+            background-color: #f0f9ff; /* Açık Mavi */
+            color: #1e40af; /* Koyu Mavi */
+            border: 4px solid #bfdbfe;
+        }
+        .flashcard-back {
+            background-color: #ecfdf5; /* Açık Yeşil */
+            color: #065f46; /* Koyu Yeşil */
+            transform: rotateY(180deg);
+            border: 4px solid #a7f3d0;
+        }
+        .category-tag {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: #f43f5e;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            z-index: 10;
+        }
+        .card-counter {
+             position: absolute;
+             bottom: 15px;
+             right: 15px;
+             font-size: 0.9rem;
+             color: #6b7280;
+        }
+        /* Markdown benzeri bold vurgular için stil */
+        strong {
+            color: #be123c; /* Vurgulu kısımlar kırmızı tonunda */
+            font-weight: 800;
+        }
+    </style>
+</head>
+<body>
+
+<div class="w-full max-w-4xl mx-auto p-6 md:p-10 bg-white shadow-xl rounded-xl mt-8">
+    <header class="pb-4 border-b border-gray-200 mb-6">
+        <a href="../turkce.html" class="text-rose-600 hover:text-rose-800 text-xl mb-4 inline-block">← Türkçe Ana Menü</a>
+        <h1 class="text-3xl font-extrabold text-gray-800">Türkçe Tüm Konular Flashcard</h1>
+        <p class="text-sm text-gray-500 mt-2">Kartı çevirmek için üzerine tıklayın. **Günlük seriniz** bu sayfada da devam etmektedir.</p>
+    </header>
+
+    <div class="flashcard" id="flashcard-container">
+        <div class="flashcard-inner">
+            <div class="flashcard-front">
+                <span class="category-tag" id="card-category-front">Giriş</span>
+                <p id="card-question" class="text-2xl font-semibold">Başlamak için "Başla" butonuna tıklayın.</p>
+                <span class="card-counter" id="card-counter-front">0 / 0</span>
+            </div>
+            <div class="flashcard-back">
+                <span class="category-tag" id="card-category-back">Giriş</span>
+                <p id="card-answer" class="text-xl font-medium">Cevap burada görünecek.</p>
+                <span class="card-counter" id="card-counter-back">0 / 0</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex justify-between items-center mt-6">
+        <button id="prev-card-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-150" disabled>
+            ← Önceki Kart
+        </button>
+        <button id="next-card-btn" class="bg-rose-500 hover:bg-rose-600 text-white font-bold py-2 px-4 rounded-lg transition duration-150">
+            Başla
+        </button>
+    </div>
+
+</div>
+
+<!-- SÜRE TAKİBİ İÇİN SCRİPTLER -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<!-- DİKKAT: Ana klasöre çıkış yolu ../js/ -->
+<script src="../js/firebase-init.js"></script>
+<script src="../js/sure-takip-turkce.js"></script> 
+
+<script>
+    // 1. FLASHCARD VERİLERİ (Dil Bilgisi + Yazım + Paragraf)
+    const turkceFlashcards = [
+        // --- I. DİL BİLGİSİ ve KELİME BİLGİSİ ---
+        {
+            kategori: "Kelime Bilgisi",
+            onYuz: "Kelimenin Anlamını Nasıl Bulmalıyım?",
+            arkaYuz: "Önce anlamını **tahmin et**, sonra TDK Güncel Türkçe Sözlük'ten **kontrol et**."
+        },
+        {
+            kategori: "Kelime Bilgisi",
+            onYuz: "Terim Anlam Nedir?",
+            arkaYuz: "Bir **bilim, sanat, spor** ya da meslek dalıyla ilgili özel kavramları karşılayan sözcüklerdir."
+        },
+        {
+            kategori: "Kelime Bilgisi",
+            onYuz: "Eş Sesli (Sesteş) Sözcüğün Mecaz Anlamdan Farkı Nedir?",
+            arkaYuz: "Sesteş sözcüklerin anlamları birbirinden **tamamen farklı** olmalıdır; bir sözcüğün mecaz anlamı, onun eş seslisi **değildir**."
+        },
+        {
+            kategori: "Kelime Bilgisi",
+            onYuz: "Eş Anlamlı Sözcükler Cümlede Nasıl Kullanılmalıdır?",
+            arkaYuz: "Eş anlamlı sözcükler bir cümlede **aynı görevle kullanılamaz**."
+        },
+        {
+            kategori: "Fiiller",
+            onYuz: "Çekimli Fiil Nedir?",
+            arkaYuz: "Fiil kök ya da gövdelerinin **kip ve kişi ekleri** almış hâline denir."
+        },
+        {
+            kategori: "Fiiller",
+            onYuz: "İş (Kılış) Fiilini Nasıl Ayırt Ederim?",
+            arkaYuz: "Fiilin gerçekleşmesi için **nesneye** ihtiyaç duyan (**Neyi? Kimi?** sorusuna cevap veren) fiildir."
+        },
+        {
+            kategori: "Fiiller",
+            onYuz: "Durum Fiilini Nasıl Ayırt Ederim?",
+            arkaYuz: "Öznenin **sürerlik** gösteren bir durumu için kullanılır ve **nesne almaz**. (Örn: oturmak, yatmak)."
+        },
+        {
+            kategori: "Fiiller",
+            onYuz: "Oluş Fiilini Nasıl Ayırt Ederim?",
+            arkaYuz: "Öznenin **iradesi dışında**, zamanla gerçekleşen ve bir durumdan başka bir duruma geçişi bildiren fiillerdir. (Örn: **yeşerir**, **büyümek**)."
+        },
+        {
+            kategori: "Fiiller",
+            onYuz: "Haber (Bildirme) Kiplerinin Temel Özelliği Nedir?",
+            arkaYuz: "Eklendikleri fiillere **zaman anlamı** katar (geçmiş, şimdiki, gelecek, geniş zaman)."
+        },
+        {
+            kategori: "Deyimler",
+            onYuz: "Deyimlerin Kalıplaşmış Özelliği Nedir?",
+            arkaYuz: "Deyimler, kelimelerinin yerleri **değiştirilemeyen** ve aralarına başka sözcükler **giremeyen** kalıplaşmış söz gruplarıdır."
+        },
+        
+        // --- II. YAZIM ve NOKTALAMA ---
+        {
+            kategori: "Noktalama",
+            onYuz: "Yay Ayraç (( )) Başlıca Görevleri Nelerdir?",
+            arkaYuz: "1. Cümledeki anlamı tamamlayan **ek bilgileri** verir. 2. Tiyatro eserlerinde konuşanın **hareketlerini** ve durumunu açıklar."
+        },
+        {
+            kategori: "Noktalama",
+            onYuz: "Alay/Küçümseme için Hangi İşaret Kullanılır?",
+            arkaYuz: "Sözden hemen sonra **yay ayraç içinde ünlem işareti (!)** kullanılır."
+        },
+        {
+            kategori: "Noktalama",
+            onYuz: "Kısa Çizgi (-) Hangi Yapısal Amaçla Kullanılır?",
+            arkaYuz: "**Sözcüklerin köklerini, gövdelerini ve eklerini** birbirinden ayırmak için kullanılır."
+        },
+        {
+            kategori: "Noktalama",
+            onYuz: "Üç Nokta (...) Ne Zaman İki Nokta Olarak Kullanılır?",
+            arkaYuz: "**Ünlem ve soru işaretlerinden sonra**, anlatımın kesik olduğunu göstermek için üç nokta yerine **iki nokta** konması yeterlidir."
+        },
+        {
+            kategori: "Yazım",
+            onYuz: "Kesme İşaretinin ( ' ) Kullanılmadığı Durumlar?",
+            arkaYuz: "**Kurum ve kuruluş adlarına** gelen çekim ekleri kesme işaretiyle **ayrılmaz**. (Örn: Yüksek Seçim Kurulu'nun yazımı yanlıştır)."
+        },
+
+        // --- III. PARAGRAF VE CÜMLEDE ANLAM ---
+        {
+            kategori: "Paragraf",
+            onYuz: "Ana Düşünce (Ana Fikir) Nedir?",
+            arkaYuz: "Yazarın metin aracılığıyla okuyucuya ulaştırmak istediği **temel mesajı** veya metinden çıkarılabilecek **en kapsamlı yargıdır**."
+        },
+        {
+            kategori: "Cümlede Anlam",
+            onYuz: "Örtülü Anlam Nasıl Tespit Edilir?",
+            arkaYuz: "Cümlede doğrudan söylenmeyen ancak cümlenin bütününden veya **'artık'** gibi kelimelerden çıkarılabilen **gizli anlamdır**."
+        },
+        {
+            kategori: "Cümlede Anlam",
+            onYuz: "Nesnel Yargı Nedir?",
+            arkaYuz: "Doğruluğu tartışılmayan, **kişisel duygu ve düşünce içermeyen**, belgelenip kanıtlanabilen düşüncelerdir."
+        },
+        {
+            kategori: "Cümlede Anlam",
+            onYuz: "Neden-Sonuç Cümlesini Nasıl Ayırt Ederim?",
+            arkaYuz: "Eylemin hangi gerekçeyle yapıldığı cevabını içerir. Yükleme sorulan **'Neden? / Niçin?'** sorularına cevap alınır."
+        },
+        {
+            kategori: "Cümlede Anlam",
+            onYuz: "Amaç-Sonuç Cümlesini Nasıl Ayırt Ederim?",
+            arkaYuz: "Amaç-sonuç ilişkisinde eylemin **hangi amaca yönelik** yapıldığı ifade edilir."
+        },
+        {
+            kategori: "Anlatım Biçimleri",
+            onYuz: "Betimleme (Tasvir Etme) Nedir?",
+            arkaYuz: "Yazarın gördüklerini **okuyucunun gözünde canlanacak şekilde**, ayırıcı özelliklerini kullanarak anlatmasıdır."
+        },
+        {
+            kategori: "Söz Sanatları",
+            onYuz: "Benzetme (Teşbih) Sanatının Tespiti:",
+            arkaYuz: "Bir varlığı, kavramı veya nesneyi başka bir varlığın özellikleriyle **kıyaslayarak** ortaya koymaktır."
+        },
+        {
+            kategori: "Söz Sanatları",
+            onYuz: "Kişileştirme (Teşhis) Sanatının Tespiti:",
+            arkaYuz: "**İnsana özgü özelliklerin** (düşünme, ağlama, sevinme) insan dışındaki varlıklara verilmesidir."
+        },
+        {
+            kategori: "Anlatıcı",
+            onYuz: "Öyküleme Kaçıncı Kişi Ağzından Anlatılır?",
+            arkaYuz: "**Birinci kişi** (yazar kahraman, 'ben/biz') veya **üçüncü kişi** (yazar gözlemci, 'o/onlar') ağzından yapılabilir."
+        },
+        {
+            kategori: "Metin Türleri",
+            onYuz: "Düşünce Yazıları Hangi Türleri Kapsar?",
+            arkaYuz: "**Deneme** (öznel fikirler) ve **Söyleşi/Sohbet** (okuyucuya hitap eden samimi dil) gibi türlerdir."
+        }
+    ];
+
+    // 2. DOM ELEMENTLERİ
+    const flashcardContainer = document.getElementById('flashcard-container');
+    const cardQuestion = document.getElementById('card-question');
+    const cardAnswer = document.getElementById('card-answer');
+    const cardCategoryFront = document.getElementById('card-category-front');
+    const cardCategoryBack = document.getElementById('card-category-back');
+    const cardCounterFront = document.getElementById('card-counter-front');
+    const cardCounterBack = document.getElementById('card-counter-back');
+    const nextCardBtn = document.getElementById('next-card-btn');
+    const prevCardBtn = document.getElementById('prev-card-btn');
+    const totalCards = turkceFlashcards.length;
+
+    let currentCardIndex = -1;
+    let shuffledCards = [];
+
+    // 3. İŞLEVLER
+
+    // Kartları karıştır
+    function shuffleCards(array) {
+        let shuffled = array.slice();
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+
+    // Metni formatla (Markdown benzeri **bold** işlemi)
+    function formatText(text) {
+        return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    }
+
+    // Kartı göster
+    function displayCard(index) {
+        if (index >= 0 && index < totalCards) {
+            const card = shuffledCards[index];
+            
+            cardQuestion.innerHTML = formatText(card.onYuz);
+            cardAnswer.innerHTML = formatText(card.arkaYuz);
+            
+            cardCategoryFront.textContent = card.kategori;
+            cardCategoryBack.textContent = card.kategori;
+            
+            // Kategori renklerini ayarla
+            const categoryColors = {
+                'Kelime Bilgisi': 'bg-blue-500',
+                'Fiiller': 'bg-indigo-500',
+                'Noktalama': 'bg-purple-500',
+                'Paragraf': 'bg-emerald-600',
+                'Cümlede Anlam': 'bg-teal-600',
+                'Anlatım Biçimleri': 'bg-orange-500',
+                'Söz Sanatları': 'bg-pink-500'
+            };
+            
+            // Renk sınıfını uygula (varsayılan kırmızı)
+            const colorClass = categoryColors[card.kategori] || 'bg-rose-500';
+            
+            // Önceki renkleri temizle
+            cardCategoryFront.className = `category-tag ${colorClass}`;
+            cardCategoryBack.className = `category-tag ${colorClass}`;
+
+            const counterText = `${index + 1} / ${totalCards}`;
+            cardCounterFront.textContent = counterText;
+            cardCounterBack.textContent = counterText;
+
+            // Flip durumunu sıfırla
+            flashcardContainer.classList.remove('flipped');
+            currentCardIndex = index;
+        }
+        updateButtonState();
+    }
+    
+    // Buton durumlarını güncelle
+    function updateButtonState() {
+        prevCardBtn.disabled = currentCardIndex <= 0;
+        
+        if (currentCardIndex === -1) {
+             nextCardBtn.textContent = "Başla";
+        } else if (currentCardIndex === totalCards - 1) {
+             nextCardBtn.textContent = "Baştan Başla (Karıştır)";
+        } else {
+             nextCardBtn.textContent = "Yeni Kart →";
+        }
+    }
+
+    // Sonraki kartı göster
+    function nextCard() {
+        if (currentCardIndex === -1) {
+            shuffledCards = shuffleCards(turkceFlashcards); // Karıştır
+            displayCard(0); // İlk kartı göster
+        }
+        else if (currentCardIndex < totalCards - 1) {
+            displayCard(currentCardIndex + 1);
+        } else {
+            shuffledCards = shuffleCards(turkceFlashcards);
+            displayCard(0);
+        }
+    }
+
+    // Önceki kartı göster
+    function prevCard() {
+        if (currentCardIndex > 0) {
+            displayCard(currentCardIndex - 1);
+        }
+    }
+
+    // Kartı çevir (flip)
+    flashcardContainer.addEventListener('click', () => {
+        if (currentCardIndex !== -1) {
+            flashcardContainer.classList.toggle('flipped');
+        }
+    });
+
+    // Buton olayları
+    nextCardBtn.addEventListener('click', nextCard);
+    prevCardBtn.addEventListener('click', prevCard);
+
+    // Uygulamayı Başlat
+    updateButtonState(); 
+</script>
+
+</body>
+</html>
