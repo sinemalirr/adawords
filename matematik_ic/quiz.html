@@ -481,7 +481,6 @@
         let quizzesToDisplay = [];
         let headerText = 'Test Seçimi';
         
-        // Hata alınan kısım artık aynı script bloğu içinde olduğu için ReferenceError çözüldü.
         if (groupFilter === 'deneme') {
             quizzesToDisplay = matematikDenemeler;
             headerText = '🏆 Deneme Sınavları (Tarama Testleri)';
@@ -516,7 +515,6 @@
 
     // --- QUIZ AKIŞI FONKSİYONLARI ---
     function startQuiz(quizId) {
-        // tumMatematikQuizler dizisini her iki diziyi de içerdiği için kullanıyoruz.
         currentQuiz = tumMatematikQuizler.find(q => q.id === quizId);
         currentQuestionIndex = 0;
         userAnswers = {};
