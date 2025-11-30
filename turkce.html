@@ -104,80 +104,134 @@
 <script src="js/sure-takip-turkce.js"></script>
 
 <script>
-    // Gerçek uygulamada, bu fonksiyonun Firebase'den (Firestore) kullanıcıya ait
-    // deneme sınavı sonuçlarını (Doğru, Yanlış, Net sayıları) çekmesi gerekir.
-    // Şimdilik, grafik yapısını göstermek için TAHMİNİ/örnek veriler kullanacağız.
-    function getAnalysisData() {
-        // Örnek: Üç deneme sınavının sonuçları
-        return {
-            labels: ['Deneme 11', 'Deneme 12', 'Deneme 13'], // X ekseni etiketleri
-            correct: [18, 15, 20],    // Doğru sayısı (Bar)
-            wrong: [2, 5, 0],         // Yanlış sayısı (Bar)
-            nets: [17.33, 13.33, 20]  // Net sayısı (Çizgi) - LGS kuralı: D - Y/3
-        };
-    }
+    // Kullanıcı girişini ve kimlik doğrulama durumunu bekleyelim
+    firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+            // Kullanıcı oturum açtıysa grafiği yükle
+            renderLgsChart(user.uid);
+        } else {
+            // Kullanıcı oturum açmadıysa, grafik alanına bilgilendirme mesajı yaz
+            const ctx = document.getElementById('lgsGrafik').getContext('2d');
+            // Canvas üzerinde mesaj göstermek için basit bir çözüm
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.fillStyle = '#6b7280'; // gray-500
+            ctx.font = "14px Inter";
+            ctx.fillText("Grafiği görmek için lütfen giriş yapın.", 10, 50);
+        }
+    });
 
-    function renderLgsChart() {
-        const data = getAnalysisData();
-        const ctx = document.getElementById('lgsGrafik').getContext('2d');
+    /**
+     * Firestore'dan sonuçları çeker ve grafiği çizer.
+     * Artık hem Konu Quizlerini (ID < 11) hem de Denemeleri (ID >= 11) içerir.
+     * @param {string} userId - Firestore'da sorgulama için kullanılan kullanıcı ID'si.
+     */
+    async function renderLgsChart(userId) {
+        const db = firebase.firestore();
+        const results = [];
+        const totalMaxQuestions = 20; // Türkçe 20 soru varsayımı
 
-        new Chart(ctx, {
-            type: 'bar', // Ana görünüm çubuk grafik
-            data: {
-                labels: data.labels,
-                datasets: [{
-                    label: 'Doğru Sayısı',
-                    data: data.correct,
-                    backgroundColor: 'rgba(52, 211, 153, 0.7)', // Zümrüt Yeşili
-                    borderColor: 'rgba(52, 211, 153, 1)',
-                    borderWidth: 1
-                }, {
-                    label: 'Yanlış Sayısı',
-                    data: data.wrong,
-                    backgroundColor: 'rgba(248, 113, 113, 0.7)', // Kırmızı
-                    borderColor: 'rgba(248, 113, 113, 1)',
-                    borderWidth: 1
-                }, {
-                    type: 'line', // Netleri çizgi grafik olarak üstte göster
-                    label: 'Net Sayısı',
-                    data: data.nets,
-                    borderColor: 'rgb(244, 72, 186)', // Gül rengi
-                    backgroundColor: 'rgb(244, 72, 186)',
-                    fill: false,
-                    yAxisID: 'y1' // İkinci Y ekseni kullan
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { position: 'top' },
-                    title: {
-                        display: true,
-                        text: 'Türkçe Deneme Sınavları Başarı Grafiği'
-                    }
+        try {
+            // QUIZID FİLTRESİ KALDIRILDI: Kullanıcıya ait tüm quiz sonuçlarını çekiyoruz.
+            const snapshot = await db.collection('turkceSonuclari')
+                .where('userId', '==', userId)
+                .orderBy('timestamp', 'asc') // Tarihe göre sırala
+                .get();
+
+            snapshot.forEach(doc => {
+                results.push(doc.data());
+            });
+
+            const ctx = document.getElementById('lgsGrafik').getContext('2d');
+            
+            if (results.length === 0) {
+                // Sonuç yoksa bilgilendir
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.fillStyle = '#6b7280';
+                ctx.font = "14px Inter";
+                ctx.fillText("Henüz tamamlanmış test sonucu bulunmamaktadır.", 10, 50);
+                return;
+            }
+
+            // --- Grafik Verilerini Hazırlama ---
+            const labels = results.map(r => {
+                const prefix = r.quizId >= 11 ? 'DENEME ' : 'KONU ';
+                return prefix + r.quizId; 
+            });
+            const correct = results.map(r => r.correct);
+            const wrong = results.map(r => r.wrong);         
+            const nets = results.map(r => r.net); 
+
+            // --- Chart.js Grafiği Oluşturma ---
+            new Chart(ctx, {
+                type: 'bar', 
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Doğru Sayısı',
+                        data: correct,
+                        backgroundColor: 'rgba(52, 211, 153, 0.7)', // Zümrüt Yeşili
+                        borderColor: 'rgba(52, 211, 153, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Yanlış Sayısı',
+                        data: wrong,
+                        backgroundColor: 'rgba(248, 113, 113, 0.7)', // Kırmızı
+                        borderColor: 'rgba(248, 113, 113, 1)',
+                        borderWidth: 1
+                    }, {
+                        type: 'line', 
+                        label: 'Net Sayısı',
+                        data: nets,
+                        borderColor: 'rgb(244, 72, 186)', // Gül rengi
+                        backgroundColor: 'rgb(244, 72, 186)',
+                        fill: false,
+                        yAxisID: 'y1' 
+                    }]
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 20, // Türkçe 20 soru varsayımıyla
-                        title: { display: true, text: 'Soru Sayısı (Doğru/Yanlış)' }
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        title: {
+                            display: true,
+                            text: 'Türkçe Tüm Testler Başarı Grafiği'
+                        }
                     },
-                    y1: { 
-                        type: 'linear',
-                        display: true,
-                        position: 'right', // Sağ tarafta göster
-                        grid: { drawOnChartArea: false },
-                        title: { display: true, text: 'Net Sayısı' },
-                        min: 0,
-                        max: 20
+                    scales: {
+                        x: {
+                            // Konu/Deneme etiketleri uzun olabileceğinden eksen metinlerini 90 derece döndür
+                            ticks: {
+                                maxRotation: 90,
+                                minRotation: 90
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: totalMaxQuestions,
+                            title: { display: true, text: 'Soru Sayısı (Doğru/Yanlış)' }
+                        },
+                        y1: { 
+                            type: 'linear',
+                            display: true,
+                            position: 'right', 
+                            grid: { drawOnChartArea: false },
+                            title: { display: true, text: 'Net Sayısı' },
+                            min: 0,
+                            max: totalMaxQuestions
+                        }
                     }
                 }
-            }
-        });
-    }
+            });
 
-    // Sayfa yüklendiğinde grafiği çiz
-    document.addEventListener('DOMContentLoaded', renderLgsChart);
+        } catch (error) {
+            console.error("Grafik verisi çekilirken hata oluştu:", error);
+            const ctx = document.getElementById('lgsGrafik').getContext('2d');
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.fillStyle = '#ef4444'; // red-500
+            ctx.font = "14px Inter";
+            ctx.fillText("Veri yüklenirken bir hata oluştu.", 10, 50);
+        }
+    }
 </script>
 
 </body>
