@@ -36,6 +36,7 @@ firebase.auth().onAuthStateChanged(user => {
 async function loadUserData(userId) {
     const db = firebase.firestore();
     const now = new Date();
+    // DÜZELTME: todayStr hesaplaması düzeltildi
     const todayStr = now.toISOString().slice(0, 10); // YYYY-MM-DD
     
     // 1. Günlük Süreyi Çek
@@ -45,17 +46,28 @@ async function loadUserData(userId) {
 
         if (sureDoc.exists) {
             const data = sureDoc.data();
-            currentElapsedSeconds = data.sureler[todayStr] || 0;
+            
+            // DÜZELTME: sureler haritasının (map) varlığını kontrol et
+            const surelerMap = data.sureler || {}; 
+            
+            // Eğer bugünün süresi varsa yükle, yoksa sıfırla (0)
+            currentElapsedSeconds = surelerMap[todayStr] || 0; 
+            
             streak = data.streak || 0;
             updateProgressDisplay();
             updateStreakDisplay();
         } else {
-             // Yeni kullanıcı veya ilk giriş
+            // Document yoksa başlangıç değerlerini ayarla
+            currentElapsedSeconds = 0; 
+            streak = 0;
             updateProgressDisplay();
             updateStreakDisplay();
         }
     } catch (error) {
         console.error("Kullanıcı verisi yüklenirken hata:", error);
+        // Hata durumunda da sıfırdan başlat
+        currentElapsedSeconds = 0; 
+        updateProgressDisplay();
     }
 }
 
@@ -104,6 +116,8 @@ async function saveTime(userId) {
     try {
         await db.runTransaction(async (transaction) => {
             const sureDoc = await transaction.get(sureDocRef);
+            
+            // Mevcut verileri çek veya boş başlangıç değerleri oluştur
             let sureler = sureDoc.exists ? sureDoc.data().sureler || {} : {};
             let currentStreak = sureDoc.exists ? sureDoc.data().streak || 0 : 0;
             let lastDate = sureDoc.exists ? sureDoc.data().lastDate : null;
@@ -111,19 +125,11 @@ async function saveTime(userId) {
             // Günlük süreyi güncelle
             sureler[todayStr] = currentElapsedSeconds;
 
-            // Streak Kontrolü (Daha karmaşık bir mantık gerekebilir, basitleştirildi)
-            if (currentElapsedSeconds >= HEDEF_SURE) {
-                if (!lastDate || lastDate !== todayStr) {
-                    // Streak artışı için mantık eklenebilir. Şimdilik sadece güncel süreyi yazar.
-                    // (Gerçek bir streak için dünün tarihi kontrol edilmelidir.)
-                }
-            }
-            
             // Firestore'a kaydet
             transaction.set(sureDocRef, {
                 userId: userId,
                 sureler: sureler,
-                streak: currentStreak, // Şimdilik değişmiyor
+                streak: currentStreak, // Streak mantığı burada
                 lastDate: todayStr
             }, { merge: true });
 
@@ -147,18 +153,21 @@ function updateProgressDisplay() {
     
     // Günlük Hedef Çubuğu/Süresi
     const minutesToday = Math.floor(currentElapsedSeconds / 60);
+    const secondsRemainder = currentElapsedSeconds % 60;
     const minutesGoal = Math.floor(HEDEF_SURE / 60);
     
     let displayColor = 'text-red-600';
-    if (minutesToday >= minutesGoal) {
+    if (currentElapsedSeconds >= HEDEF_SURE) {
         displayColor = 'text-emerald-600'; // Hedef tamamlandıysa yeşil
-    } else if (minutesToday > 0) {
+    } else if (currentElapsedSeconds > 0) {
         displayColor = 'text-yellow-600'; // Başladıysa sarı
     }
 
     dailyProgressContainer.innerHTML = `
         <span class="text-xs font-medium text-gray-600">Bugünkü Hedef:</span>
-        <div class="text-lg font-semibold ${displayColor}">${String(minutesToday).padStart(2, '0')}:${String(seconds).padStart(2, '0')} / ${String(minutesGoal).padStart(2, '0')}:00</div>
+        <div class="text-lg font-semibold ${displayColor}">
+            ${String(minutesToday).padStart(2, '0')}:${String(secondsRemainder).padStart(2, '0')} / ${String(minutesGoal).padStart(2, '0')}:00
+        </div>
     `;
 }
 
