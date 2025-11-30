@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ders Seçimi - Ada Dersler</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* index.html'den stil değişkenlerini ve buton stilini kopyalıyoruz */
+        :root {
+            --primary-blue: #2563EB;
+            --secondary-rose: #E11D48;
+        }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #EFF6FF;
+            min-height: 100vh;
+        }
+        .ders-karti {
+             box-shadow: 0 6px 0 0 rgba(0, 0, 0, 0.2);
+             transition: transform 0.1s, box-shadow 0.1s;
+        }
+        .ders-karti:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 0 rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+<div class="w-full max-w-5xl mx-auto p-6 md:p-10">
+    <header class="flex justify-between items-center mb-10">
+        <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight">📚 Ders Seçimi</h1>
+        <div class="flex items-center space-x-4">
+            <span id="user-info" class="text-gray-600 font-medium text-lg"></span>
+            <button id="logout-btn" class="p-2 bg-rose-600 text-white rounded-lg font-semibold hover:bg-rose-700 transition duration-150">Çıkış Yap</button>
+        </div>
+    </header>
+    
+    <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <a href="turkce.html" class="ders-karti bg-rose-600 hover:bg-rose-700 active:bg-rose-800 p-6 text-white rounded-xl text-center cursor-pointer">
+            <div class="text-5xl mb-2">🇹🇷</div>
+            <h2 class="text-2xl font-bold">TÜRKÇE</h2>
+            <p class="text-sm opacity-80 mt-1">Dilbilgisi & Paragraf</p>
+        </a>
+
+        <a href="matematik.html" class="ders-karti bg-blue-600 hover:bg-blue-700 active:bg-blue-800 p-6 text-white rounded-xl text-center cursor-pointer">
+            <div class="text-5xl mb-2">📐</div>
+            <h2 class="text-2xl font-bold">MATEMATİK</h2>
+            <p class="text-sm opacity-80 mt-1">Sayısal Taktikler</p>
+        </a>
+
+        <a href="fen.html" class="ders-karti bg-green-600 hover:bg-green-700 active:bg-green-700 p-6 text-white rounded-xl text-center cursor-pointer">
+            <div class="text-5xl mb-2">🔬</div>
+            <h2 class="text-2xl font-bold">FEN BİLİMLERİ</h2>
+            <p class="text-sm opacity-80 mt-1">Deneyler & Konular</p>
+        </a>
+
+        <a href="sosyal.html" class="ders-karti bg-amber-600 hover:bg-amber-700 active:bg-amber-800 p-6 text-white rounded-xl text-center cursor-pointer">
+            <div class="text-5xl mb-2">🌍</div>
+            <h2 class="text-2xl font-bold">SOSYAL</h2>
+            <p class="text-sm opacity-80 mt-1">Hafıza Teknikleri</p>
+        </a>
+    </main>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-init.js"></script>
+<script>
+    // dersler.html için özel JavaScript
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            // Kullanıcı oturum açmışsa
+            document.getElementById('user-info').textContent = user.email;
+        } else {
+            // Oturum açmamışsa giriş sayfasına yönlendir
+            window.location.href = 'index.html';
+        }
+    });
+
+    document.getElementById('logout-btn').addEventListener('click', () => {
+        auth.signOut().then(() => {
+            // Çıkış yapıldıktan sonra giriş sayfasına yönlendir
+            window.location.href = 'index.html';
+        }).catch((error) => {
+            alert("Çıkış yapılırken bir hata oluştu: " + error.message);
+        });
+    });
+</script>
+</body>
+</html>
