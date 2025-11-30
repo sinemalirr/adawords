@@ -39,14 +39,21 @@ function updateDailyProgressUI() {
     // Yüzde hesaplama
     let progressPercent = Math.min(100, (bugunCalisilanSure / MIN_SURE_SERI_SAYACI) * 100);
     
-    // UI Güncelleme
+    // UI Güncelleme: Hedef süresini ve ilerleme çubuğunu gösterir
     dailyProgressContainer.innerHTML = `
-        <span class="font-semibold">${formatTime(bugunCalisilanSure)} / 15:00</span>
-        <div class="h-2 bg-gray-200 rounded-full mt-1 overflow-hidden">
+        <div class="flex items-center space-x-2">
+            <span class="text-xs font-medium text-gray-600">Bugünkü Hedef:</span>
+            <div class="text-lg font-semibold text-green-600">${formatTime(bugunCalisilanSure)} / 15:00</div>
+        </div>
+        <div class="h-1.5 bg-gray-200 rounded-full w-24 overflow-hidden ml-4" title="Hedefe Kalan: ${100 - progressPercent}%">
             <div class="h-full bg-green-500 transition-all duration-500" style="width: ${progressPercent}%;"></div>
         </div>
-        <p class="text-xs text-gray-500 mt-1">${isStreakCompletedToday ? '✅ Bugünün Serisi Tamamlandı!' : 'Günlük 15 Dakika Hedefi'}</p>
     `;
+    
+    // Not: Hedef tamamlandıysa uyarı vermek için küçük bir emoji eklenebilir.
+    if (isStreakCompletedToday && bugunCalisilanSure >= MIN_SURE_SERI_SAYACI) {
+        dailyProgressContainer.querySelector('.text-green-600').textContent += ' ✅';
+
 }
 
 // 2. Seri (Streak) Kontrolü
