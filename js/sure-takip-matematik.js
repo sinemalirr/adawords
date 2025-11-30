@@ -6,9 +6,10 @@
 const DERS_ADI = "matematik";
 // KRİTİK EŞİK: Günlük 15 dakika = 900 saniye
 const MIN_SURE_SERI_SAYACI = 15 * 60; 
-// Not: Firestore'da bu veriler 'matematikSureleri' koleksiyonuna kaydedilir.
-const DERS_TAKIP_COLLECTION = 'matematikSureleri'; 
+// 🔥 DÜZELTME: Tanımlama hatasını çözmek için benzersiz isim kullanıldı.
+const MATEMATIK_SURE_COLLECTION = 'matematikSureleri'; 
 
+// DOM Elementleri
 const sureSayacElementi = document.getElementById('sure-sayac');
 const userEmailDisplay = document.getElementById('user-email-display');
 const streakContainer = document.getElementById('streak-container'); 
@@ -40,10 +41,8 @@ function formatTime(saniye) {
 function updateDailyProgressUI() {
     if (!dailyProgressContainer) return;
     
-    // Yüzde hesaplama
     let progressPercent = Math.min(100, (bugunCalisilanSure / MIN_SURE_SERI_SAYACI) * 100);
     
-    // Rengi dinamik olarak belirle
     let timeDisplayColor = 'text-red-600';
     if (bugunCalisilanSure >= MIN_SURE_SERI_SAYACI) {
         timeDisplayColor = 'text-green-600';
@@ -51,7 +50,6 @@ function updateDailyProgressUI() {
         timeDisplayColor = 'text-yellow-600';
     }
 
-    // UI Güncelleme: Hedef süresini ve ilerleme çubuğunu gösterir
     dailyProgressContainer.innerHTML = `
         <span class="text-xs font-medium text-gray-600">Bugünkü Hedef:</span>
         <div class="text-lg font-semibold ${timeDisplayColor}">
@@ -62,7 +60,6 @@ function updateDailyProgressUI() {
         </div>
     `;
     
-    // Hedef tamamlandıysa onay emojisi ekle (Türkçe kodunuzdan alındı)
     if (isStreakCompletedToday && bugunCalisilanSure >= MIN_SURE_SERI_SAYACI) {
          const div = dailyProgressContainer.querySelector(`.${timeDisplayColor}`);
          if (div) div.textContent += ' ✅';
@@ -77,65 +74,58 @@ function checkStreak(data) {
     // Firebase'den verileri çek
     mevcutSeri = data[`${DERS_ADI}_streak`] || 0;
     lastStudyDate = data[`${DERS_ADI}_last_study_date`] || '';
+    
+    // Bugüne ait süreyi Firebase'den çek, eğer bugün çalışılmadıysa 0'dan başlar
     bugunCalisilanSure = data[`${DERS_ADI}_daily_time`] || 0;
     
     // Bugünkü tarih dünden farklıysa (seri kırılmış/devam ediyor olabilir)
     if (lastStudyDate !== today) {
         
-        // Dünün tarihini ISO formatında al
         const yesterday = new Date(Date.now() - YESTERDAY_MS).toISOString().slice(0, 10);
         
-        // Eğer dün çalışılmadıysa ve dün de son çalışma günü değilse, seriyi sıfırla
         if (lastStudyDate !== yesterday) {
              mevcutSeri = 0; // Seri kırıldı
         }
         
-        isStreakCompletedToday = false; // Bugün daha tamamlanmadı
-        bugunCalisilanSure = 0; // Yeni gün, sayaç sıfırdan başlar
+        isStreakCompletedToday = false; 
+        bugunCalisilanSure = 0; // Yeni gün için sıfırdan başla
     } else {
-         // Son çalışma günü bugün ise, seri zaten sayılmış demektir.
+         // Son çalışma günü bugün ise
         isStreakCompletedToday = true;
     }
     
-    // UI'ı seriyi göstermek üzere güncelle
     if (streakContainer) streakContainer.textContent = `${mevcutSeri} Gün`;
-    // Ödül bölümü kaldırıldı, ihtiyaca göre eklenebilir.
-    
     updateDailyProgressUI();
 }
 
 
 // 3. Firebase'e Kayıt Fonksiyonu
 function sureyiFirebaseKaydet() {
-    // Firestore'da 'matematikSureleri' koleksiyonunu kullanıyoruz
     if (!firebase.auth().currentUser) return; 
 
     const auth = firebase.auth();
     const db = firebase.firestore();
 
     const userID = auth.currentUser.uid;
-    const dersRef = db.collection(DERS_TAKIP_COLLECTION).doc(userID);
+    // 🔥 DÜZELTME KULLANIMI: Benzersiz koleksiyon adı kullanıldı.
+    const dersRef = db.collection(MATEMATIK_SURE_COLLECTION).doc(userID);
     const today = getTodayDateString();
     
     let updateData = {
-        [`${DERS_ADI}_sure`]: toplamSureSaniye, // Toplam süreyi kaydet (kalıcı)
-        [`${DERS_ADI}_daily_time`]: bugunCalisilanSure // Bugün çalışılan toplam süreyi kaydet
+        [`${DERS_ADI}_sure`]: toplamSureSaniye, 
+        [`${DERS_ADI}_daily_time`]: bugunCalisilanSure 
     };
     
     // KRİTİK KONTROL: Eğer bugün 15 dakikalık eşik geçildiyse VE daha önce sayılmadıysa
     if (bugunCalisilanSure >= MIN_SURE_SERI_SAYACI && !isStreakCompletedToday) {
         
-        // Seriyi artır
         mevcutSeri += 1;
         
-        // Kayıt verilerini güncelle
         updateData[`${DERS_ADI}_streak`] = mevcutSeri;
         updateData[`${DERS_ADI}_last_study_date`] = today;
         
-        // Bayrağı güncelle (Bu sayım bir daha yapılmasın)
         isStreakCompletedToday = true;
         
-        // Arayüzü güncelle
         if (streakContainer) streakContainer.textContent = `${mevcutSeri} Gün`;
     }
     
@@ -156,7 +146,6 @@ function sayaciBaslat() {
     timerInterval = setInterval(() => {
         toplamSureSaniye += 1;
         
-        // Sadece bugün seri tamamlanmadıysa, bugünkü süreyi artır.
         if (!isStreakCompletedToday) {
             bugunCalisilanSure += 1;
         }
@@ -165,7 +154,7 @@ function sayaciBaslat() {
             sureSayacElementi.textContent = formatTime(toplamSureSaniye);
         }
         
-        // Her 10 saniyede bir kaydet (Türkçe kodunuzdan alındı)
+        // Her 10 saniyede bir kaydet
         if (toplamSureSaniye % 10 === 0) {
             sureyiFirebaseKaydet();
         }
@@ -182,12 +171,13 @@ firebase.auth().onAuthStateChanged(user => {
     
     const userID = user.uid;
     if (userEmailDisplay) {
-        userEmailDisplay.textContent = `${user.email}`; // E-posta gösterimi
+        userEmailDisplay.textContent = `${user.email}`; 
     }
     
     const db = firebase.firestore();
 
-    db.collection(DERS_TAKIP_COLLECTION).doc(userID).get()
+    // 🔥 DÜZELTME KULLANIMI: Benzersiz koleksiyon adı kullanıldı.
+    db.collection(MATEMATIK_SURE_COLLECTION).doc(userID).get()
         .then(doc => {
             const data = doc.exists ? doc.data() : {};
             
@@ -205,6 +195,11 @@ firebase.auth().onAuthStateChanged(user => {
         })
         .catch((error) => {
             console.error("Veri yüklenirken kritik hata:", error);
+            // Hata durumunda da sayacı sıfırdan başlatmayı dene (en azından sayar)
+            toplamSureSaniye = 0;
+            bugunCalisilanSure = 0;
+            checkStreak({});
+            sayaciBaslat(); 
         });
 });
 
