@@ -39,12 +39,12 @@
 <div class="w-full max-w-4xl mx-auto p-6 md:p-10 mt-8">
     <header class="pb-4 border-b border-gray-200 mb-6">
         <a href="../turkce.html" class="text-rose-600 hover:text-rose-800 text-xl mb-4 inline-block">← Türkçe Ana Menü</a>
-        <h1 class="text-3xl font-extrabold text-gray-800">Türkçe Quiz ve Testler 📝</h1>
+        <h1 class="text-3xl font-extrabold text-gray-800 tracking-tight">Türkçe Quiz ve Testler 📝</h1>
         <p class="text-sm text-gray-500 mt-2">Aşağıdan bir test seçin ve kendinizi deneyin.</p>
     </header>
 
     <div id="quiz-selection-area" class="quiz-card mb-8">
-        <h2 class="text-2xl font-semibold mb-4 text-gray-700">Test Seçimi</h2>
+        <h2 id="list-title" class="text-2xl font-semibold mb-4 text-gray-700">Test Seçimi</h2>
         <div id="quiz-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
             </div>
     </div>
@@ -92,902 +92,260 @@
 <script src="../js/sure-takip-turkce.js"></script> 
 
 <script>
-    // 1. QUIZ VERİLERİ (Tüm 13 test burada tanımlanmıştır)
-    const turkceQuizler = [
+    // ====================================================================
+    // 1. QUIZ VERİLERİ (KONU BAZLI VE DENEME OLARAK KESİN AYRILMIŞTIR)
+    // ====================================================================
+
+    // A) KONU BAZLI QUIZLER (ID 1-10)
+    const konuBazliQuizler = [
         // Quiz-1: Sözcükte Anlam
         {
             id: 1,
             konu: "Sözcükte Anlam (Gerçek, Mecaz, Deyim, Zıt)",
             sorular: [
-                {
-                    metin: '"Kasa" sözcüğü aşağıdaki cümlelerin hangi ikisinde aynı anlamda kullanılmıştır?\\n1. Kasadan önemli belgeleri çıkardı.\\n2. Meyveleri kasalara yerleştirdik.\\n3. Kamyonun kasa-sında yolculuk yaptık.\\n4. Babam parasını kasaya koydu.',
-                    cevaplar: { A: "1 ve 2", B: "2 ve 3", C: "2 ve 4", D: "3 ve 4" },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '“Sarmak” sözcüğü aşağıdaki cümlelerin hangisinde **mecaz** anlamda kullanılmıştır?',
-                    cevaplar: { A: "Annem, küçük kardeşimi kundağa sardı.", B: "Bu dizi film beni çok sardı.", C: "Kedimin dolaştığı ipi çözüp sardım.", D: "Akşamleyin bir kilo yaprak sardık." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki sözcüklerden hangileri eşleştirildiği kavramla ilgili **değildir**?',
-                    cevaplar: { A: "gitar - beste (müzik)", B: "seksek - körebe (çocuk oyunu)", C: "çekiç - çivi (resim)", D: "kamyon - minibüs (taşıt)" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: '“Can” sözcüğü numaralanmış cümlelerin hangisinde **deyim içinde kullanılmamıştır**?\\n1. Üzümlü kek olsa da yesek, canım çekti.\\n2. Canımı dişime takıp bu sınavı kazanacağım.\\n3. Bu konuyu can kulağıyla dinledim.\\n4. Bizim evde beş can, geçinip gidiyoruz.',
-                    cevaplar: { A: "1", B: "2", C: "3", D: "4" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde yer alan altı çizili sözcük **terim anlamıyla kullanılmamıştır**?',
-                    cevaplar: { A: "Hikâye, romandan daha kısa bir **türdür**.", B: "Dinen yasak olan şeylere **haram** denir.", C: "Küresel ısınma nedeniyle **iklim** değişiklikleri yaşanıyor.", D: "Ders kitaplarının çoğu **büyük** boy basılmıştır." },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '“Boş” sözcüğü aşağıdaki cümlelerin hangisinde “İçi meyve **dolu** tabağı önümüze koydu.” cümlesindeki “dolu” sözcüğün **karşıt anlamlısı** olarak kullanılmıştır?',
-                    cevaplar: { A: "Annem, **boş** oturma, bana yardım et, dedi.", B: "Düşünceleri o kadar **boş**tu ki anlam veremedik.", C: "Kasadaki bütün yerleri doldurduk, hiç **boş** yer kalmadı.", D: "Boş sözler söylemektense susmayı tercih eder." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde **eş sesli** bir sözcük kullanılmıştır?',
-                    cevaplar: { A: "Profesyonel sporcular kampa gittiler.", B: "Mağaza sahibi, çocuğun eline bir şeker sıkıştırdı.", C: "Anlattığın olaylar bana çok garip gelmişti.", D: "Köyün **yolu** uzundu, yürüyerek gidemeyeceğim." },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '“Kök” sözcüğü aşağıdaki cümlelerin hangisinde **terim anlamıyla** kullanılmıştır?',
-                    cevaplar: { A: "Aniden başlayan tipi ve fırtına onların sıcak evini **kökünden** sarsıyordu.", B: "**Kökü** geçmişe dayanan güzel bir dostlukları vardı.", C: "Yaşadıkları sorunu **kökünden** çözmek için bir araya geldiler.", D: "\"Yaptırmak\" kelimesinin **kökünü** bulmak için bütün eklerini çıkardı." },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '"Sıkmak" sözcüğü aşağıdaki cümlelerin hangisinde **mecaz** anlamda kullanılmıştır?',
-                    cevaplar: { A: "Seyirciyi **sıkmamak** için filmin süresi kısa tutulmuştur.", B: "Marketten aldığım portakalları **sıktım**.", C: "Yeni aldığım kemer belimi çok **sıktı**.", D: "Patronun elini kibarca **sıktı**." },
-                    dogruCevap: "A"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde **zıt anlamlı sözcükler** bir arada kullanılmamıştır?',
-                    cevaplar: { A: "**Gece gündüz** bu konu konuşuldu.", B: "Bu bahçe **büyüklü küçüklü** meyve ağaçlarıyla doluydu.", C: "**Genç yaşlı** birçok insan meydanda toplanmıştı.", D: "**Olmak** ya da **olmamak**.... İşte bütün mesele bu." },
-                    dogruCevap: "D"
-                }
+                { metin: '"Kasa" sözcüğü aşağıdaki cümlelerin hangi ikisinde aynı anlamda kullanılmıştır?\\n1. Kasadan önemli belgeleri çıkardı.\\n2. Meyveleri kasalara yerleştirdik.\\n3. Kamyonun kasa-sında yolculuk yaptık.\\n4. Babam parasını kasaya koydu.', cevaplar: { A: "1 ve 2", B: "2 ve 3", C: "2 ve 4", D: "3 ve 4" }, dogruCevap: "B" },
+                { metin: '“Sarmak” sözcüğü aşağıdaki cümlelerin hangisinde **mecaz** anlamda kullanılmıştır?', cevaplar: { A: "Annem, küçük kardeşimi kundağa sardı.", B: "Bu dizi film beni çok sardı.", C: "Kedimin dolaştığı ipi çözüp sardım.", D: "Akşamleyin bir kilo yaprak sardık." }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki sözcüklerden hangileri eşleştirildiği kavramla ilgili **değildir**?', cevaplar: { A: "gitar - beste (müzik)", B: "seksek - körebe (çocuk oyunu)", C: "çekiç - çivi (resim)", D: "kamyon - minibüs (taşıt)" }, dogruCevap: "C" },
+                { metin: '“Can” sözcüğü numaralanmış cümlelerin hangisinde **deyim içinde kullanılmamıştır**?\\n1. Üzümlü kek olsa da yesek, canım çekti.\\n2. Canımı dişime takıp bu sınavı kazanacağım.\\n3. Bu konuyu can kulağıyla dinledim.\\n4. Bizim evde beş can, geçinip gidiyoruz.', cevaplar: { A: "1", B: "2", C: "3", D: "4" }, dogruCevap: "D" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde yer alan altı çizili sözcük **terim anlamıyla kullanılmamıştır**?', cevaplar: { A: "Hikâye, romandan daha kısa bir **türdür**.", B: "Dinen yasak olan şeylere **haram** denir.", C: "Küresel ısınma nedeniyle **iklim** değişiklikleri yaşanıyor.", D: "Ders kitaplarının çoğu **büyük** boy basılmıştır." }, dogruCevap: "D" },
+                { metin: '“Boş” sözcüğü aşağıdaki cümlelerin hangisinde “İçi meyve **dolu** tabağı önümüze koydu.” cümlesindeki “dolu” sözcüğün **karşıt anlamlısı** olarak kullanılmıştır?', cevaplar: { A: "Annem, **boş** oturma, bana yardım et, dedi.", B: "Düşünceleri o kadar **boş**tu ki anlam veremedik.", C: "Kasadaki bütün yerleri doldurduk, hiç **boş** yer kalmadı.", D: "Boş sözler söylemektense susmayı tercih eder." }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde **eş sesli** bir sözcük kullanılmıştır?', cevaplar: { A: "Profesyonel sporcular kampa gittiler.", B: "Mağaza sahibi, çocuğun eline bir şeker sıkıştırdı.", C: "Anlattığın olaylar bana çok garip gelmişti.", D: "Köyün **yolu** uzundu, yürüyerek gidemeyeceğim." }, dogruCevap: "D" },
+                { metin: '“Kök” sözcüğü aşağıdaki cümlelerin hangisinde **terim anlamıyla** kullanılmıştır?', cevaplar: { A: "Aniden başlayan tipi ve fırtına onların sıcak evini **kökünden** sarsıyordu.", B: "**Kökü** geçmişe dayanan güzel bir dostlukları vardı.", C: "Yaşadıkları sorunu **kökünden** çözmek için bir araya geldiler.", D: "\"Yaptırmak\" kelimesinin **kökünü** bulmak için bütün eklerini çıkardı." }, dogruCevap: "D" },
+                { metin: '"Sıkmak" sözcüğü aşağıdaki cümlelerin hangisinde **mecaz** anlamda kullanılmıştır?', cevaplar: { A: "Seyirciyi **sıkmamak** için filmin süresi kısa tutulmuştur.", B: "Marketten aldığım portakalları **sıktım**.", C: "Yeni aldığım kemer belimi çok **sıktı**.", D: "Patronun elini kibarca **sıktı**." }, dogruCevap: "A" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde **zıt anlamlı sözcükler** bir arada kullanılmamıştır?', cevaplar: { A: "**Gece gündüz** bu konu konuşuldu.", B: "Bu bahçe **büyüklü küçüklü** meyve ağaçlarıyla doluydu.", C: "**Genç yaşlı** birçok insan meydanda toplanmıştı.", D: "**Olmak** ya da **olmamak**.... İşte bütün mesele bu." }, dogruCevap: "D" }
             ]
         },
-        // Quiz-2: Cümlede Anlam
         {
             id: 2,
             konu: "Cümlede Anlam (Öznel/Nesnel, Neden/Amaç-Sonuç, Deyimler, Atasözleri)",
             sorular: [
-                {
-                    metin: '(1) Bu hafta sonu güzel bir eve taşındık. (2) Dört odası, bir salonu var. (3) En güzel oda benimki. (4) Penceresinden bakınca insanın içi açılıyor. Numaralanmış cümlelerden hangisi **nesnel** yargı içermektedir?',
-                    cevaplar: { A: "1", B: "2", C: "3", D: "4" },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde **sebep - sonuç** ilişkisi vardır?',
-                    cevaplar: { A: "Çivi çürük olduğu **için** çerçeveler yere düştü.", B: "Konserin en güzel yerinde mikrofon bozuldu.", C: "Saatin geç olduğunu nice sonra fark etti.", D: "Romanımı yaşadıklarımdan yola çıkarak yazdım." },
-                    dogruCevap: "A"
-                },
-                {
-                    metin: '"İçin" sözcüğü aşağıdaki cümlelerin hangisine **farklı bir anlam** katmıştır?',
-                    cevaplar: { A: "Ameliyat olmak **için** yurt dışına gitti.", B: "Eşyaları taşımak **için** hamal çağırdı.", C: "Arkadaşıyla barışmak **için** ona bir sürpriz hazırladı.", D: "Gözlerim uzağı görmediği **için** seni tanıyamadım." },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '(1) Yarın bize Almanya’dan amcamlar gelecek. (2) **Bundan dolayı** annemle çeşit çeşit yemekler yaptık. (3) Onları dört gözle bekliyorum. (4) Bir an önce gelseler de hasret gidersek. Numaralanmış cümlelerin hangileri arasında **neden-sonuç** ilişkisi vardır?',
-                    cevaplar: { A: "1 ile 2", B: "2 ile 3", C: "2 ile 4", D: "1 ile 3" },
-                    dogruCevap: "A"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde **amaç-sonuç** ilişkisi vardır?',
-                    cevaplar: { A: "Hava soğuk olduğundan dışarı çıkamadım.", B: "Eve gitmek **için** okul idaresinden izin istedi.", C: "Gece olunca köye kurt sürüleri inerdi.", D: "Kendi başına kaldığı için çok korkmuş." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '"**Elden düşme** bir araba satın aldım." cümlesindeki altı çizili söz grubuyla anlatılmak istenen aşağıdakilerden hangisidir?',
-                    cevaplar: { A: "Çok eski olan", B: "Hiç kullanılmamış, yeni olan", C: "Sahibinden ve ucuza olan", D: "Çok yıpranmış, kullanılmayacak durumda olan" },
-                    dogruCevap: "A"
-                },
-                {
-                    metin: 'Aşağıdakilerden hangisi **kanıtlanabilirlik** açısından farklıdır?',
-                    cevaplar: { A: "Geceleri sokaklarda tehlikelerle karşılaşıyorum.", B: "O, bu yarışmanın **en iyi** yarışmacısıydı.", C: "Okuduğum kitaplar sayesinde birçok arkadaşımdan daha çok bilgiye sahip oldum.", D: "Kitaplarını herkese hediye etmiş." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Açıklaması verilen atasözü aşağıdakilerden hangisidir? **Zenginliğe de işbaşında olmaya da güvenilmemelidir. Gün gelir, zengin fakirleşir; eskiden fakir zengin olabilir.**',
-                    cevaplar: { A: "**Emanet ata binen tez iner**.", B: "Horoz ölür, gözü çöplükte kalır.", C: "Boş gezmekten bedava çalışmak yeğdir.", D: "Karınca kanatlanınca serçe oldum sanır." },
-                    dogruCevap: "A"
-                },
-                {
-                    metin: '"Toplumda güveni sağlamanın en önemli yollarından biri, hukuku herkese eşit tatbik etmektir." Bu paragrafta aşağıdakilerin hangisi üzerinde durulmuştur?',
-                    cevaplar: { A: "Toplumda güvenin sağlanması", B: "**Hukuk kurallarının eşit uygulanması**", C: "Ayrıcalıklı insanlara ceza verilmesi", D: "Kanunlarda bazı ayrıcalıkların olması" },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdakilerden hangisi **nesnel** yargı içermektedir?',
-                    cevaplar: { A: "Gençlerin en önemli vazifesi ülkelerine sahip çıkmaktır.", B: "Toplantıda alınan kararlar hemen uygulandı.", C: "Bilgisayarımın arızasını onarmaya çalışıyoruz.", D: "**Kadıköy’de çıkan yangında üç ev hasar gördü.**" },
-                    dogruCevap: "D"
-                }
+                { metin: '(1) Bu hafta sonu güzel bir eve taşındık. (2) Dört odası, bir salonu var. (3) En güzel oda benimki. (4) Penceresinden bakınca insanın içi açılıyor. Numaralanmış cümlelerden hangisi **nesnel** yargı içermektedir?', cevaplar: { A: "1", B: "2", C: "3", D: "4" }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde **sebep - sonuç** ilişkisi vardır?', cevaplar: { A: "Çivi çürük olduğu **için** çerçeveler yere düştü.", B: "Konserin en güzel yerinde mikrofon bozuldu.", C: "Saatin geç olduğunu nice sonra fark etti.", D: "Romanımı yaşadıklarımdan yola çıkarak yazdım." }, dogruCevap: "A" },
+                { metin: '"İçin" sözcüğü aşağıdaki cümlelerin hangisine **farklı bir anlam** katmıştır?', cevaplar: { A: "Ameliyat olmak **için** yurt dışına gitti.", B: "Eşyaları taşımak **için** hamal çağırdı.", C: "Arkadaşıyla barışmak **için** ona bir sürpriz hazırladı.", D: "Gözlerim uzağı görmediği **için** seni tanıyamadım." }, dogruCevap: "D" },
+                { metin: '(1) Yarın bize Almanya’dan amcamlar gelecek. (2) **Bundan dolayı** annemle çeşit çeşit yemekler yaptık. (3) Onları dört gözle bekliyorum. (4) Bir an önce gelseler de hasret gidersek. Numaralanmış cümlelerin hangileri arasında **neden-sonuç** ilişkisi vardır?', cevaplar: { A: "1 ile 2", B: "2 ile 3", C: "2 ile 4", D: "1 ile 3" }, dogruCevap: "A" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde **amaç-sonuç** ilişkisi vardır?', cevaplar: { A: "Hava soğuk olduğundan dışarı çıkamadım.", B: "Eve gitmek **için** okul idaresinden izin istedi.", C: "Gece olunca köye kurt sürüleri inerdi.", D: "Kendi başına kaldığı için çok korkmuş." }, dogruCevap: "B" },
+                { metin: '"**Elden düşme** bir araba satın aldım." cümlesindeki altı çizili söz grubuyla anlatılmak istenen aşağıdakilerden hangisidir?', cevaplar: { A: "Çok eski olan", B: "Hiç kullanılmamış, yeni olan", C: "Sahibinden ve ucuza olan", D: "Çok yıpranmış, kullanılmayacak durumda olan" }, dogruCevap: "A" },
+                { metin: 'Aşağıdakilerden hangisi **kanıtlanabilirlik** açısından farklıdır?', cevaplar: { A: "Geceleri sokaklarda tehlikelerle karşılaşıyorum.", B: "O, bu yarışmanın **en iyi** yarışmacısıydı.", C: "Okuduğum kitaplar sayesinde birçok arkadaşımdan daha çok bilgiye sahip oldum.", D: "Kitaplarını herkese hediye etmiş." }, dogruCevap: "B" },
+                { metin: 'Açıklaması verilen atasözü aşağıdakilerden hangisidir? **Zenginliğe de işbaşında olmaya da güvenilmemelidir. Gün gelir, zengin fakirleşir; eskiden fakir zengin olabilir.**', cevaplar: { A: "**Emanet ata binen tez iner**.", B: "Horoz ölür, gözü çöplükte kalır.", C: "Boş gezmekten bedava çalışmak yeğdir.", D: "Karınca kanatlanınca serçe oldum sanır." }, dogruCevap: "A" },
+                { metin: '"Toplumda güveni sağlamanın en önemli yollarından biri, hukuku herkese eşit tatbik etmektir." Bu paragrafta aşağıdakilerin hangisi üzerinde durulmuştur?', cevaplar: { A: "Toplumda güvenin sağlanması", B: "**Hukuk kurallarının eşit uygulanması**", C: "Ayrıcalıklı insanlara ceza verilmesi", D: "Kanunlarda bazı ayrıcalıkların olması" }, dogruCevap: "B" },
+                { metin: 'Aşağıdakilerden hangisi **nesnel** yargı içermektedir?', cevaplar: { A: "Gençlerin en önemli vazifesi ülkelerine sahip çıkmaktır.", B: "Toplantıda alınan kararlar hemen uygulandı.", C: "Bilgisayarımın arızasını onarmaya çalışıyoruz.", D: "**Kadıköy’de çıkan yangında üç ev hasar gördü.**" }, dogruCevap: "D" }
             ]
         },
-        // Quiz-3: Fiiller
         {
             id: 3,
             konu: "Fiiller (İş, Oluş, Durum) ve Çekimli Fiil (Kip/Şahıs)",
             sorular: [
-                {
-                    metin: 'Aşağıdaki fiillerden hangisi **farklı bir şahsa** göre çekimlenmiştir?',
-                    cevaplar: { A: "bildik (1. çoğul)", B: "yaşayacak (3. tekil)", C: "görmüşüz (1. çoğul)", D: "uyuruz (1. çoğul)" },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki fiillerden hangisi **gelecek zamana** göre çekimlenmiştir?',
-                    cevaplar: { A: "anlatmışlar", B: "dinleriz", C: "**arayacak**", D: "yazdınız" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde fiil **şimdiki zaman ikinci tekil şahsa** göre çekimlenmiştir?',
-                    cevaplar: { A: "Babam geçen yıl büyük bir iş yeri kurdu.", B: "Günlerdir aynı şiiri **yazıyorsun**.", C: "Her gün onlara bir not bırakırdım.", D: "Bu kitabı okumak için zamanı vardı." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki fiillerden hangisi **mastar** durumundadır?',
-                    cevaplar: { A: "anlatmışlar", B: "sevsinler", C: "**konuşmak**", D: "yazıyorduk" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerden hangisinin fiili **şimdiki zamana** göre çekimlenmiştir?',
-                    cevaplar: { A: "Burası eskiden deniz kenarıydı.", B: "Kitaplar, insanın en iyi dostudur.", C: "İnsan, gelişmek için sürekli **okuyor**.", D: "İnsanın en güvende olduğu yer evidir." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde yer alan fiil **farklı bir kiple** çekimlenmiştir?',
-                    cevaplar: { A: "Eski Türkler Anadolu’ya Orta Asya’dan gelmişler. (Haber)", B: "Okulun bahçesindeki çöp kutuları yenilendi. (Haber)", C: "Kapıyı açarken sessiz olmaya özen gösterir. (Haber)", D: "Eşyaları duvara çarpmadan **taşıyalım**. (İstek)" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerdeki fiillerin anlam özelliklerini tespit ediniz ve farklı olanı bulunuz:\\n1. Her gün erken saatte kalkarak çalışmayı seviyordu. (Durum)\\n2. Düzenli okudukça zihnimizde yeni fikirler **yeşerir**. (Oluş)\\n3. Kendi varlığımızı anlayabilmek için doğaya **bakmalıyız**. (İş)\\n4. Başarılı kişiler, başkalarının düşüncelerine de kulak **verirler**. (İş)',
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '(1) Ülkü’nün annesi yeni bir masa örtüsü **dikmiş**. (2) Bu örtü masanın üzerine çok yakışacak. (3) Masayı örtüyle süslemiş olmalıyız. (4) Annesine hemen yeni bir sipariş **verdi**. Numaralanmış cümlelerdeki fiillerden hangileri **İş (Kılış)** Fiilidir?',
-                    cevaplar: { A: "1 ve 2", B: "1 ve 3", C: "2 ve 4", D: "**3 ve 4**" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '“Kitaplık almak için mobilyacıya **gitmişler**.” cümlesindeki fiilin türü aşağıdakilerden hangisidir?',
-                    cevaplar: { A: "İş", B: "**Durum**", C: "Oluş", D: "Haber" },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '(1) Elime kalemi alıp bir yazının başına **oturuyorum**. (2) Cümleleri yan yana **diziyorum**, elektrik tellerine yan yana dizilmiş kuşlar gibi. Numaralanmış fiillerin anlam özelliği doğru olarak aşağıdakilerin hangisinde verilmiştir?',
-                    cevaplar: { A: "1: İş / 2: Durum", B: "1: Durum / 2: Oluş", C: "1: İş / 2: Oluş", D: "**1: Durum / 2: İş**" },
-                    dogruCevap: "D"
-                }
+                { metin: 'Aşağıdaki fiillerden hangisi **farklı bir şahsa** göre çekimlenmiştir?', cevaplar: { A: "bildik (1. çoğul)", B: "yaşayacak (3. tekil)", C: "görmüşüz (1. çoğul)", D: "uyuruz (1. çoğul)" }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki fiillerden hangisi **gelecek zamana** göre çekimlenmiştir?', cevaplar: { A: "anlatmışlar", B: "dinleriz", C: "**arayacak**", D: "yazdınız" }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde fiil **şimdiki zaman ikinci tekil şahsa** göre çekimlenmiştir?', cevaplar: { A: "Babam geçen yıl büyük bir iş yeri kurdu.", B: "Günlerdir aynı şiiri **yazıyorsun**.", C: "Her gün onlara bir not bırakırdım.", D: "Bu kitabı okumak için zamanı vardı." }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki fiillerden hangisi **mastar** durumundadır?', cevaplar: { A: "anlatmışlar", B: "sevsinler", C: "**konuşmak**", D: "yazıyorduk" }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerden hangisinin fiili **şimdiki zamana** göre çekimlenmiştir?', cevaplar: { A: "Burası eskiden deniz kenarıydı.", B: "Kitaplar, insanın en iyi dostudur.", C: "İnsan, gelişmek için sürekli **okuyor**.", D: "İnsanın en güvende olduğu yer evidir." }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde yer alan fiil **farklı bir kiple** çekimlenmiştir?', cevaplar: { A: "Eski Türkler Anadolu’ya Orta Asya’dan gelmişler. (Haber)", B: "Okulun bahçesindeki çöp kutuları yenilendi. (Haber)", C: "Kapıyı açarken sessiz olmaya özen gösterir. (Haber)", D: "Eşyaları duvara çarpmadan **taşıyalım**. (İstek)" }, dogruCevap: "D" },
+                { metin: 'Aşağıdaki cümlelerdeki fiillerin anlam özelliklerini tespit ediniz ve farklı olanı bulunuz:\\n1. Her gün erken saatte kalkarak çalışmayı seviyordu. (Durum)\\n2. Düzenli okudukça zihnimizde yeni fikirler **yeşerir**. (Oluş)\\n3. Kendi varlığımızı anlayabilmek için doğaya **bakmalıyız**. (İş)\\n4. Başarılı kişiler, başkalarının düşüncelerine de kulak **verirler**. (İş)', cevaplar: { A: "1", B: "2", C: "3", D: "4" }, dogruCevap: "B" },
+                { metin: '(1) Ülkü’nün annesi yeni bir masa örtüsü **dikmiş**. (2) Bu örtü masanın üzerine çok yakışacak. (3) Masayı örtüyle süslemiş olmalıyız. (4) Annesine hemen yeni bir sipariş **verdi**. Numaralanmış cümlelerdeki fiillerden hangileri **İş (Kılış)** Fiilidir?', cevaplar: { A: "1 ve 2", B: "1 ve 3", C: "2 ve 4", D: "**3 ve 4**" }, dogruCevap: "D" },
+                { metin: '“Kitaplık almak için mobilyacıya **gitmişler**.” cümlesindeki fiilin türü aşağıdakilerden hangisidir?', cevaplar: { A: "İş", B: "**Durum**", C: "Oluş", D: "Haber" }, dogruCevap: "B" },
+                { metin: '(1) Elime kalemi alıp bir yazının başına **oturuyorum**. (2) Cümleleri yan yana **diziyorum**, elektrik tellerine yan yana dizilmiş kuşlar gibi. Numaralanmış fiillerin anlam özelliği doğru olarak aşağıdakilerin hangisinde verilmiştir?', cevaplar: { A: "1: İş / 2: Durum", B: "1: Durum / 2: Oluş", C: "1: İş / 2: Oluş", D: "**1: Durum / 2: İş**" }, dogruCevap: "D" }
             ]
         },
-        // Quiz-4: Yazım ve Noktalama
         {
             id: 4,
             konu: "Yazım ve Noktalama Kuralları",
             sorular: [
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde **yazım yanlışı** vardır?',
-                    cevaplar: { A: "Yemeğini yeyince tabağını mutfağa götür.", B: "İçeride koyu bir sohbete başlamışlardı.", C: "“Yol” deyince sorunun cevabını buldum.", D: "Yarışmayı arkadaşı **kazandığı** için çok mutlu oldu." },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde **yazım yanlışı** vardır?',
-                    cevaplar: { A: "Bu ayın **onbeşinde** tatile çıkıyoruz.", B: "Yeni işinde yüzliralık indirim kazandı.", C: "**Yapdığım** alışverişle yüz liralık indirim kazandım.", D: "**Sınıfdakilerin** çoğu onuncu soruyu yanlış cevaplamış." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde **anlam kayması** vardır?',
-                    cevaplar: { A: "Yarın okulu ziyaret edeceğiz.", B: "Ebru, saat yediye doğru eve döndü.", C: "Önümüzdeki hafta Sinop’tan **ayrılacağız**.", D: "Her gün buraları **terk eder**." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde "**ki**"nin yazımı yanlıştır?',
-                    cevaplar: { A: "Yaşadığımız yer o kadar küçük ki anlatamam.", B: "Oysaki ben bu projeye çok emek vermiştim.", C: "**Seninki** de laf mı?", D: "**Sendeki** bu cesaret ki kimsede yok." },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde **noktalama yanlışı** vardır?',
-                    cevaplar: { A: "Soğuktan titreyen çocuğun haline acıdım.", B: "Şans bana ne zaman gülecek?", C: "Yangına itfaiye ekipleri müdahale etti.", D: "İlkbaharda açan çiçeklere dönmüşsün." },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '“Hayatın çeşitli güçlüklerine karşı üç şey hediye edilmiştir( )Ümit( )uyku ve gülmek( )” cümlesinde yay ayraçla ( ) belirtilen yerlere sırasıyla aşağıdaki noktalama işaretlerinden hangileri getirilmelidir?',
-                    cevaplar: { A: "(:) (,) (.)", B: "(:) (,) (...)", C: "(;) (,) (...)", D: "(.) (,) (.)" },
-                    dogruCevap: "A"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde **yazım yanlışı yoktur**?',
-                    cevaplar: { A: "Ortalığa dökülen **kâğıtları** topladık.", B: "**Kâbe** ziyareti hepimiz için önemliydi.", C: "Kuaföre **kâkülümü** kısalttırmak için gittim.", D: "Kurtuluş Savaşı'nda kadınlarımız **kâğnılarla** askerlere yiyecek taşıdılar." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde **ünlem işareti (!)** farklı bir görevde kullanılmıştır?',
-                    cevaplar: { A: "Hey, buraya gel! (Seslenme)", B: "Çocuklar, bana bakın! (Seslenme)", C: "Bu işi ona versek iki günde tamamlarmış (**!**). (Alay/Kinaye)", D: "Size söylüyorum öndekiler, ilerleyin! (Seslenme)" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde **kesme işareti (\') yanlış** kullanılmıştır?',
-                    cevaplar: { A: "Beklenen paket Antalya’dan yola çıktı.", B: "Dilekçeyi bir an önce **Çözüm Lisesi Müdürlüğü’ne** vermelisin.", C: "Pınar Hanım’ı arayıp gerekli dosyaları istedik.", D: "Almanya’nın bazı şehirlerinde su baskınları meydana geldi." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde **nokta (.) yanlış** kullanılmıştır?',
-                    cevaplar: { A: "Tarihin derinliklerine saklanan gerçekler vardır.", B: "Kampa giderken çadır, çanta, matara **vb. aldı** yanına.", C: "Ameliyatımı **Doç. Dr.** Sabri Kaya gerçekleştirdi.", D: "**MEB.’den** yapılan açıklama içimizi rahatlattı." },
-                    dogruCevap: "D"
-                }
+                { metin: 'Aşağıdaki cümlelerin hangisinde **yazım yanlışı** vardır?', cevaplar: { A: "Yemeğini yeyince tabağını mutfağa götür.", B: "İçeride koyu bir sohbete başlamışlardı.", C: "“Yol” deyince sorunun cevabını buldum.", D: "Yarışmayı arkadaşı **kazandığı** için çok mutlu oldu." }, dogruCevap: "D" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde **yazım yanlışı** vardır?', cevaplar: { A: "Bu ayın **onbeşinde** tatile çıkıyoruz.", B: "Yeni işinde yüzliralık indirim kazandı.", C: "**Yapdığım** alışverişle yüz liralık indirim kazandım.", D: "**Sınıfdakilerin** çoğu onuncu soruyu yanlış cevaplamış." }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde **anlam kayması** vardır?', cevaplar: { A: "Yarın okulu ziyaret edeceğiz.", B: "Ebru, saat yediye doğru eve döndü.", C: "Önümüzdeki hafta Sinop’tan **ayrılacağız**.", D: "Her gün buraları **terk eder**." }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde "**ki**"nin yazımı yanlıştır?', cevaplar: { A: "Yaşadığımız yer o kadar küçük ki anlatamam.", B: "Oysaki ben bu projeye çok emek vermiştim.", C: "**Seninki** de laf mı?", D: "**Sendeki** bu cesaret ki kimsede yok." }, dogruCevap: "D" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde **noktalama yanlışı** vardır?', cevaplar: { A: "Soğuktan titreyen çocuğun haline acıdım.", B: "Şans bana ne zaman gülecek?", C: "Yangına itfaiye ekipleri müdahale etti.", D: "İlkbaharda açan çiçeklere dönmüşsün." }, dogruCevap: "D" },
+                { metin: '“Hayatın çeşitli güçlüklerine karşı üç şey hediye edilmiştir( )Ümit( )uyku ve gülmek( )” cümlesinde yay ayraçla ( ) belirtilen yerlere sırasıyla aşağıdaki noktalama işaretlerinden hangileri getirilmelidir?', cevaplar: { A: "(:) (,) (.)", B: "(:) (,) (...)", C: "(;) (,) (...)", D: "(.) (,) (.)" }, dogruCevap: "A" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde **yazım yanlışı yoktur**?', cevaplar: { A: "Ortalığa dökülen **kâğıtları** topladık.", B: "**Kâbe** ziyareti hepimiz için önemliydi.", C: "Kuaföre **kâkülümü** kısalttırmak için gittim.", D: "Kurtuluş Savaşı'nda kadınlarımız **kâğnılarla** askerlere yiyecek taşıdılar." }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde **ünlem işareti (!)** farklı bir görevde kullanılmıştır?', cevaplar: { A: "Hey, buraya gel! (Seslenme)", B: "Çocuklar, bana bakın! (Seslenme)", C: "Bu işi ona versek iki günde tamamlarmış (**!**). (Alay/Kinaye)", D: "Size söylüyorum öndekiler, ilerleyin! (Seslenme)" }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde **kesme işareti (\') yanlış** kullanılmıştır?', cevaplar: { A: "Beklenen paket Antalya’dan yola çıktı.", B: "Dilekçeyi bir an önce **Çözüm Lisesi Müdürlüğü’ne** vermelisin.", C: "Pınar Hanım’ı arayıp gerekli dosyaları istedik.", D: "Almanya’nın bazı şehirlerinde su baskınları meydana geldi." }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde **nokta (.) yanlış** kullanılmıştır?', cevaplar: { A: "Tarihin derinliklerine saklanan gerçekler vardır.", B: "Kampa giderken çadır, çanta, matara **vb. aldı** yanına.", C: "Ameliyatımı **Doç. Dr.** Sabri Kaya gerçekleştirdi.", D: "**MEB.’den** yapılan açıklama içimizi rahatlattı." }, dogruCevap: "D" }
             ]
         },
-        // Quiz-5: Paragraf ve Söz Sanatları
         {
             id: 5,
             konu: "Paragraf ve Söz Sanatları (Metin Türü, Anlatım Biçimleri, Anlatıcı)",
             sorular: [
-                {
-                    metin: 'Benzetme (Teşbih) sanatı aşağıdaki dizelerin hangisinde yapılmıştır?',
-                    cevaplar: { A: "İki yanımdan aksın, bir **sel gibi** fenerler.", B: "Dost bildiğin insanların yüzleri aynalar gibi kapkara.", C: "Şehre çöken karanlık / Sokakta bir adam gördü.", D: "Düşünür ağaçlar aylarca gelecek baharı." },
-                    dogruCevap: "A"
-                },
-                {
-                    metin: '“Ben, kalabalık bir aile içinde bir çiftlikte büyüdüm. Etrafım bir sevgi çemberiyle sarılıydı. ... Yaptığım her işten keyif alıyor ve hiç şikâyet etmiyordum.” Bu parçayla ilgili olarak aşağıdakilerden hangisine **ulaşılamaz**?',
-                    cevaplar: { A: "Bir hikâyeden alınmıştır.", B: "**Atasözleri kullanılmıştır.**", C: "Sebep-sonuç ilişkisi içeren cümlelere yer verilmiştir.", D: "Anlatım birinci kişi ağzından yapılmıştır." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki dörtlüklerden hangisinin **konusu diğerlerinden farklıdır**?',
-                    cevaplar: { A: "Kokladığım bütün güller, / **Hasret** kokuyor, hasret...", B: "Küçükken baş ucumda / Bana ninni söylerdin...", C: "Sen bir avuç bebektin / Kimdi süt veren sana...", D: "Yemeyip de yediren, / Giymeyip de giydiren..." },
-                    dogruCevap: "A"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde anlatım **birinci kişi** ağzından yapılmıştır?',
-                    cevaplar: { A: "Köyün güzel kızı, obanın güzel oğlunu bir gün kırlarda gezerken **görmüş**.", B: "Denize doğru baktı. Yazlıkta gizlenen birinden çok düş kırıklığına uğramış eski günlere özlem çeken aptal bir aşık gibi gördü kendini bir an.", C: "Gelin kardeşlerim / Bir dünya kuralım.", D: "Şehirde beni güler yüzle misafir **ediyorlardı**. Ben de onlarla seve-rek, isteyerek tanışıyor; dostluk **kuruyordum**." },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '"Aydede, bütün minik yıldızları etrafına toplamış, onlarla güzelce sohbet ediyordu." Bu metinde aşağıdaki sanatların hangisi vardır?',
-                    cevaplar: { A: "Benzetme", B: "Konuşturma (İntak)", C: "Abartma", D: "**Kişileştirme (Teşhis)**" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '"Yaratıcı yazı, düşlerin yerine sanatçının düş kurma biçimi olarak kurmacayı yarattı, yaşamı kurmacaya dönüştürdü. Borges, bu durumu “İlkel insan ve çocuk için düşler, uyanık yaşamın öyküleri-dir.” diye açıklıyor." Bu paragrafta kullanılan düşünceyi geliştirme yolu aşağıdakilerden hangisidir?',
-                    cevaplar: { A: "Tanımlama", B: "Örnekleme", C: "Karşılaştırma", D: "**Tanık gösterme** (Borges'in sözünün kullanılması)" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '"Alipaşa Mahallesi’nde Komeslihan diye bir yere **giriyorum**. Eski evlerden sökülüp getirilmiş antika eşyalar… Tepede kör bir ampul... Gramofonda taş plaklar... Zeki Müren’in billur sesi akıyor ortama. Sobada çay demliği fokurduyor." Bu parçanın anlatımında aşağıdakilerin hangilerinden yararlanılmıştır?',
-                    cevaplar: { A: "Açıklama - Betimleme", B: "**Öyküleme - Betimleme**", C: "Karşılaştırma - Tanımlama", D: "Öyküleme - Karşılaştırma" },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '"Benim en sevmediğim şeylerden biri, bana zorla yemek yedirilmesidir. Aç isem sorun değil, oturur hiç seçmeden sofrada ne varsa yerim. Ama tok olmama rağmen birisi zorla yemek yedirmeye çalışırsa o dakikalar benim için ızdıraba dönüşür." Bu parçanın dil ve anlatımıyla ilgili olarak aşağıdakilerden hangisi söylenebilir?',
-                    cevaplar: { A: "Tanımlamalar yapıldığı", B: "Çekimli fiil kullanıldığı", C: "**Anlatımın birinci kişinin ağzından yapıldığı**", D: "Kişisel duygu ve düşüncelere yer verildiği" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: '"Yazar, düşüncelerini söz oyunlarına başvurmadan doğrudan aktarırım. Yazılarım çeşitli gazete ve dergilerde yayımlanır." Buna göre yazar aşağıdaki yazı türlerinin hangisinde eser vermektedir?',
-                    cevaplar: { A: "Anı", B: "Söyleşi", C: "**Makale**", D: "Gezi yazısı" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: '"Çocukluğun durup dinlenmek bilmeyen ve yorgunluk tanımayan gücü ile bozuk, inişli çıkışlı yokuşları ve çakıllı yollarını nefesimiz kesilmeden bir solukta tırmanırdık." Bu paragraf aşağıdaki yazı türlerinin hangisinden alınmış olabilir?',
-                    cevaplar: { A: "Efsane", B: "Hikâye", C: "**Anı**", D: "Masal" },
-                    dogruCevap: "C"
-                }
+                { metin: 'Benzetme (Teşbih) sanatı aşağıdaki dizelerin hangisinde yapılmıştır?', cevaplar: { A: "İki yanımdan aksın, bir **sel gibi** fenerler.", B: "Dost bildiğin insanların yüzleri aynalar gibi kapkara.", C: "Şehre çöken karanlık / Sokakta bir adam gördü.", D: "Düşünür ağaçlar aylarca gelecek baharı." }, dogruCevap: "A" },
+                { metin: '“Ben, kalabalık bir aile içinde bir çiftlikte büyüdüm. Etrafım bir sevgi çemberiyle sarılıydı. ... Yaptığım her işten keyif alıyor ve hiç şikâyet etmiyordum.” Bu parçayla ilgili olarak aşağıdakilerden hangisine **ulaşılamaz**?', cevaplar: { A: "Bir hikâyeden alınmıştır.", B: "**Atasözleri kullanılmıştır.**", C: "Sebep-sonuç ilişkisi içeren cümlelere yer verilmiştir.", D: "Anlatım birinci kişi ağzından yapılmıştır." }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki dörtlüklerden hangisinin **konusu diğerlerinden farklıdır**?', cevaplar: { A: "Kokladığım bütün güller, / **Hasret** kokuyor, hasret...", B: "Küçükken baş ucumda / Bana ninni söylerdin...", C: "Sen bir avuç bebektin / Kimdi süt veren sana...", D: "Yemeyip de yediren, / Giymeyip de giydiren..." }, dogruCevap: "A" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde anlatım **birinci kişi** ağzından yapılmıştır?', cevaplar: { A: "Köyün güzel kızı, obanın güzel oğlunu bir gün kırlarda gezerken **görmüş**.", B: "Denize doğru baktı. Yazlıkta gizlenen birinden çok düş kırıklığına uğramış eski günlere özlem çeken aptal bir aşık gibi gördü kendini bir an.", C: "Gelin kardeşlerim / Bir dünya kuralım.", D: "Şehirde beni güler yüzle misafir **ediyorlardı**. Ben de onlarla seve-rek, isteyerek tanışıyor; dostluk **kuruyordum**." }, dogruCevap: "D" },
+                { metin: '"Aydede, bütün minik yıldızları etrafına toplamış, onlarla güzelce sohbet ediyordu." Bu metinde aşağıdaki sanatların hangisi vardır?', cevaplar: { A: "Benzetme", B: "Konuşturma (İntak)", C: "Abartma", D: "**Kişileştirme (Teşhis)**" }, dogruCevap: "D" },
+                { metin: '"Yaratıcı yazı, düşlerin yerine sanatçının düş kurma biçimi olarak kurmacayı yarattı, yaşamı kurmacaya dönüştürdü. Borges, bu durumu “İlkel insan ve çocuk için düşler, uyanık yaşamın öyküleri-dir.” diye açıklıyor." Bu paragrafta kullanılan düşünceyi geliştirme yolu aşağıdakilerden hangisidir?', cevaplar: { A: "Tanımlama", B: "Örnekleme", C: "Karşılaştırma", D: "**Tanık gösterme** (Borges\'in sözünün kullanılması)" }, dogruCevap: "D" },
+                { metin: '"Alipaşa Mahallesi’nde Komeslihan diye bir yere **giriyorum**. Eski evlerden sökülüp getirilmiş antika eşyalar… Tepede kör bir ampul... Gramofonda taş plaklar... Zeki Müren’in billur sesi akıyor ortama. Sobada çay demliği fokurduyor." Bu parçanın anlatımında aşağıdakilerin hangilerinden yararlanılmıştır?', cevaplar: { A: "Açıklama - Betimleme", B: "**Öyküleme - Betimleme**", C: "Karşılaştırma - Tanımlama", D: "Öyküleme - Karşılaştırma" }, dogruCevap: "B" },
+                { metin: '"Benim en sevmediğim şeylerden biri, bana zorla yemek yedirilmesidir. Aç isem sorun değil, oturur hiç seçmeden sofrada ne varsa yerim. Ama tok olmama rağmen birisi zorla yemek yedirmeye çalışırsa o dakikalar benim için ızdıraba dönüşür." Bu parçanın dil ve anlatımıyla ilgili olarak aşağıdakilerden hangisi söylenebilir?', cevaplar: { A: "Tanımlamalar yapıldığı", B: "Çekimli fiil kullanıldığı", C: "**Anlatımın birinci kişinin ağzından yapıldığı**", D: "Kişisel duygu ve düşüncelere yer verildiği" }, dogruCevap: "C" },
+                { metin: '"Yazar, düşüncelerini söz oyunlarına başvurmadan doğrudan aktarırım. Yazılarım çeşitli gazete ve dergilerde yayımlanır." Buna göre yazar aşağıdaki yazı türlerinin hangisinde eser vermektedir?', cevaplar: { A: "Anı", B: "Söyleşi", C: "**Makale**", D: "Gezi yazısı" }, dogruCevap: "C" },
+                { metin: '"Çocukluğun durup dinlenmek bilmeyen ve yorgunluk tanımayan gücü ile bozuk, inişli çıkışlı yokuşları ve çakıllı yollarını nefesimiz kesilmeden bir solukta tırmanırdık." Bu paragraf aşağıdaki yazı türlerinin hangisinden alınmış olabilir?', cevaplar: { A: "Efsane", B: "Hikâye", C: "**Anı**", D: "Masal" }, dogruCevap: "C" }
             ]
         },
-        // Quiz-6: 7. SINIF TÜRKÇE – PARAGRAF TESTİ – 1
         {
             id: 6,
             konu: "Paragraf Testi - 1",
             sorular: [
-                {
-                    metin: '"Mizah, şakanın arkasına saklanmış ciddiyettir." Bu cümleyle ilgili olarak aşağıdakilerden hangisi söylenebilir?',
-                    cevaplar: { A: "Kanıtlanabilir yargılar içermektedir.", B: "Cümle, sebep-sonuç ilişkisi içermektedir.", C: "**Tanımlama yapılmıştır.**", D: "Öznel bir ifadeye yer verilmiştir." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde **amaç-sonuç** ilişkisi vardır?',
-                    cevaplar: { A: "Çok kar yağdığı için yollar kapandı.", B: "İyi bir araba alabilmek **için** para biriktiriyordu.", C: "Yüzmek zihni açtığı için yararlıdır.", D: "Sözünü dinlemediği için ona küstü." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '"Yaratıcı yazı, düşlerin yerine sanatçının düş kurma biçimi olarak kurmacayı yarattı, yaşamı kurmacaya dönüştürdü." cümlesindeki altı çizili söz grubunun cümleye kattığı anlam aşağıdakilerden hangisidir?',
-                    cevaplar: { A: "Sanatçının düş kurma yeteneği.", B: "**Edebî eserlerin çoğunun hayal ürünü olduğu.**", C: "Sanatçının düş kurma biçiminin yaşama dönüştüğü.", D: "Kurmacanın yaşamsal değerler taşıdığı." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerden hangisi **nesnel** yargı içermektedir?',
-                    cevaplar: { A: "En güzel oda benimki.", B: "Penceresinden bakınca insanın içi açılıyor.", C: "**Dört odası, bir salonu var.**", D: "Bu hafta sonu güzel bir eve taşındık." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde anlatım **birinci kişi** ağzından yapılmıştır?\\nI. Köyün güzel kızı, obanın güzel oğlunu bir gün kırlarda gezerken görmüş.\\nII. Denize doğru baktı. Yazlıkta gizlenen birinden çok düş kırıklığına uğramış eski günlere özlem çeken aptal bir aşık gibi gördü kendini bir an.',
-                    cevaplar: { A: "Köyün güzel kızı, obanın güzel oğlunu bir gün kırlarda gezerken görmüş.", B: "**Şehirde beni güler yüzle misafir ediyorlardı.**", C: "Üçüncü bakıştan sonra obanın oğlunun güzelliğine vurulmuş.", D: "Denize doğru baktı." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '(1) Kitaptan daha iyi bir arkadaş yoktur. (2) O, insana dert ortaklığı eder, yüreğine su serper. (3) Gönlünün her istediğine onunla erişirsin. (4) Böylesine güvenilir bir dosta sahip olmak, **büyük bir kazançtır**. Bu parçadaki numaralanmış cümlelerin hangisi **ana düşünceyi** içermektedir?',
-                    cevaplar: { A: "1", B: "2", C: "3", D: "**4**" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '(1) Ülkemiz, eserlerini çok iyi inceleyen, eleştiren bir zümrenin elinden çıkmış bir edebiyata sahiptir. (2) **Eleştiriler sonucunda alınan ödüller eserlerin değerini artırır.** (3) Edebiyatımızın en büyük yazarları, hep o dönemde yazılan eserler sayesinde yetiştiler. (4) Bu yüzden Batı edebiyatında görülmeyen, güçlü bir geleneğe sahibiz. Bu parçadaki numaralanmış cümlelerden hangisi **düşüncenin akışını bozmaktadır**?',
-                    cevaplar: { A: "1", B: "**2**", C: "3", D: "4" },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '"Toplumsal hizmetlerde, artık tarih olmuşum / Kimsesizin, muhtacın yardımına koşmuşum / Güneş gibi aydınlık müessese kurmuşum / Yüzyıllarca yaşamış, yaşatmışım durmuşum." Bu şiirdeki altı çizili sözlerden hangisi şiirin **konusu** olabilir?',
-                    cevaplar: { A: "Güneş gibi aydınlık", B: "Kimsesizlerin muhtacın", C: "Yüzyıllarca yaşamış", D: "**Toplumsal hizmetler**" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '"Geceleri, karalar denizlerden daha çabuk soğur. Soğuk hava, karada aşağı inmeye başlar. Denizin üstündeki hava ise hâlâ sıcaktır. Soğuk hava hareketleri, kara meltemini oluşturur." Bu paragrafta aşağıdaki anlatım biçimlerinden hangisi ağır basmaktadır?',
-                    cevaplar: { A: "Öyküleme", B: "**Açıklama**", C: "Tartışma", D: "Betimleme" },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki dizelerin hangisinde **yalınlık (sadelik) yoktur**?',
-                    cevaplar: { A: "Her yüze gülen dost olur sanma.", B: "Kimi dağlarda gezer / Kimisi incisin dizer.", C: "Benim gönlüm anam bakar gülerdi.", D: "**Bir gemi bembeyaz teniyle açıklarda**" },
-                    dogruCevap: "D"
-                }
+                { metin: '"Mizah, şakanın arkasına saklanmış ciddiyettir." Bu cümleyle ilgili olarak aşağıdakilerden hangisi söylenebilir?', cevaplar: { A: "Kanıtlanabilir yargılar içermektedir.", B: "Cümle, sebep-sonuç ilişkisi içermektedir.", C: "**Tanımlama yapılmıştır.**", D: "Öznel bir ifadeye yer verilmiştir." }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde **amaç-sonuç** ilişkisi vardır?', cevaplar: { A: "Çok kar yağdığı için yollar kapandı.", B: "İyi bir araba alabilmek **için** para biriktiriyordu.", C: "Yüzmek zihni açtığı için yararlıdır.", D: "Sözünü dinlemediği için ona küstü." }, dogruCevap: "B" },
+                { metin: '"Yaratıcı yazı, düşlerin yerine sanatçının düş kurma biçimi olarak kurmacayı yarattı, yaşamı kurmacaya dönüştürdü." cümlesindeki altı çizili söz grubunun cümleye kattığı anlam aşağıdakilerden hangisidir?', cevaplar: { A: "Sanatçının düş kurma yeteneği.", B: "**Edebî eserlerin çoğunun hayal ürünü olduğu.**", C: "Sanatçının düş kurma biçiminin yaşama dönüştüğü.", D: "Kurmacanın yaşamsal değerler taşıdığı." }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki cümlelerden hangisi **nesnel** yargı içermektedir?', cevaplar: { A: "En güzel oda benimki.", B: "Penceresinden bakınca insanın içi açılıyor.", C: "**Dört odası, bir salonu var.**", D: "Bu hafta sonu güzel bir eve taşındık." }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde anlatım **birinci kişi** ağzından yapılmıştır?\\nI. Köyün güzel kızı, obanın güzel oğlunu bir gün kırlarda gezerken görmüş.\\nII. Denize doğru baktı. Yazlıkta gizlenen birinden çok düş kırıklığına uğramış eski günlere özlem çeken aptal bir aşık gibi gördü kendini bir an.', cevaplar: { A: "Köyün güzel kızı, obanın güzel oğlunu bir gün kırlarda gezerken görmüş.", B: "**Şehirde beni güler yüzle misafir ediyorlardı.**", C: "Üçüncü bakıştan sonra obanın oğlunun güzelliğine vurulmuş.", D: "Denize doğru baktı." }, dogruCevap: "B" },
+                { metin: '(1) Kitaptan daha iyi bir arkadaş yoktur. (2) O, insana dert ortaklığı eder, yüreğine su serper. (3) Gönlünün her istediğine onunla erişirsin. (4) Böylesine güvenilir bir dosta sahip olmak, **büyük bir kazançtır**. Bu parçadaki numaralanmış cümlelerin hangisi **ana düşünceyi** içermektedir?', cevaplar: { A: "1", B: "2", C: "3", D: "**4**" }, dogruCevap: "D" },
+                { metin: '(1) Ülkemiz, eserlerini çok iyi inceleyen, eleştiren bir zümrenin elinden çıkmış bir edebiyata sahiptir. (2) **Eleştiriler sonucunda alınan ödüller eserlerin değerini artırır.** (3) Edebiyatımızın en büyük yazarları, hep o dönemde yazılan eserler sayesinde yetiştiler. (4) Bu yüzden Batı edebiyatında görülmeyen, güçlü bir geleneğe sahibiz. Bu parçadaki numaralanmış cümlelerden hangisi **düşüncenin akışını bozmaktadır**?', cevaplar: { A: "1", B: "**2**", C: "3", D: "4" }, dogruCevap: "B" },
+                { metin: '"Toplumsal hizmetlerde, artık tarih olmuşum / Kimsesizin, muhtacın yardımına koşmuşum / Güneş gibi aydınlık müessese kurmuşum / Yüzyıllarca yaşamış, yaşatmışım durmuşum." Bu şiirdeki altı çizili sözlerden hangisi şiirin **konusu** olabilir?', cevaplar: { A: "Güneş gibi aydınlık", B: "Kimsesizlerin muhtacın", C: "Yüzyıllarca yaşamış", D: "**Toplumsal hizmetler**" }, dogruCevap: "D" },
+                { metin: '"Geceleri, karalar denizlerden daha çabuk soğur. Soğuk hava, karada aşağı inmeye başlar. Denizin üstündeki hava ise hâlâ sıcaktır. Soğuk hava hareketleri, kara meltemini oluşturur." Bu paragrafta aşağıdaki anlatım biçimlerinden hangisi ağır basmaktadır?', cevaplar: { A: "Öyküleme", B: "**Açıklama**", C: "Tartışma", D: "Betimleme" }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki dizelerin hangisinde **yalınlık (sadelik) yoktur**?', cevaplar: { A: "Her yüze gülen dost olur sanma.", B: "Kimi dağlarda gezer / Kimisi incisin dizer.", C: "Benim gönlüm anam bakar gülerdi.", D: "**Bir gemi bembeyaz teniyle açıklarda**" }, dogruCevap: "D" }
             ]
         },
-        // Quiz-7: 7. SINIF TÜRKÇE – PARAGRAF TESTİ – 2
         {
             id: 7,
             konu: "Paragraf Testi - 2",
             sorular: [
-                {
-                    metin: '"Benim en sevmediğim şeylerden biri, bana zorla yemek yedirilmesidir... Ama tok olmama rağmen birisi zorla yemek yedirmeye çalışırsa o dakikalar benim için ızdıraba dönüşür." Bu parçanın dil ve anlatımıyla ilgili olarak aşağıdakilerden hangisi söylenebilir?',
-                    cevaplar: { A: "Tanımlamalar yapıldığı.", B: "Çekimli fiil kullanıldığı.", C: "Anlatımın birinci kişinin ağzından yapıldığı.", D: "**Kişisel duygu ve düşüncelere yer verildiği.**" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '(1) Varlıkların pek çok özelliği, matematik kanunlarıyla yakından alakalıdır. (2) Hemen her varlığın dış görünüşündeki güzellik, birçok faktörün bir arada bulunmasına bağlıdır. (3) Bu faktörler içinde en önemli olanı, “parçalar arasındaki ölçü ve ahenkteki güzellik” olarak tarif edilen “simetri”dir. (4) Ayaklarımız simetrik olmasaydı dengeli yürüyemezdik. Bu parçada aşağıdakilerin hangisi üzerinde durulmuştur?',
-                    cevaplar: { A: "Matematik kanunları", B: "Varlıkların dış görünüşü", C: "Canlılarda yaşam", D: "**Canlıların yapısındaki simetri**" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '"Yüreğini rahat tut, / Her şeyi dert edinme. / Olumsuzluğu unut, / Önemlidir beslenme." Bu dörtlükte anlatılmak istenen aşağıdakilerden hangisidir?',
-                    cevaplar: { A: "Sağlık açısından doğru beslenmek önemlidir.", B: "İnsanın her zaman rahat olması gerekir.", C: "Huzurlu olmak için olumsuzluklardan uzak durmak gerekir.", D: "**A ve C seçeneklerinde belirtilenler.**" },
-                    dogruCevap: "A"
-                },
-                {
-                    metin: 'Aşağıdaki dizelerin hangisinde **Benzetme (Teşbih)** sanatı vardır?',
-                    cevaplar: { A: "Düşünür ağaçlar aylarca gelecek baharı.", B: "Yüzün bir **kır çiçeği gibi** usulca söner.", C: "Şehre çöken karanlık / Sokakta bir adam gördü.", D: "Aydede, bütün minik yıldızları etrafına toplamış." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '"Onlar yaşları 7 ile 12 arasında değişen öğrenciler. Hepsinin ortak özelliği, çizgi film ve sinema merakları ve yönetmen olma hayali… Üstün zekâlı öğrencilerden oluşan bu grup, 3 boyutlu çizgi film çekiyor." Bu paragrafın **konusu** aşağıdakilerden hangisidir?',
-                    cevaplar: { A: "Sinema filmlerinin izlenmesi", B: "Üstün zekâlı öğrencilerin sorunları", C: "**Üstün zekâlı öğrencilerin film merakı**", D: "Yönetmenlik eğitimi" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: '"Akşam serinliğiyle başlıyor memleketim / Doğduğum köy göründü / Sakin yıldızlarıyla gittikçe yakınlaşan sema / Dörtnala **kalktı atım sevincinden**" Bu dörtlükle ilgili olarak aşağıdakilerden hangisi **söylenemez**?',
-                    cevaplar: { A: "Betimleme yapılmıştır.", B: "Kişileştirme yapılmıştır (Atın sevinmesi).", C: "Şiirin konusu özlemdir.", D: "**Sesteş sözcüklere yer verilmiştir.**" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '"Alipaşa Mahallesi’nde Komeslihan diye bir yere **giriyorum**. Eski evlerden sökülüp getirilmiş antika eşyalar… Tepede kör bir ampul... Gramofonda taş plaklar... Zeki Müren’in billur sesi akıyor ortama. Sobada çay demliği fokurduyor." Bu parçanın anlatımında aşağıdakilerin hangilerinden yararlanılmıştır?',
-                    cevaplar: { A: "Açıklama - Betimleme", B: "**Öyküleme - Betimleme**", C: "Karşılaştırma - Tanımlama", D: "Öyküleme - Karşılaştırma" },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '(1) İnsanların doğasında çevrenin onayını almak ve sosyalleşmek eğilimi vardır. (2) Bu da bir araya gelen insanların sorunları konuşarak, düşünerek çözmesini gerektirir. (3) Böylece karşımızdaki-lerle ortak paydalar ve ortaklıklar üretmiş oluruz. (4) **Diyalog, bunu sağlamanın en etkili yoludur.** Bu paragrafta kullanılan düşünceyi geliştirme yollarından hangisi ağır basmaktadır?',
-                    cevaplar: { A: "Tanık gösterme", B: "Sayısal verilerden yararlanma", C: "**Tanımlama** (Diyalog tanımı)", D: "Karşılaştırma" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: '"Güneşin hararetinden kaçanlar, deniz sularının serinliğine sığınıyor. Deniz; **uslu bir fil gibi** hortumunu toplamış, toprağın çıplak çocuklarının eğlencesidir. Kurbağalarla birlikte bütün gün gezer ve koskoca deniz insan zencilerinin dostça oynaşmalarını seyrettim." Bu parçayla ilgili olarak aşağıdakilerden hangisi **söylenemez**?',
-                    cevaplar: { A: "Betimleyici anlatım kullanılmıştır.", B: "**Abartma sanatı kullanılmıştır.**", C: "Kişileştirmeye başvurulmuştur.", D: "Benzetme kullanılmıştır." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '(1) Kitaptan daha iyi bir arkadaş yoktur. (2) O, insana dert ortaklığı eder, yüreğine su serper. (3) Gönlünün her istediğine onunla erişirsin. (4) Böylesine güvenilir bir dosta sahip olmak, büyük bir kazançtır. Bu parçadaki numaralanmış cümlelerden hangisi **kanıtlanabilirlik** açısından farklıdır?',
-                    cevaplar: { A: "1", B: "2", C: "3", D: "**4**" },
-                    dogruCevap: "D"
-                }
+                { metin: '"Benim en sevmediğim şeylerden biri, bana zorla yemek yedirilmesidir... Ama tok olmama rağmen birisi zorla yemek yedirmeye çalışırsa o dakikalar benim için ızdıraba dönüşür." Bu parçanın dil ve anlatımıyla ilgili olarak aşağıdakilerden hangisi söylenebilir?', cevaplar: { A: "Tanımlamalar yapıldığı.", B: "Çekimli fiil kullanıldığı.", C: "Anlatımın birinci kişinin ağzından yapıldığı.", D: "**Kişisel duygu ve düşüncelere yer verildiği.**" }, dogruCevap: "D" },
+                { metin: '(1) Varlıkların pek çok özelliği, matematik kanunlarıyla yakından alakalıdır. (2) Hemen her varlığın dış görünüşündeki güzellik, birçok faktörün bir arada bulunmasına bağlıdır. (3) Bu faktörler içinde en önemli olanı, “parçalar arasındaki ölçü ve ahenkteki güzellik” olarak tarif edilen “simetri”dir. (4) Ayaklarımız simetrik olmasaydı dengeli yürüyemezdik. Bu parçada aşağıdakilerin hangisi üzerinde durulmuştur?', cevaplar: { A: "Matematik kanunları", B: "Varlıkların dış görünüşü", C: "Canlılarda yaşam", D: "**Canlıların yapısındaki simetri**" }, dogruCevap: "D" },
+                { metin: '"Yüreğini rahat tut, / Her şeyi dert edinme. / Olumsuzluğu unut, / Önemlidir beslenme." Bu dörtlükte anlatılmak istenen aşağıdakilerden hangisidir?', cevaplar: { A: "Sağlık açısından doğru beslenmek önemlidir.", B: "İnsanın her zaman rahat olması gerekir.", C: "Huzurlu olmak için olumsuzluklardan uzak durmak gerekir.", D: "**A ve C seçeneklerinde belirtilenler.**" }, dogruCevap: "A" },
+                { metin: 'Aşağıdaki dizelerin hangisinde **Benzetme (Teşbih)** sanatı vardır?', cevaplar: { A: "Düşünür ağaçlar aylarca gelecek baharı.", B: "Yüzün bir **kır çiçeği gibi** usulca söner.", C: "Şehre çöken karanlık / Sokakta bir adam gördü.", D: "Aydede, bütün minik yıldızları etrafına toplamış." }, dogruCevap: "B" },
+                { metin: '"Onlar yaşları 7 ile 12 arasında değişen öğrenciler. Hepsinin ortak özelliği, çizgi film ve sinema merakları ve yönetmen olma hayali… Üstün zekâlı öğrencilerden oluşan bu grup, 3 boyutlu çizgi film çekiyor." Bu paragrafın **konusu** aşağıdakilerden hangisidir?', cevaplar: { A: "Sinema filmlerinin izlenmesi", B: "Üstün zekâlı öğrencilerin sorunları", C: "**Üstün zekâlı öğrencilerin film merakı**", D: "Yönetmenlik eğitimi" }, dogruCevap: "C" },
+                { metin: '"Akşam serinliğiyle başlıyor memleketim / Doğduğum köy göründü / Sakin yıldızlarıyla gittikçe yakınlaşan sema / Dörtnala **kalktı atım sevincinden**" Bu dörtlükle ilgili olarak aşağıdakilerden hangisi **söylenemez**?', cevaplar: { A: "Betimleme yapılmıştır.", B: "Kişileştirme yapılmıştır (Atın sevinmesi).", C: "Şiirin konusu özlemdir.", D: "**Sesteş sözcüklere yer verilmiştir.**" }, dogruCevap: "D" },
+                { metin: '"Alipaşa Mahallesi’nde Komeslihan diye bir yere **giriyorum**. Eski evlerden sökülüp getirilmiş antika eşyalar… Tepede kör bir ampul... Gramofonda taş plaklar... Zeki Müren’in billur sesi akıyor ortama. Sobada çay demliği fokurduyor." Bu parçanın anlatımında aşağıdakilerin hangilerinden yararlanılmıştır?', cevaplar: { A: "Açıklama - Betimleme", B: "**Öyküleme - Betimleme**", C: "Karşılaştırma - Tanımlama", D: "Öyküleme - Karşılaştırma" }, dogruCevap: "B" },
+                { metin: '(1) İnsanların doğasında çevrenin onayını almak ve sosyalleşmek eğilimi vardır. (2) Bu da bir araya gelen insanların sorunları konuşarak, düşünerek çözmesini gerektirir. (3) Böylece karşımızdaki-lerle ortak paydalar ve ortaklıklar üretmiş oluruz. (4) **Diyalog, bunu sağlamanın en etkili yoludur.** Bu paragrafta kullanılan düşünceyi geliştirme yollarından hangisi ağır basmaktadır?', cevaplar: { A: "Tanık gösterme", B: "Sayısal verilerden yararlanma", C: "**Tanımlama** (Diyalog tanımı)", D: "Karşılaştırma" }, dogruCevap: "C" },
+                { metin: '"Güneşin hararetinden kaçanlar, deniz sularının serinliğine sığınıyor. Deniz; **uslu bir fil gibi** hortumunu toplamış, toprağın çıplak çocuklarının eğlencesidir. Kurbağalarla birlikte bütün gün gezer ve koskoca deniz insan zencilerinin dostça oynaşmalarını seyrettim." Bu parçayla ilgili olarak aşağıdakilerden hangisi **söylenemez**?', cevaplar: { A: "Betimleyici anlatım kullanılmıştır.", B: "**Abartma sanatı kullanılmıştır.**", C: "Kişileştirmeye başvurulmuştur.", D: "Benzetme kullanılmıştır." }, dogruCevap: "B" },
+                { metin: '(1) Kitaptan daha iyi bir arkadaş yoktur. (2) O, insana dert ortaklığı eder, yüreğine su serper. (3) Gönlünün her istediğine onunla erişirsin. (4) Böylesine güvenilir bir dosta sahip olmak, büyük bir kazançtır. Bu parçadaki numaralanmış cümlelerden hangisi **kanıtlanabilirlik** açısından farklıdır?', cevaplar: { A: "1", B: "2", C: "3", D: "**4**" }, dogruCevap: "D" }
             ]
         },
-        // Quiz-8: 7. SINIF TÜRKÇE – PARAGRAF TESTİ – 3
         {
             id: 8,
             konu: "Paragraf Testi - 3",
             sorular: [
-                {
-                    metin: '"Yazmaktan o kadar korkmam; kötüleri anlatırken içimin titremesi, iyi hikâyelerde heyecanlanmam, kelimelerimi beğenmediğim uzun bir metin yazmam, yazar olmam için yeterli mi?" Bu cümlede geçen aşağıdaki sözcüklerin hangisi diğerlerinden **farklı bir görevde** kullanılmıştır?',
-                    cevaplar: { A: "Kötüleri", B: "İyi", C: "Uzun", D: "**Yazar**" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: 'Aşağıdaki parçalardan hangisinin anlatımında **üçüncü kişi ağzından** anlatım vardır?',
-                    cevaplar: { A: "Ben hayatımda en çok zevki, kasabanın bayram yerlerinden aldım.", B: "Köydeki günlerim güzel geçiyor. Kuzenlerimle koşup oynuyoruz.", C: "**Yasin, yaşlı bir onbaşıydı. Güldüğü hiç görülmemişti** ama amirlerinin emrini harfiyen yerine getirmekle ün salmıştı.", D: "Benim en sevmediğim şeylerden biri, bana zorla yemek yedirilmesidir." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: '(1) İnsanlar, saygı ve sevgiyi çocuk yaşta öğrenirler. (2) Büyüdükçe de bu duyguları iç dünyalarında zenginleştirirler. (3) **Bu yüzden çocukların eğitimi ailede başlar.** (4) Ailede bir çocuğa insanlara karşı sevgi duyması öğretildiyse bu çocuk, hayatı boyunca insanlara sevgi ve saygıyla davranır. Bu parçadaki numaralanmış cümlelerin hangisi **ana düşünceyi destekleyen bir yargı değildir**?',
-                    cevaplar: { A: "1", B: "2", C: "**3**", D: "4" },
-                    dogruCevap: "A"
-                },
-                {
-                    metin: 'Aşağıdaki dizelerde kullanılan söz sanatlarından hangisi **Abartma (Mübalağa)** sanatına örnektir?',
-                    cevaplar: { A: "Bir sel gibi fenerler. (Benzetme)", B: "Düşünür ağaçlar aylarca gelecek baharı. (Kişileştirme)", C: "Bir gül açtı gönlümde, hiç solmayacak. (Kişileştirme)", D: "**Gözümde yaşlar sel olup akacak.**" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '"Aydede, bütün minik yıldızları etrafına toplamış, onlarla güzelce sohbet ediyordu." Bu metinde aşağıdaki sanatların hangisi vardır?',
-                    cevaplar: { A: "Benzetme ve Konuşturma", B: "**Kişileştirme** (Aydede\'nin toplaması ve sohbet etmesi)", C: "Abartma ve Benzetme", D: "Sadece Konuşturma" },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '“Sadece paragraf soruları...” cümlesindeki "**sadece**" kelimesinin eş anlamlısı aşağıdaki cümlelerin hangisinde kullanılmıştır?',
-                    cevaplar: { A: "Ben de bugün size katılırım.", B: "**Yalnız** bu konuda çalışmak yeterli.", C: "Hep birlikte gelmeliyiz.", D: "Bugün bile dersimiz vardı." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerden hangisi bir **anı** metninden alınmış olabilir?',
-                    cevaplar: { A: "Tiyatro, gelecekle bugün arasında bir köprüdür.", B: "Denizin üstündeki hava hâlâ sıcaktır.", C: "**Çocukluğum ve gençliğim**, yeşille mavinin en güzel tonlarının bütün canlılığıyla yaşandığı Karadeniz\'de geçti.", D: "Gelin görün ki konu gıda olunca merceğimizi evde unutuyoruz." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: '(I) İnsan, doğar. (II) Sonra beyninde bir sürü bilgi biriktirir. (III) Öğrendiği bilgiler, beyninde bir süzgeçten geçer, sonra yeni bir fikir ortaya çıkar. (IV) Öğrendiği her şey, onun yeni şeyler üretmesini sağlar. Yukarıdaki söz gruplarıyla anlamlı ve kurallı bir cümle oluşturulduğunda sıralama aşağıdakilerden hangisi olur?',
-                    cevaplar: { A: "I - II - III - IV", B: "I - IV - II - III", C: "II - III - IV - I", D: "IV - I - III - II" },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '"Bir yazar, eserlerini verirken nelere dikkat etmelidir?" Bu soruya karşılık gelebilecek paragrafın anlatımında aşağıdaki anlatım türlerinden hangisi ağır basmalıdır?',
-                    cevaplar: { A: "Öyküleme", B: "Betimleme", C: "**Tartışma** (Yazarın görüşlerini savunduğu)", D: "Açıklama" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: '(1) Kimi eserler var ki değeri hiçbir şekilde ödenemez. (2) Kaybedildi mi, bir daha yerine konamaz. (3) İşte Konya Alaaddin Camii’nin minberi de Ahlatlı bir ahşap ustasının paha biçilmez bir eseridir. Bu parçada kullanılan düşünceyi geliştirme yolu aşağıdakilerden hangisidir?',
-                    cevaplar: { A: "Tanımlama", B: "**Örnekleme**", C: "Benzetme", D: "Karşılaştırma" },
-                    dogruCevap: "B"
-                }
+                { metin: '"Yazmaktan o kadar korkmam; kötüleri anlatırken içimin titremesi, iyi hikâyelerde heyecanlanmam, kelimelerimi beğenmediğim uzun bir metin yazmam, yazar olmam için yeterli mi?" Bu cümlede geçen aşağıdaki sözcüklerin hangisi diğerlerinden **farklı bir görevde** kullanılmıştır?', cevaplar: { A: "Kötüleri", B: "İyi", C: "Uzun", D: "**Yazar**" }, dogruCevap: "D" },
+                { metin: 'Aşağıdaki parçalardan hangisinin anlatımında **üçüncü kişi ağzından** anlatım vardır?', cevaplar: { A: "Ben hayatımda en çok zevki, kasabanın bayram yerlerinden aldım.", B: "Köydeki günlerim güzel geçiyor. Kuzenlerimle koşup oynuyoruz.", C: "**Yasin, yaşlı bir onbaşıydı. Güldüğü hiç görülmemişti** ama amirlerinin emrini harfiyen yerine getirmekle ün salmıştı.", D: "Benim en sevmediğim şeylerden biri, bana zorla yemek yedirilmesidir." }, dogruCevap: "C" },
+                { metin: '(1) İnsanlar, saygı ve sevgiyi çocuk yaşta öğrenirler. (2) Büyüdükçe de bu duyguları iç dünyalarında zenginleştirirler. (3) **Bu yüzden çocukların eğitimi ailede başlar.** (4) Ailede bir çocuğa insanlara karşı sevgi duyması öğretildiyse bu çocuk, hayatı boyunca insanlara sevgi ve saygıyla davranır. Bu parçadaki numaralanmış cümlelerin hangisi **ana düşünceyi destekleyen bir yargı değildir**?', cevaplar: { A: "1", B: "2", C: "**3**", D: "4" }, dogruCevap: "A" },
+                { metin: 'Aşağıdaki dizelerde kullanılan söz sanatlarından hangisi **Abartma (Mübalağa)** sanatına örnektir?', cevaplar: { A: "Bir sel gibi fenerler. (Benzetme)", B: "Düşünür ağaçlar aylarca gelecek baharı. (Kişileştirme)", C: "Bir gül açtı gönlümde, hiç solmayacak. (Kişileştirme)", D: "**Gözümde yaşlar sel olup akacak.**" }, dogruCevap: "D" },
+                { metin: '"Aydede, bütün minik yıldızları etrafına toplamış, onlarla güzelce sohbet ediyordu." Bu metinde aşağıdaki sanatların hangisi vardır?', cevaplar: { A: "Benzetme ve Konuşturma", B: "**Kişileştirme** (Aydede\'nin toplaması ve sohbet etmesi)", C: "Abartma ve Benzetme", D: "Sadece Konuşturma" }, dogruCevap: "B" },
+                { metin: '“Sadece paragraf soruları...” cümlesindeki "**sadece**" kelimesinin eş anlamlısı aşağıdaki cümlelerin hangisinde kullanılmıştır?', cevaplar: { A: "Ben de bugün size katılırım.", B: "**Yalnız** bu konuda çalışmak yeterli.", C: "Hep birlikte gelmeliyiz.", D: "Bugün bile dersimiz vardı." }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki cümlelerden hangisi bir **anı** metninden alınmış olabilir?', cevaplar: { A: "Tiyatro, gelecekle bugün arasında bir köprüdür.", B: "Denizin üstündeki hava hâlâ sıcaktır.", C: "**Çocukluğum ve gençliğim**, yeşille mavinin en güzel tonlarının bütün canlılığıyla yaşandığı Karadeniz\'de geçti.", D: "Gelin görün ki konu gıda olunca merceğimizi evde unutuyoruz." }, dogruCevap: "C" },
+                { metin: '(I) İnsan, doğar. (II) Sonra beyninde bir sürü bilgi biriktirir. (III) Öğrendiği bilgiler, beyninde bir süzgeçten geçer, sonra yeni bir fikir ortaya çıkar. (IV) Öğrendiği her şey, onun yeni şeyler üretmesini sağlar. Yukarıdaki söz gruplarıyla anlamlı ve kurallı bir cümle oluşturulduğunda sıralama aşağıdakilerin hangisi olur?', cevaplar: { A: "I - II - III - IV", B: "I - IV - II - III", C: "II - III - IV - I", D: "IV - I - III - II" }, dogruCevap: "B" },
+                { metin: '"Bir yazar, eserlerini verirken nelere dikkat etmelidir?" Bu soruya karşılık gelebilecek paragrafın anlatımında aşağıdaki anlatım türlerinden hangisi ağır basmalıdır?', cevaplar: { A: "Öyküleme", B: "Betimleme", C: "**Tartışma** (Yazarın görüşlerini savunduğu)", D: "Açıklama" }, dogruCevap: "C" },
+                { metin: '(1) Kimi eserler var ki değeri hiçbir şekilde ödenemez. (2) Kaybedildi mi, bir daha yerine konamaz. (3) İşte Konya Alaaddin Camii’nin minberi de Ahlatlı bir ahşap ustasının paha biçilmez bir eseridir. Bu parçada kullanılan düşünceyi geliştirme yolu aşağıdakilerden hangisidir?', cevaplar: { A: "Tanımlama", B: "**Örnekleme**", C: "Benzetme", D: "Karşılaştırma" }, dogruCevap: "B" }
             ]
         },
-        // Quiz-9: 7. SINIF TÜRKÇE – PARAGRAF TESTİ – 4
         {
             id: 9,
             konu: "Paragraf Testi - 4",
             sorular: [
-                {
-                    metin: '"Kimi eserler var ki değeri hiçbir şekilde ödenemez... Bu eser karşısında Alman Araştırmacı Anna Marie Schimmel, \'Almanya yıkılır, tekrar inşa edilir fakat bu kutlu min-\' demiştir." Bu paragrafın **ana düşüncesi** aşağıdakilerden hangisidir?',
-                    cevaplar: { A: "Ülkelerin kalkınması için yapılan harcamaların bir kısmı boşa gitmektedir.", B: "**Tarihi değeri olan eserler korunmalıdır.**", C: "Ülkeler yaptıkları harcamaların bir kısmısnı çocuklarının eğitimine ayırmalıdır.", D: "Yeni nesillerin yetiştirilmesi için yapılan harcamalar, milletlerin geleceğini koruyan kaynaklardır." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '(1) Tatil işte böyle bir değişikliktir. (2) İnsan; rüzgârlarla başka diyarlara savrulan... bir de kar tanesi vardır gökyüzünde. (3) Günü, saati farklı biçimde değerlendirmektir. (4) Tatil, kişinin en temel ihtiyaçlarındandır. Bu parçadaki numaralanmış cümlelerle anlamlı bir paragraf oluşturulmak istenirse doğru sıralama nasıl olmalıdır?',
-                    cevaplar: { A: "4 – 1 – 3 – 2", B: "1 – 3 – 4 – 2", C: "**4 – 3 – 1 – 2**", D: "2 – 4 – 3 – 1" },
-                    dogruCevap: "C" 
-                },
-                {
-                    metin: '(I) Arkadaşlık, akıllı telefonlarla yaşam daha da kolaylaştı. (II) Bu telefonlar istenilen her yerde iletişim olanağı sunuyor. (III) İnternet üzerinden rahatlıkla bilgiye ulaşmayı sağlıyor. (IV) **Bu bilgilere kısa sürede ulaşmak insanları tembelleştiriyor.** (V) Zengin uygulama çeşitliliği ile işleri kolaylaştırıyor. Bu parçadaki numaralanmış cümlelerden hangisi **anlatımın akışını bozmaktadır**?',
-                    cevaplar: { A: "I", B: "II", C: "III", D: "**IV**" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde yer alan altı çizili sözcük **terim anlamıyla kullanılmamıştır**?',
-                    cevaplar: { A: "Yeni aldığı makineyi **test** etmek için kullandı.", B: "Romanın son **bölümünde** okuyucuyu şaşırtan olaylar var.", C: "Dedesini **sayar**, onun bir dediğini iki etmezdi.", D: "Araba ile yokuş aşağı inmek de çok zordur." },
-                    dogruCevap: "C" 
-                },
-                {
-                    metin: '"Her bir yanı ışıl ışıl / Yeşil örtü ne de yeşil / Buysa eğer kural koşul / İşte çevre buna derim" Bu şiirle ilgili olarak aşağıdakilerden hangisi söylenebilir?',
-                    cevaplar: { A: "Şiirde sadece renkler üzerine durulmuştur.", B: "**Şiirin ana düşüncesi çevrenin önemidir.**", C: "Şiirde abartma sanatı kullanılmıştır.", D: "Şair, duygusal bir anlatım kullanmıştır." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '"Maddi ve manevi yıkımlar karşısında da güçlü bir şekilde kendini gösteren annenin kollayışı, yavrularını muhafaza etmeye çalışması..." Bu paragrafın **ana düşüncesi** aşağıdakilerden hangisidir?',
-                    cevaplar: { A: "Çocukları bilinçsiz yetiştirmek.", B: "**Annelerin fedakârlığı.**", C: "Dünya değiştiği için annelik zorlaştı.", D: "Yolların çamur içinde kalması." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki dizelerin hangisinde **Kişileştirme (Teşhis)** sanatı vardır?',
-                    cevaplar: { A: "Dereden akan soğuk su gibi.", B: "Göklere çıkarsam seni, kimse görmesin.", C: "**Gün bitti** / Akşam serinliğiyle başlıyor memleketim.", D: "Teyzemiz bizi çok iyi karşılıyor." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: '(1) Her edebi eserin güzelliği, kendi içinde organik bir bütün oluşundan kaynaklanır. (2) Eserlerinde ki organik unsurlar arasında kurala uygunluk, mükemmeliyeti sağlar. (3) Bu bütünlüğü sağlayan eserler başarılı sayılmaz. (4) Her sanatçının kendine göre bir hayatı vardır. Bu metin **iki paragrafa ayrılmak** istenirse ikinci paragraf kaç numaralı cümleyle başlar?',
-                    cevaplar: { A: "1", B: "2", C: "3", D: "**4**" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '"Güneşlenmek denince bazı insanların aklına hemen deniz kıyıları gelir. Oysa güneş ışınları dağlarda deniz kenarındakinden daha az değildir. Hatta bazı tedbirler alınmazsa dağlarda deri, deniz kenarındakinden daha çabuk esmerleşir." Bu parçadaki numaralanmış cümlelerin hangilerinde **karşılaştırma** yapılmıştır?',
-                    cevaplar: { A: "1 ve 2", B: "1 ve 3", C: "**2 ve 3**", D: "3 ve 4" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde yüklem **Ek Fiil ile çekimlenmiştir**?',
-                    cevaplar: { A: "Babam, oğluna göl ile ilgili bir şeyler anlatmaktadır.", B: "**Hayriye Hanım, bir buçuk yıldır evliydi.**", C: "Rusya ile Türkiye arasında anlaşma sağlandı.", D: "Sınavdaki en yüksek notu Sıla aldı." },
-                    dogruCevap: "B"
-                }
+                { metin: '"Kimi eserler var ki değeri hiçbir şekilde ödenemez... Bu eser karşısında Alman Araştırmacı Anna Marie Schimmel, \'Almanya yıkılır, tekrar inşa edilir fakat bu kutlu min-\' demiştir." Bu paragrafın **ana düşüncesi** aşağıdakilerden hangisidir?', cevaplar: { A: "Ülkelerin kalkınması için yapılan harcamaların bir kısmı boşa gitmektedir.", B: "**Tarihi değeri olan eserler korunmalıdır.**", C: "Ülkeler yaptıkları harcamaların bir kısmısnı çocuklarının eğitimine ayırmalıdır.", D: "Yeni nesillerin yetiştirilmesi için yapılan harcamalar, milletlerin geleceğini koruyan kaynaklardır." }, dogruCevap: "B" },
+                { metin: '(1) Tatil işte böyle bir değişikliktir. (2) İnsan; rüzgârlarla başka diyarlara savrulan... bir de kar tanesi vardır gökyüzünde. (3) Günü, saati farklı biçimde değerlendirmektir. (4) Tatil, kişinin en temel ihtiyaçlarındandır. Bu parçadaki numaralanmış cümlelerle anlamlı bir paragraf oluşturulmak istenirse doğru sıralama nasıl olmalıdır?', cevaplar: { A: "4 – 1 – 3 – 2", B: "1 – 3 – 4 – 2", C: "**4 – 3 – 1 – 2**", D: "2 – 4 – 3 – 1" }, dogruCevap: "C" },
+                { metin: '(I) Arkadaşlık, akıllı telefonlarla yaşam daha da kolaylaştı. (II) Bu telefonlar istenilen her yerde iletişim olanağı sunuyor. (III) İnternet üzerinden rahatlıkla bilgiye ulaşmayı sağlıyor. (IV) **Bu bilgilere kısa sürede ulaşmak insanları tembelleştiriyor.** (V) Zengin uygulama çeşitliliği ile işleri kolaylaştırıyor. Bu parçadaki numaralanmış cümlelerden hangisi **anlatımın akışını bozmaktadır**?', cevaplar: { A: "I", B: "II", C: "III", D: "**IV**" }, dogruCevap: "D" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde yer alan altı çizili sözcük **terim anlamıyla kullanılmamıştır**?', cevaplar: { A: "Yeni aldığı makineyi **test** etmek için kullandı.", B: "Romanın son **bölümünde** okuyucuyu şaşırtan olaylar var.", C: "Dedesini **sayar**, onun bir dediğini iki etmezdi.", D: "Araba ile yokuş aşağı inmek de çok zordur." }, dogruCevap: "C" },
+                { metin: '"Her bir yanı ışıl ışıl / Yeşil örtü ne de yeşil / Buysa eğer kural koşul / İşte çevre buna derim" Bu şiirle ilgili olarak aşağıdakilerden hangisi söylenebilir?', cevaplar: { A: "Şiirde sadece renkler üzerine durulmuştur.", B: "**Şiirin ana düşüncesi çevrenin önemidir.**", C: "Şiirde abartma sanatı kullanılmıştır.", D: "Şair, duygusal bir anlatım kullanmıştır." }, dogruCevap: "B" },
+                { metin: '"Maddi ve manevi yıkımlar karşısında da güçlü bir şekilde kendini gösteren annenin kollayışı, yavrularını muhafaza etmeye çalışması..." Bu paragrafın **ana düşüncesi** aşağıdakilerden hangisidir?', cevaplar: { A: "Çocukları bilinçsiz yetiştirmek.", B: "**Annelerin fedakârlığı.**", C: "Dünya değiştiği için annelik zorlaştı.", D: "Yolların çamur içinde kalması." }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki dizelerin hangisinde **Kişileştirme (Teşhis)** sanatı vardır?', cevaplar: { A: "Dereden akan soğuk su gibi.", B: "Göklere çıkarsam seni, kimse görmesin.", C: "**Gün bitti** / Akşam serinliğiyle başlıyor memleketim.", D: "Teyzemiz bizi çok iyi karşılıyor." }, dogruCevap: "C" },
+                { metin: '(1) Her edebi eserin güzelliği, kendi içinde organik bir bütün oluşundan kaynaklanır. (2) Eserlerinde ki organik unsurlar arasında kurala uygunluk, mükemmeliyeti sağlar. (3) Bu bütünlüğü sağlayan eserler başarılı sayılmaz. (4) Her sanatçının kendine göre bir hayatı vardır. Bu metin **iki paragrafa ayrılmak** istenirse ikinci paragraf kaç numaralı cümleyle başlar?', cevaplar: { A: "1", B: "2", C: "3", D: "**4**" }, dogruCevap: "D" },
+                { metin: '"Güneşlenmek denince bazı insanların aklına hemen deniz kıyıları gelir. Oysa güneş ışınları dağlarda deniz kenarındakinden daha az değildir. Hatta bazı tedbirler alınmazsa dağlarda deri, deniz kenarındakinden daha çabuk esmerleşir." Bu parçadaki numaralanmış cümlelerin hangilerinde **karşılaştırma** yapılmıştır?', cevaplar: { A: "1 ve 2", B: "1 ve 3", C: "**2 ve 3**", D: "3 ve 4" }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde yüklem **Ek Fiil ile çekimlenmiştir**?', cevaplar: { A: "Babam, oğluna göl ile ilgili bir şeyler anlatmaktadır.", B: "**Hayriye Hanım, bir buçuk yıldır evliydi.**", C: "Rusya ile Türkiye arasında anlaşma sağlandı.", D: "Sınavdaki en yüksek notu Sıla aldı." }, dogruCevap: "B" }
             ]
         },
-        // Quiz-10: 7. SINIF TÜRKÇE – PARAGRAF TESTİ – 5
         {
             id: 10,
             konu: "Paragraf Testi - 5",
             sorular: [
-                {
-                    metin: 'Aşağıdaki dizelerin hangisinde Abartma (Mübalağa) sanatı kullanılmıştır?',
-                    cevaplar: { A: "Dereden akan soğuk su gibi.", B: "Taze ruhuyla coşkunluğu var.", C: "**Yorgunluktan dizleri titriyordu.**", D: "Kuş cıvıltıları çevreyi sardı." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: '(I) Kitap okumayı sevmeyen birinin yazar olması imkânsızdır. (II) Okudukça yazarın dünyasını keşfeder. (III) Okul, kitap okumayı teşvik etmeli. (IV) Okulda verilen kitaplar yazarın dünyasını geliştirir. (V) Okudukça kelime dağarcığı zenginleşir. Bu parçadaki numaralanmış cümlelerin anlamlı bir bütün oluşturulabilmesi için hangi ikisinin birbiriyle yer değiştirmesi gerekir?',
-                    cevaplar: { A: "I. ve II.", B: "II. ve IV.", C: "III. ve V.", D: "**IV. ve V.**" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '(I) Hayvanların yaşam kalitesinin artırılması için çizgi film ve sinema merakları ve yönetmen olma hayali çok önemlidir. (II) Bu nedenle, hayvanların yaşam kalitesini artırmanın en önemli yollarından biri, onların yaşam kalitesini artırmaktır. (III) Hayvanların sağlıklı ve mutlu olmaları, doğal yaşam alanlarına bağlıdır. (IV) Hayvanların yaşam kalitesini artırmak, çevrenin korunmasına da katkı sağlar. (V) Hayvanların yaşam kalitesini artırmak, herkesin sorumluluğundadır. Bu parçadaki numaralanmış cümlelerden hangisi **düşüncenin akışını bozmaktadır**?',
-                    cevaplar: { A: "I.", B: "II.", C: "III.", D: "IV." },
-                    dogruCevap: "A"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde **amaç-sonuç** ilişkisi vardır?',
-                    cevaplar: { A: "Çok kar yağdığı için yollar kapandı.", B: "**Ameliyat olmak için yurt dışına gitti.**", C: "Yüzmek zihni açtığı için yararlıdır.", D: "Kendi başına kaldığı için çok korkmuş." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '(I) Tıbbi araştırmalar göstermektedir ki kronik stres, bireyde korku, endişe ve panik atak semptomları yaratmaktadır. (II) Komşuluk kültürü zayıfladığı için bu sorunlar ortaya çıkmaktadır. (III) Stres, kişinin kendisiyle ve çevresiyle olan ilişkisini zedeleyerek insanı huzursuz etmektedir. (IV) İnsanların çoğu, bu durumlara tepki olarak kendine zarar verecek davranışlar sergilemektedir. Bu parçadaki numaralanmış cümlelerden hangisi **düşüncenin akışını bozmaktadır**?',
-                    cevaplar: { A: "I.", B: "II.", C: "III.", D: "IV." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '"Zola, gençliğini 19. yüzyılın ikinci yarısında Fransız toplumuyla yaşayan olayları kayıtsız kalmaz, romanlarında ve gazetelerindeki makalelerinde toplumsal sorunları irdeler." Bu parçadan yola çıkarak Zola\'nın eserleriyle ilgili aşağıdakilerden hangisine ulaşılabilir?',
-                    cevaplar: { A: "Zola'nın eserleri sadece güncel olaylara değinir.", B: "**Zola'nın eserleri, toplumsal gerçekliği yansıtmaktadır.**", C: "Zola'nın eserleri sadece roman türündedir.", D: "Zola, eserlerinde sadece kendi hayatını anlatmıştır." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde **I. Tekil Şahıs** vardır?',
-                    cevaplar: { A: "Herkesin sorunlarıyla yakın-dan ilgilenileceği bir durumdur.", B: "Bu eserlere ilgi gösterilmesi gerekir.", C: "**Bu konuya sadece birinci tekil kişi değil, ikinci tekil kişi de dahil.**", D: "İnsanlar, yazarın eserlerini okumalıdır." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: '(I) Romantizmin yayılarak kuvvetli bir duyguya dönüşmesi ve duyguların birbiriyle çatışması en önemli unsurlardan biridir. (II) Bu nedenle sanatçıların romanı yazarken dikkat etmesi gerekir. (III) İnsanlar, yazarın duygularını okuduklarında anlamalı ve anlamlandırmalıdırlar. (IV) Duyguların, yazarın eserlerinde olduğu kadar okuyucular tarafından da anlaşılması önemlidir. (V) Yazarların duygularına okurun dikkat etmesi önemlidir. Yukarıdaki numaralanmış cümlelerin anlamlı bir bütün oluşturulabilmesi için hangi ikisinin birbiriyle yer değiştirmesi gerekir?',
-                    cevaplar: { A: "I. ve II.", B: "II. ve III.", C: "III. ve IV.", D: "**IV. ve V.**" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '"Gözden ırak olan gönülden de ırak olur" atasözünün **karşıt anlamlısı** aşağıdakilerden hangisidir?',
-                    cevaplar: { A: "Demir tavında dövülür.", B: "Dost başa, düşman ayağa bakar.", C: "Üzümünü ye, bağını sorma.", D: "**Tencere yuvarlanmış kapağını bulmuş** (Yakın olanlar bir araya gelir anlamında)." },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '(1) Çayın tütününden üretilen rakamların fazlalığı zaman içinde artmıştır. (2) Bu nedenle ise hızla devam eden bir artış söz konusudur. (3) Her iki unsur da bir hareketlilik durumu oluşturuyor. (4) Orta Çağ\'da da aynı kullanım artmakta. (5) Bu nedenle ise çay tütününü ülkemizde üretim oranının çok düşük olduğunu söyleyemeyiz. Yukarıdaki numaralanmış cümlelerin anlamlı bir bütün oluşturulabilmesi için hangi ikisinin birbiriyle yer değiştirmesi gerekir?',
-                    cevaplar: { A: "I. ve II.", B: "II. ve III.", C: "**III. ve V.**", D: "IV. ve V." },
-                    dogruCevap: "C"
-                }
+                { metin: 'Aşağıdaki dizelerin hangisinde Abartma (Mübalağa) sanatı kullanılmıştır?', cevaplar: { A: "Dereden akan soğuk su gibi.", B: "Taze ruhuyla coşkunluğu var.", C: "**Yorgunluktan dizleri titriyordu.**", D: "Kuş cıvıltıları çevreyi sardı." }, dogruCevap: "C" },
+                { metin: '(I) Kitap okumayı sevmeyen birinin yazar olması imkânsızdır. (II) Okudukça yazarın dünyasını keşfeder. (III) Okul, kitap okumayı teşvik etmeli. (IV) Okulda verilen kitaplar yazarın dünyasını geliştirir. (V) Okudukça kelime dağarcığı zenginleşir. Bu parçadaki numaralanmış cümlelerin anlamlı bir bütün oluşturulabilmesi için hangi ikisinin birbiriyle yer değiştirmesi gerekir?', cevaplar: { A: "I. ve II.", B: "II. ve IV.", C: "III. ve V.", D: "**IV. ve V.**" }, dogruCevap: "D" },
+                { metin: '(I) Hayvanların yaşam kalitesinin artırılması için çizgi film ve sinema merakları ve yönetmen olma hayali çok önemlidir. (II) Bu nedenle, hayvanların yaşam kalitesini artırmanın en önemli yollarından biri, onların yaşam kalitesini artırmaktır. (III) Hayvanların sağlıklı ve mutlu olmaları, doğal yaşam alanlarına bağlıdır. (IV) Hayvanların yaşam kalitesini artırmak, çevrenin korunmasına da katkı sağlar. (V) Hayvanların yaşam kalitesini artırmak, herkesin sorumluluğundadır. Bu parçadaki numaralanmış cümlelerden hangisi **düşüncenin akışını bozmaktadır**?', cevaplar: { A: "I.", B: "II.", C: "III.", D: "IV." }, dogruCevap: "A" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde **amaç-sonuç** ilişkisi vardır?', cevaplar: { A: "Çok kar yağdığı için yollar kapandı.", B: "**Ameliyat olmak için yurt dışına gitti.**", C: "Yüzmek zihni açtığı için yararlıdır.", D: "Kendi başına kaldığı için çok korkmuş." }, dogruCevap: "B" },
+                { metin: '(I) Tıbbi araştırmalar göstermektedir ki kronik stres, bireyde korku, endişe ve panik atak semptomları yaratmaktadır. (II) Komşuluk kültürü zayıfladığı için bu sorunlar ortaya çıkmaktadır. (III) Stres, kişinin kendisiyle ve çevresiyle olan ilişkisini zedeleyerek insanı huzursuz etmektedir. (IV) İnsanların çoğu, bu durumlara tepki olarak kendine zarar verecek davranışlar sergilemektedir. Bu parçadaki numaralanmış cümlelerden hangisi **düşüncenin akışını bozmaktadır**?', cevaplar: { A: "I.", B: "II.", C: "III.", D: "IV." }, dogruCevap: "B" },
+                { metin: '"Zola, gençliğini 19. yüzyılın ikinci yarısında Fransız toplumuyla yaşayan olayları kayıtsız kalmaz, romanlarında ve gazetelerindeki makalelerinde toplumsal sorunları irdeler." Bu parçadan yola çıkarak Zola\'nın eserleriyle ilgili aşağıdakilerden hangisine ulaşılabilir?', cevaplar: { A: "Zola'nın eserleri sadece güncel olaylara değinir.", B: "**Zola'nın eserleri, toplumsal gerçekliği yansıtmaktadır.**", C: "Zola'nın eserleri sadece roman türündedir.", D: "Zola, eserlerinde sadece kendi hayatını anlatmıştır." }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde **I. Tekil Şahıs** vardır?', cevaplar: { A: "Herkesin sorunlarıyla yakın-dan ilgilenileceği bir durumdur.", B: "Bu eserlere ilgi gösterilmesi gerekir.", C: "**Bu konuya sadece birinci tekil kişi değil, ikinci tekil kişi de dahil.**", D: "İnsanlar, yazarın eserlerini okumalıdır." }, dogruCevap: "C" },
+                { metin: '(I) Romantizmin yayılarak kuvvetli bir duyguya dönüşmesi ve duyguların birbiriyle çatışması en önemli unsurlardan biridir. (II) Bu nedenle sanatçıların romanı yazarken dikkat etmesi gerekir. (III) İnsanlar, yazarın duygularını okuduklarında anlamalı ve anlamlandırmalıdırlar. (IV) Duyguların, yazarın eserlerinde olduğu kadar okuyucular tarafından da anlaşılması önemlidir. (V) Yazarların duygularına okurun dikkat etmesi önemlidir. Yukarıdaki numaralanmış cümlelerin anlamlı bir bütün oluşturulabilmesi için hangi ikisinin birbiriyle yer değiştirmesi gerekir?', cevaplar: { A: "I. ve II.", B: "II. ve III.", C: "III. ve IV.", D: "**IV. ve V.**" }, dogruCevap: "D" },
+                { metin: '"Gözden ırak olan gönülden de ırak olur" atasözünün **karşıt anlamlısı** aşağıdakilerden hangisidir?', cevaplar: { A: "Demir tavında dövülür.", B: "Dost başa, düşman ayağa bakar.", C: "Üzümünü ye, bağını sorma.", D: "**Tencere yuvarlanmış kapağını bulmuş** (Yakın olanlar bir araya gelir anlamında)." }, dogruCevap: "D" },
+                { metin: '(1) Çayın tütününden üretilen rakamların fazlalığı zaman içinde artmıştır. (2) Bu nedenle ise hızla devam eden bir artış söz konusudur. (3) Her iki unsur da bir hareketlilik durumu oluşturuyor. (4) Orta Çağ\'da da aynı kullanım artmakta. (5) Bu nedenle ise çay tütününü ülkemizde üretim oranının çok düşük olduğunu söyleyemeyiz. Yukarıdaki numaralanmış cümlelerin anlamlı bir bütün oluşturulabilmesi için hangi ikisinin birbiriyle yer değiştirmesi gerekir?', cevaplar: { A: "I. ve II.", B: "II. ve III.", C: "**III. ve V.**", D: "IV. ve V." }, dogruCevap: "C" }
             ]
-        },
-        // --- DENEME SINAVLARI BAŞLANGICI ---
-        // 7. SINIF TÜRKÇE TARAMA TESTİ – 1
+        }
+    ];
+
+    // B) DENEME SINAVLARI (ID 11-13)
+    const denemeSinavlari = [
         {
             id: 11,
             konu: "Tarama Testi - 1 (Sözcük, Fiil, Noktalama)",
             sorular: [
-                {
-                    metin: 'Aşağıdaki sözcüklerden hangileri eşleştirildiği kavramla ilgili değildir?',
-                    cevaplar: { A: "gitar - beste (müzik)", B: "seksek - körebe (çocuk oyunu)", C: "çekiç - çivi (resim)", D: "kamyon - minibüs (taşıt)" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: '“Tarih” kelimesi numaralanmış cümlelerin hangisinde “bir olayın gününü, ayını ve yılını belirten söz” anlamında kullanılmıştır?\\n1. Kitap arkadaştır.\\n2. En büyük dostumdur.\\n3. Hayata bakış açısını değiştirir.\\n4. Annem lise yıllarında tarihten hep iyi not alırmış.',
-                    cevaplar: { A: "1", B: "2", C: "3", D: "4" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '“Sıkmak” sözcüğü, aşağıdaki cümlelerin hangisinde mecaz anlamda kullanılmıştır?',
-                    cevaplar: { A: "Yeni aldığım kemer belimi çok sıktı.", B: "Marketten aldığım portakalları sıktım.", C: "Marketten aldığım portakalları sıktım.", D: "Seyirciyi sıkmamak için filmin süresi kısa tutulmuştur." },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde fiil, Durum fiilidir?',
-                    cevaplar: { A: "Kazanın nedenini herkes anladı. (İş)", B: "Kırmızı Başlıklı Kız masalını okudunuz mu? (İş)", C: "Yemekten sonra kiraz ve kayısı yedik. (İş)", D: "Bugün oldukça yorgun görünüyorsun. (Durum)" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde zaman zarfı kullanılmıştır?',
-                    cevaplar: { A: "Komşumuz tatile giderken çiçeklerini bize bıraktı.", B: "**Dün gece**, orta şiddette bir deprem oldu.", C: "Nemrut Dağı’nın yakınlarında güneşin doğusunu izledik.", D: "Arkadaşlarla hafta sonunda kahvaltıda buluşuyoruz." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '“Ucu açık bir kullanım, bağımlılığı her hâlükârda tetikleyecektir.” cümlesindeki “ucu açık kullanım” ifadesi, metin bağlamında ne anlama gelmektedir?',
-                    cevaplar: { A: "Teknolojinin çok az kullanılması.", B: "Kullanım süresinin sınırlandırılmaması.", C: "Tek bir cihaza bağımlı kalmak.", D: "Aile üyeleriyle birlikte kullanım." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde ek fiil yoktur?',
-                    cevaplar: { A: "Ankara’ya Eylül 2005’te gelmişti.", B: "Olanların hepsini babasına anlatacaktı.", C: "Bu saatte burada açık bir yer yoktur.", D: "Her gün aynı saate buraya geliyor." },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '“Boş” sözcüğü aşağıdaki cümlelerin hangisinde “İçi meyve dolu tabağı önümüze koydu.” cümlesindeki “dolu” sözcüğün karşıt anlamlısı olarak kullanılmıştır?',
-                    cevaplar: { A: "Annem, boş oturma, bana yardım et, dedi.", B: "Düşünceleri o kadar boştu ki anlam veremedik.", C: "Kasada hiç boş yer kalmadı.", D: "Boş sözler söylemektense susmayı tercih eder." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: '“Dayanmak” sözcüğü aşağıdakilerin hangisinde “Alacaklılar birer birer kapıya dayandı.” cümlesindeki anlamıyla kullanılmıştır?',
-                    cevaplar: { A: "Kanunun verdiği haklara dayanarak dava açtı.", B: "Müşteriler, iflas eden bankanın kapısına dayandılar.", C: "Giydiğim ayakkabılar neredeyse on yıl dayandı.", D: "Onların ilişkileri sevgi ve saygıya dayanıyor." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde fiilin çekimi, Geniş Zaman’ın 3. çoğul kişisi ile yapılmıştır?',
-                    cevaplar: { A: "Annem ve babam beni sorumsuzlukla suçluyorlar.", B: "İnsanlar, Ay’ın sırrını çözmeyi çok isterler.", C: "Yarın okulun kermesine katılacağız.", D: "Dersler artık 07.20’de başlayacakmış." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '“Sana hızlı gitmemeni söylemiştim. Neredeyse kaza yapıyordun.” cümlesindeki altı çizili sözcüğün yerine aşağıdakilerden hangisi getirilirse cümlenin anlamı değişmez?',
-                    cevaplar: { A: "En azından", B: "Hiç olmazsa", C: "**Az kalsın**", D: "Bunun üzerine" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde "mi" soru ekinin yazımı yanlıştır?',
-                    cevaplar: { A: "Eve gelmeli beni seni sorardı.", B: "Hiç böyle yapılır mı?", C: "Sen mi geleceksin, o mu gelecek?", D: "Tatlı **mı** tatlı bir kızı oldu Hüseyin’in." },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '"Hayatın çeşitli güçlüklerine karşı üç şey hediye edilmiştir( )Ümit( )uyku ve gülmek( )" cümlesinde yay ayraçla ( ) belirtilen yerlere sırasıyla aşağıdaki noktalama işaretlerinden hangileri getirilmelidir?',
-                    cevaplar: { A: "(:) (,) (.)", B: "(:) (,) (...)", C: "(;) (,) (...)", D: "(.) (,) (.)" },
-                    dogruCevap: "A"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerden hangisi yazım ve noktalama bakımından doğrudur?',
-                    cevaplar: { A: 'Mevlana: "Denizde inciler derinde olur, çer çöp ise sahilde olur." demiştir.', B: 'Mevlana: "Denizde inciler derinde olur; çer çöp ise sahilde olur." demiştir.', C: 'Mevlana: "Denizde inciler derinde olur, çer çöp ise sahilde olur;” demiştir.', D: 'Mevlana: "Denizde inciler derinde olur; çer çöp ise sahilde olur..." demiştir.' },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde ünlem işareti (!) alay, kinaye veya küçümseme anlamı kazandırmak amacıyla kullanılmıştır?',
-                    cevaplar: { A: "Size söylüyorum öndekiler, ilerleyin!", B: "Eyvah, rüzgâr şapkamı uçurdu!", C: "Çocuklar, bana bakın!", D: "Bu işi ona versek iki günde tamamlarmış (!)." },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde yay ayraçla ( ) belirtilen yere aşağıdaki noktalama işaretlerinden hangisi getirilemez?',
-                    cevaplar: { A: "(: )", B: "(.)", C: "(...)", D: "(?)" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: 'Aşağıdakilerden hangisi Ek Fiilin Görülen (Bilinen) Geçmiş Zamanı ile çekimlenmiş bir cümledir?',
-                    cevaplar: { A: "Evde kapısı kilitli bir oda dikkatimi çekti.", B: "Gözlerimin önünden geçen bir olaydı.", C: "Annem, odun satarak geçimimizi sağlıyordu.", D: "Köyümüz biraz uzak bir köşede olduğu için." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '"Çok merak ettiğim bir başka konu ise uzaydı. Sonsuzluğu düşünürdüm." Bu paragrafın anlatımı kaçıncı kişi ağzından yapılmıştır?',
-                    cevaplar: { A: "Birinci tekil kişi (Ben)", B: "Birinci çoğul kişi (Biz)", C: "Üçüncü tekil kişi (O)", D: "Üçüncü çoğul kişi (Onlar)" },
-                    dogruCevap: "A"
-                },
-                {
-                    metin: '“Annem, lise yıllarında tarihten hep iyi not alırmış.” cümlesindeki fiilin kipi, cümleye hangi anlamı katmıştır?',
-                    cevaplar: { A: "Eylemin yapıldığına dair emin olma", B: "Eylemin başkasından duyulduğu veya öğrenildiği", C: "Eylemin her zaman yapıldığı (alışkanlık)", D: "Eylemin henüz gerçekleşmediği" },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '"Gülmek" sözcüğünün eş seslisi (sesteşi) olan, yazılışı aynı fakat anlamı farklı sözcük aşağıdaki cümlelerin hangisinde kullanılmıştır?',
-                    cevaplar: { A: "Bardağı doldurdukça içimdeki coşku artıyordu.", B: "**Gülün** açtığı bu bahar, içimdeki mutluluğu canlandırdı.", C: "Çekilişi kazanıp gülünce bütün dertlerimi unuttum.", D: "Yol kenarındaki derede, su hızla akıyordu." },
-                    dogruCevap: "B"
-                }
+                { metin: 'Aşağıdaki sözcüklerden hangileri eşleştirildiği kavramla ilgili değildir?', cevaplar: { A: "gitar - beste (müzik)", B: "seksek - körebe (çocuk oyunu)", C: "çekiç - çivi (resim)", D: "kamyon - minibüs (taşıt)" }, dogruCevap: "C" },
+                { metin: '“Tarih” kelimesi numaralanmış cümlelerin hangisinde “bir olayın gününü, ayını ve yılını belirten söz” anlamında kullanılmıştır?\\n1. Kitap arkadaştır.\\n2. En büyük dostumdur.\\n3. Hayata bakış açısını değiştirir.\\n4. Annem lise yıllarında tarihten hep iyi not alırmış.', cevaplar: { A: "1", B: "2", C: "3", D: "4" }, dogruCevap: "D" },
+                { metin: '“Sıkmak” sözcüğü, aşağıdaki cümlelerin hangisinde mecaz anlamda kullanılmıştır?', cevaplar: { A: "Yeni aldığım kemer belimi çok sıktı.", B: "Marketten aldığım portakalları sıktım.", C: "Marketten aldığım portakalları sıktım.", D: "Seyirciyi sıkmamak için filmin süresi kısa tutulmuştur." }, dogruCevap: "D" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde fiil, Durum fiilidir?', cevaplar: { A: "Kazanın nedenini herkes anladı. (İş)", B: "Kırmızı Başlıklı Kız masalını okudunuz mu? (İş)", C: "Yemekten sonra kiraz ve kayısı yedik. (İş)", D: "Bugün oldukça yorgun görünüyorsun. (Durum)" }, dogruCevap: "D" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde zaman zarfı kullanılmıştır?', cevaplar: { A: "Komşumuz tatile giderken çiçeklerini bize bıraktı.", B: "**Dün gece**, orta şiddette bir deprem oldu.", C: "Nemrut Dağı’nın yakınlarında güneşin doğusunu izledik.", D: "Arkadaşlarla hafta sonunda kahvaltıda buluşuyoruz." }, dogruCevap: "B" },
+                { metin: '“Ucu açık bir kullanım, bağımlılığı her hâlükârda tetikleyecektir.” cümlesindeki “ucu açık kullanım” ifadesi, metin bağlamında ne anlama gelmektedir?', cevaplar: { A: "Teknolojinin çok az kullanılması.", B: "Kullanım süresinin sınırlandırılmaması.", C: "Tek bir cihaza bağımlı kalmak.", D: "Aile üyeleriyle birlikte kullanım." }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde ek fiil yoktur?', cevaplar: { A: "Ankara’ya Eylül 2005’te gelmişti.", B: "Olanların hepsini babasına anlatacaktı.", C: "Bu saatte burada açık bir yer yoktur.", D: "Her gün aynı saate buraya geliyor." }, dogruCevap: "D" },
+                { metin: '“Boş” sözcüğü aşağıdaki cümlelerin hangisinde “İçi meyve dolu tabağı önümüze koydu.” cümlesindeki “dolu” sözcüğün karşıt anlamlısı olarak kullanılmıştır?', cevaplar: { A: "Annem, boş oturma, bana yardım et, dedi.", B: "Düşünceleri o kadar boştu ki anlam veremedik.", C: "Kasada hiç boş yer kalmadı.", D: "Boş sözler söylemektense susmayı tercih eder." }, dogruCevap: "C" },
+                { metin: '“Dayanmak” sözcüğü aşağıdakilerin hangisinde “Alacaklılar birer birer kapıya dayandı.” cümlesindeki anlamıyla kullanılmıştır?', cevaplar: { A: "Kanunun verdiği haklara dayanarak dava açtı.", B: "Müşteriler, iflas eden bankanın kapısına dayandılar.", C: "Giydiğim ayakkabılar neredeyse on yıl dayandı.", D: "Onların ilişkileri sevgi ve saygıya dayanıyor." }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde fiilin çekimi, Geniş Zaman’ın 3. çoğul kişisi ile yapılmıştır?', cevaplar: { A: "Annem ve babam beni sorumsuzlukla suçluyorlar.", B: "İnsanlar, Ay’ın sırrını çözmeyi çok isterler.", C: "Yarın okulun kermesine katılacağız.", D: "Dersler artık 07.20’de başlayacakmış." }, dogruCevap: "B" },
+                { metin: '“Sana hızlı gitmemeni söylemiştim. Neredeyse kaza yapıyordun.” cümlesindeki altı çizili sözcüğün yerine aşağıdakilerden hangisi getirilirse cümlenin anlamı değişmez?', cevaplar: { A: "En azından", B: "Hiç olmazsa", C: "**Az kalsın**", D: "Bunun üzerine" }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde "mi" soru ekinin yazımı yanlıştır?', cevaplar: { A: "Eve gelmeli beni seni sorardı.", B: "Hiç böyle yapılır mı?", C: "Sen mi geleceksin, o mu gelecek?", D: "Tatlı **mı** tatlı bir kızı oldu Hüseyin’in." }, dogruCevap: "D" },
+                { metin: '"Hayatın çeşitli güçlüklerine karşı üç şey hediye edilmiştir( )Ümit( )uyku ve gülmek( )" cümlesinde yay ayraçla ( ) belirtilen yerlere sırasıyla aşağıdaki noktalama işaretlerinden hangileri getirilmelidir?', cevaplar: { A: "(:) (,) (.)", B: "(:) (,) (...)", C: "(;) (,) (...)", D: "(.) (,) (.)" }, dogruCevap: "A" },
+                { metin: 'Aşağıdaki cümlelerden hangisi yazım ve noktalama bakımından doğrudur?', cevaplar: { A: 'Mevlana: "Denizde inciler derinde olur, çer çöp ise sahilde olur." demiştir.', B: 'Mevlana: "Denizde inciler derinde olur; çer çöp ise sahilde olur." demiştir.', C: 'Mevlana: "Denizde inciler derinde olur, çer çöp ise sahilde olur;” demiştir.', D: 'Mevlana: "Denizde inciler derinde olur; çer çöp ise sahilde olur..." demiştir.' }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde ünlem işareti (!) alay, kinaye veya küçümseme anlamı kazandırmak amacıyla kullanılmıştır?', cevaplar: { A: "Size söylüyorum öndekiler, ilerleyin!", B: "Eyvah, rüzgâr şapkamı uçurdu!", C: "Çocuklar, bana bakın!", D: "Bu işi ona versek iki günde tamamlarmış (!)." }, dogruCevap: "D" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde yay ayraçla ( ) belirtilen yere aşağıdaki noktalama işaretlerinden hangisi getirilemez?', cevaplar: { A: "(: )", B: "(.)", C: "(...)", D: "(?)" }, dogruCevap: "D" },
+                { metin: 'Aşağıdakilerden hangisi Ek Fiilin Görülen (Bilinen) Geçmiş Zamanı ile çekimlenmiş bir cümledir?', cevaplar: { A: "Evde kapısı kilitli bir oda dikkatimi çekti.", B: "Gözlerimin önünden geçen bir olaydı.", C: "Annem, odun satarak geçimimizi sağlıyordu.", D: "Köyümüz biraz uzak bir köşede olduğu için." }, dogruCevap: "B" },
+                { metin: '"Çok merak ettiğim bir başka konu ise uzaydı. Sonsuzluğu düşünürdüm." Bu paragrafın anlatımı kaçıncı kişi ağzından yapılmıştır?', cevaplar: { A: "Birinci tekil kişi (Ben)", B: "Birinci çoğul kişi (Biz)", C: "Üçüncü tekil kişi (O)", D: "Üçüncü çoğul kişi (Onlar)" }, dogruCevap: "A" },
+                { metin: '“Annem, lise yıllarında tarihten hep iyi not alırmış.” cümlesindeki fiilin kipi, cümleye hangi anlamı katmıştır?', cevaplar: { A: "Eylemin yapıldığına dair emin olma", B: "Eylemin başkasından duyulduğu veya öğrenildiği", C: "Eylemin her zaman yapıldığı (alışkanlık)", D: "Eylemin henüz gerçekleşmediği" }, dogruCevap: "B" },
+                { metin: '"Gülmek" sözcüğünün eş seslisi (sesteşi) olan, yazılışı aynı fakat anlamı farklı sözcük aşağıdaki cümlelerin hangisinde kullanılmıştır?', cevaplar: { A: "Bardağı doldurdukça içimdeki coşku artıyordu.", B: "**Gülün** açtığı bu bahar, içimdeki mutluluğu canlandırdı.", C: "Çekilişi kazanıp gülünce bütün dertlerimi unuttum.", D: "Yol kenarındaki derede, su hızla akıyordu." }, dogruCevap: "B" }
             ]
         },
-
-        // 7. SINIF TÜRKÇE TARAMA TESTİ – 2
         {
             id: 12,
             konu: "Tarama Testi - 2 (Cümle Anlamı, Paragraf, Yazım)",
             sorular: [
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde öznel yargı içermektedir?',
-                    cevaplar: { A: "Üzerinde kırmızı bir hırka ile siyah bir ayakkabı vardı.", B: "Düğüne üç yüz kırk beş kişi katıldı.", C: "Teyzemin **takdir ettiğim altın kuralları** vardır.", D: "“Yalnızlık” adlı film 10 Haziran’da vizyona girecek." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde sebep-sonuç ilişkisi vardır?',
-                    cevaplar: { A: "Yüzme öğrenmek için kursa gidiyor. (Amaç)", B: "İşlerim yoğun olduğu **için** seni arayamadım. (Sebep)", C: "Biraz hava almak için balkona çıktı. (Amaç)", D: "Yüksekten bakmak için çatıya çıktı. (Amaç)" },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde "ki"nin yazımı ile ilgili bir yanlışlık yapılmıştır?',
-                    cevaplar: { A: "Oysaki ben bu projeye çok emek vermiştim.", B: "**Sendeki bu cesaret ki** kimsede yok.", C: "Yazarın polisiye romanları çok satılıyor.", D: "Seninki de laf mı?" },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde fiil çekimindeki kip cümleye farklı bir anlam katmıştır (anlam kayması)?',
-                    cevaplar: { A: "Seninle yarın memlekete **gidiyoruz**.", B: "Bu kitabı okumak için zamanı vardı.", C: "Her gün onlara bir not bırakırdım.", D: "Sen de babanla maça gitmişsin." },
-                    dogruCevap: "A"
-                },
-                {
-                    metin: '"Ağabeyim, öğretmenliğe başladığında yirmi dört yaşındaydı. Her zaman yaşına göre daha olgun davranırdı. O ışıltılı yüzünden tebessüm hiç eksik olmamıştı." Bu parça aşağıdaki yazı türlerinden hangisine örnektir?',
-                    cevaplar: { A: "Anı", B: "Deneme", C: "Masal", D: "Makale" },
-                    dogruCevap: "A"
-                },
-                {
-                    metin: '"Mizah, şakanın arkasına saklanmış ciddiyettir." Bu cümlede ağır basan anlatım özelliği aşağıdakilerden hangisidir?',
-                    cevaplar: { A: "Örnekleme", B: "Tartışma", C: "Tanımlama", D: "Öyküleme" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdakilerin hangisinde kısaltmaların yazımıyla ilgili bir yanlışlık yapılmıştır?',
-                    cevaplar: { A: "Doç. Dr. Berkan Yavuzer, bugün derse gelmedi.", B: "21. yy.’da yalanacak şey mi bu?", C: "Elma, armut, kayısı **vb.** meyve ve ağaçları vardı bahçede.", D: "On cm boyunda çivi aldım hırdavatçıdan." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: '"Toplantıya babam da katılacakmış." cümlesinde var olan örtülü anlam aşağıdakilerden hangisidir?',
-                    cevaplar: { A: "Babasının toplantıya gitmeyeceği", B: "Toplantıya **başka kişilerin de katılacağı**", C: "Babasının toplantıda söz alacağı", D: "Toplantının uzun süreceği" },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '“Gülümseyerek bana bakıyor.” cümlesindeki fiilin türü aşağıdakilerden hangisidir?',
-                    cevaplar: { A: "İş", B: "Durum", C: "Oluş", D: "İstek" },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde bir yazım yanlışı vardır?',
-                    cevaplar: { A: "TCDD’den emekli oldu babam.", B: "THY’nin bir çalışanı olmak isterdim.", C: "ABD’**ne** turist olarak gitti.", D: "TDK’nın yaptığı çalışmalar yeterli mi?" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde yüklem ek fiil almıştır?',
-                    cevaplar: { A: "Rusya ile Türkiye arasında anlaşma sağlandı.", B: "Sınavdaki en yüksek notu Sıla aldı.", C: "**Hayriye Hanım, bir buçuk yıldır evliydi.**", D: "Babası, oğluna göl ile ilgili bir şeyler anlatmaktadır." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde amaç-sonuç ilişkisi vardır?',
-                    cevaplar: { A: "Hava soğuk olduğundan dışarı çıkamadım.", B: "Eve gitmek **için** okul idaresinden izin istedi.", C: "Kendi başına kaldığı için çok korkmuş.", D: "Sözünü dinlemediği için ona küstü." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde isimden yeni bir kelime türetilmiştir?',
-                    cevaplar: { A: "Camı kırık arabayla mı gidilecek?", B: "Yarın günlük ondan daha çok görebileceğim.", C: "Ahmet daha yakına gelmiş, şekerim!", D: "Miray, kapalı bir araba istediğini bildirmiş." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde yazım yanlışı yoktur?',
-                    cevaplar: { A: "Her yer karmakarışık, her şeyi ben mi düzelteceğim?", B: "Her zaman planlı ve düzenli olmalısınız.", C: "Herhangi biriniz bu işi üstlenebilir.", D: "**Bir takım** insanlar, sorumluluklarını yerine getirmiyor." },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '"Bir köpek havladı. Yörük Hoca çubuğunu..." Bu parça aşağıdaki yazı türlerinden hangisine örnektir?',
-                    cevaplar: { A: "Deneme", B: "Söyleşi", C: "Hikâye", D: "Biyografi" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde zıt anlamlı sözcükler bir arada kullanılmıştır?',
-                    cevaplar: { A: "Benimle konuşmak için dün akşam buraya geldi.", B: "Uykudan sonra bile yorgun görünüyordu.", C: "**Genç yaşlı** herkes meydanda toplanmıştı.", D: "Onunla bir daha görüşmek istemiyorum." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde altı çizili kelime ölçü (miktar) zarfı değildir?',
-                    cevaplar: { A: "Müdür bey, sözü **çok** uzattı.", B: "Sevda Hanım, bugün **az** uyumuş.", C: "Bu konuda **gayet** rahat davranıyorsun.", D: "**Azıcık** aşım, kaygısız başım." },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '"Kamyonun kasasında gördüklerim düş müydü, gerçek mi... Sanki bir anda her yer yeşile boyanmış gibi göründü gözüme." Bu parçanın anlatımında aşağıdaki anlatım biçimlerinden hangisi ağır basmaktadır?',
-                    cevaplar: { A: "Açıklama", B: "Tartışma", C: "Betimleme", D: "Tanımlama" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde görülen geçmiş zaman kipi kullanılmıştır?',
-                    cevaplar: { A: "Babam o yıllar Yozgat'tan Ankara'ya tayin olur.", B: "Günlerdir aynı şiiri yazıyorsun.", C: "Günlerdir bütün derslerine **çalıştı**.", D: "Haftaya teyzem bize gelecek." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: '"İcatların bir kısmı, 20. yy. başında büyük ses getirir." cümlesiyle ilgili olarak aşağıdakilerden hangisi söylenebilir?',
-                    cevaplar: { A: "Öznel yargı içermektedir.", B: "Nesnel yargı içermektedir.", C: "Koşul anlamı taşımaktadır.", D: "Örtülü anlam içermektedir." },
-                    dogruCevap: "B"
-                }
+                { metin: 'Aşağıdaki cümlelerin hangisinde öznel yargı içermektedir?', cevaplar: { A: "Üzerinde kırmızı bir hırka ile siyah bir ayakkabı vardı.", B: "Düğüne üç yüz kırk beş kişi katıldı.", C: "Teyzemin **takdir ettiğim altın kuralları** vardır.", D: "“Yalnızlık” adlı film 10 Haziran’da vizyona girecek." }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde sebep-sonuç ilişkisi vardır?', cevaplar: { A: "Yüzme öğrenmek için kursa gidiyor. (Amaç)", B: "İşlerim yoğun olduğu **için** seni arayamadım. (Sebep)", C: "Biraz hava almak için balkona çıktı. (Amaç)", D: "Yüksekten bakmak için çatıya çıktı. (Amaç)" }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde "ki"nin yazımı ile ilgili bir yanlışlık yapılmıştır?', cevaplar: { A: "Oysaki ben bu projeye çok emek vermiştim.", B: "**Sendeki bu cesaret ki** kimsede yok.", C: "Yazarın polisiye romanları çok satılıyor.", D: "Seninki de laf mı?" }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde fiil çekimindeki kip cümleye farklı bir anlam katmıştır (anlam kayması)?', cevaplar: { A: "Seninle yarın memlekete **gidiyoruz**.", B: "Bu kitabı okumak için zamanı vardı.", C: "Her gün onlara bir not bırakırdım.", D: "Sen de babanla maça gitmişsin." }, dogruCevap: "A" },
+                { metin: '"Ağabeyim, öğretmenliğe başladığında yirmi dört yaşındaydı. Her zaman yaşına göre daha olgun davranırdı. O ışıltılı yüzünden tebessüm hiç eksik olmamıştı." Bu parça aşağıdaki yazı türlerinden hangisine örnektir?', cevaplar: { A: "Anı", B: "Deneme", C: "Masal", D: "Makale" }, dogruCevap: "A" },
+                { metin: '"Mizah, şakanın arkasına saklanmış ciddiyettir." Bu cümlede ağır basan anlatım özelliği aşağıdakilerden hangisidir?', cevaplar: { A: "Örnekleme", B: "Tartışma", C: "Tanımlama", D: "Öyküleme" }, dogruCevap: "C" },
+                { metin: 'Aşağıdakilerin hangisinde kısaltmaların yazımıyla ilgili bir yanlışlık yapılmıştır?', cevaplar: { A: "Doç. Dr. Berkan Yavuzer, bugün derse gelmedi.", B: "21. yy.’da yalanacak şey mi bu?", C: "Elma, armut, kayısı **vb.** meyve ve ağaçları vardı bahçede.", D: "On cm boyunda çivi aldım hırdavatçıdan." }, dogruCevap: "C" },
+                { metin: '"Toplantıya babam da katılacakmış." cümlesinde var olan örtülü anlam aşağıdakilerden hangisidir?', cevaplar: { A: "Babasının toplantıya gitmeyeceği", B: "Toplantıya **başka kişilerin de katılacağı**", C: "Babasının toplantıda söz alacağı", D: "Toplantının uzun süreceği" }, dogruCevap: "B" },
+                { metin: '“Gülümseyerek bana bakıyor.” cümlesindeki fiilin türü aşağıdakilerden hangisidir?', cevaplar: { A: "İş", B: "Durum", C: "Oluş", D: "İstek" }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde bir yazım yanlışı vardır?', cevaplar: { A: "TCDD’den emekli oldu babam.", B: "THY’nin bir çalışanı olmak isterdim.", C: "ABD’**ne** turist olarak gitti.", D: "TDK’nın yaptığı çalışmalar yeterli mi?" }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde yüklem ek fiil almıştır?', cevaplar: { A: "Rusya ile Türkiye arasında anlaşma sağlandı.", B: "Sınavdaki en yüksek notu Sıla aldı.", C: "**Hayriye Hanım, bir buçuk yıldır evliydi.**", D: "Babası, oğluna göl ile ilgili bir şeyler anlatmaktadır." }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde amaç-sonuç ilişkisi vardır?', cevaplar: { A: "Hava soğuk olduğundan dışarı çıkamadım.", B: "Eve gitmek **için** okul idaresinden izin istedi.", C: "Kendi başına kaldığı için çok korkmuş.", D: "Sözünü dinlemediği için ona küstü." }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde isimden yeni bir kelime türetilmiştir?', cevaplar: { A: "Camı kırık arabayla mı gidilecek?", B: "Yarın günlük ondan daha çok görebileceğim.", C: "Ahmet daha yakına gelmiş, şekerim!", D: "Miray, kapalı bir araba istediğini bildirmiş." }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde yazım yanlışı yoktur?', cevaplar: { A: "Her yer karmakarışık, her şeyi ben mi düzelteceğim?", B: "Her zaman planlı ve düzenli olmalısınız.", C: "Herhangi biriniz bu işi üstlenebilir.", D: "**Bir takım** insanlar, sorumluluklarını yerine getirmiyor." }, dogruCevap: "D" },
+                { metin: '"Bir köpek havladı. Yörük Hoca çubuğunu..." Bu parça aşağıdaki yazı türlerinden hangisine örnektir?', cevaplar: { A: "Deneme", B: "Söyleşi", C: "Hikâye", D: "Biyografi" }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde zıt anlamlı sözcükler bir arada kullanılmıştır?', cevaplar: { A: "Benimle konuşmak için dün akşam buraya geldi.", B: "Uykudan sonra bile yorgun görünüyordu.", C: "**Genç yaşlı** herkes meydanda toplanmıştı.", D: "Onunla bir daha görüşmek istemiyorum." }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde altı çizili kelime ölçü (miktar) zarfı değildir?', cevaplar: { A: "Müdür bey, sözü **çok** uzattı.", B: "Sevda Hanım, bugün **az** uyumuş.", C: "Bu konuda **gayet** rahat davranıyorsun.", D: "**Azıcık** aşım, kaygısız başım." }, dogruCevap: "D" },
+                { metin: '"Kamyonun kasasında gördüklerim düş müydü, gerçek mi... Sanki bir anda her yer yeşile boyanmış gibi göründü gözüme." Bu parçanın anlatımında aşağıdaki anlatım biçimlerinden hangisi ağır basmaktadır?', cevaplar: { A: "Açıklama", B: "Tartışma", C: "Betimleme", D: "Tanımlama" }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde görülen geçmiş zaman kipi kullanılmıştır?', cevaplar: { A: "Babam o yıllar Yozgat'tan Ankara'ya tayin olur.", B: "Günlerdir aynı şiiri yazıyorsun.", C: "Günlerdir bütün derslerine **çalıştı**.", D: "Haftaya teyzem bize gelecek." }, dogruCevap: "C" },
+                { metin: '"İcatların bir kısmı, 20. yy. başında büyük ses getirir." cümlesiyle ilgili olarak aşağıdakilerden hangisi söylenebilir?', cevaplar: { A: "Öznel yargı içermektedir.", B: "Nesnel yargı içermektedir.", C: "Koşul anlamı taşımaktadır.", D: "Örtülü anlam içermektedir." }, dogruCevap: "B" }
             ]
         },
-
-        // 7. SINIF TÜRKÇE TARAMA TESTİ – 3
         {
             id: 13,
             konu: "Tarama Testi - 3 (Paragraf, Söz Sanatları, Fiil Yapısı)",
             sorular: [
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde Benzetme (Teşbih) sanatı vardır?',
-                    cevaplar: { A: "Düşünür ağaçlar aylarca gelecek baharı.", B: "Şehre çöken karanlık, sokakta bir adam gördü.", C: "Dere kenarındaki pınardan akan **soğuk su gibi** akıyordu.", D: "Abartma sanatı kullanılmıştır." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki fiillerden hangisi türemiş yapılıdır?',
-                    cevaplar: { A: "koşa", B: "taşıdım", C: "**incitmekten** (inç-i-tmek)", D: "oldular" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde yazım yanlışı yapılmıştır?',
-                    cevaplar: { A: "**Penbe** renkli bir kazağı vardı.", B: "Dolambaçlı bir yoldan baraja doğru indik.", C: "İstanbul ve Safranbolu’ya hiç gittiniz mi?", D: "Saklanbaç oyunu küçükken çok oynadığımız bir oyundu." },
-                    dogruCevap: "A"
-                },
-                {
-                    metin: '"Yaratıcı yazı, düşlerin yerine sanatçının düş kurma biçimi olarak kurmacayı yarattı... Borges, bu durumu \'İlkel insan ve çocuk için düşler, uyanık yaşamın öyküleri-dir.\' diye açıklıyor." Bu paragrafta aşağıdaki düşünceyi geliştirme yollarından hangisi kullanılmıştır?',
-                    cevaplar: { A: "Örneklendirme", B: "Karşılaştırma", C: "Tanık gösterme", D: "Benzetme" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdakilerin hangisinde konuşmanın hareketlerini, durumunu açıklamak için yay ayraç ( ) kullanılmıştır?',
-                    cevaplar: { A: "Yazarların alıntı yaptığı eseri, yazarı veya künye bilgilerini göstermek için.", B: "İhtiyar (**Yavaş yavaş Kaymakam’a yaklaşır.**) Ne oluyor beyefendi?", C: "Bir sözü, alay, kinaye veya küçümseme anlamı kazandırmak için.", D: "Cümledeki anlamı tamamlayan ve cümlenin dışında kalan ek bilgiler için." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '“Mendili ilk kapan oyunu kazanacaktı.” cümlesindeki altı çizili sözcük aşağıdaki anlamlardan hangisiyle kullanılmıştır?',
-                    cevaplar: { A: "Görür görmez öğrenmek", B: "Yer ayırmak", C: "**Birdenbire yakalayarak, çekerek almak**", D: "Koparmak, kıstırmak" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki fiillerden hangisi farklı bir anlam özelliğine sahiptir?',
-                    cevaplar: { A: "**duracak** (Durum)", B: "süpürdü (İş)", C: "bekleriz (İş)", D: "taşıdım (İş)" },
-                    dogruCevap: "A"
-                },
-                {
-                    metin: '“Çocuklar buraya gelmekten bıkmışlar, artık başka bir yere gitmek istiyor.” cümlesindeki fiilin kipi, cümleye hangi anlamı katmıştır?',
-                    cevaplar: { A: "Kesinlik", B: "Gerçekleşmemiş beklenti", C: "Küçümseme", D: "Olasılık" },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '"Uzun süreli kronik stres, bağışıklık sistemini zayıflatıp sağlığımızı tehdit eden durumlara neden olur." Bu metnin ana düşüncesi aşağıdakilerden hangisidir?',
-                    cevaplar: { A: "Bağışıklık sistemi zayıflayınca grip olunur.", B: "Kalp krizi riski üst solunum yolu enfeksiyonundan yüksektir.", C: "**Stresin uzun vadede sağlığa ciddi zararları vardır.**", D: "Stres, omuz ağrılarına neden olur." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde sözcüğün yanlış anlamda kullanılmasından kaynaklanan anlatım bozukluğu yoktur?',
-                    cevaplar: { A: "Yazar, son romanında çocukluk anılarına değinmiş. (Anı yerine 'anıları' kullanılmalı)", B: "İzin gösteri salonuna girmek doğru değil.", C: "Bu yılki yaz tatilinde günlerin sayısı biraz daha fazla.", D: "Yazarın polisiye romanları çok satılıyor." },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '"Gözden ırak olan gönülden de ırak olur" atasözünün karşıt anlamlısı aşağıdakilerden hangisidir?',
-                    cevaplar: { A: "Demir tavında dövülür.", B: "Dost başa, düşman ayağa bakar.", C: "Üzümünü ye, bağını sorma.", D: "**Tencere yuvarlanmış kapağını bulmuş.**" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '"Ben, kalabalık bir aile içinde bir çiftlikte büyüdüm. Etrafım bir sevgi çemberiyle sarılıydı." Bu parçayla ilgili olarak aşağıdakilerden hangisine ulaşılamaz?',
-                    cevaplar: { A: "Bir hikâyeden alınmıştır.", B: "**Atasözleri kullanılmıştır.**", C: "Anlatım birinci kişi ağzından yapılmıştır.", D: "Sebep-sonuç ilişkisi içeren cümleye yer verilmiştir." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde koşul (şart) anlamı vardır?',
-                    cevaplar: { A: "Çok kar yağdığı için yollar kapandı.", B: "İyi bir araba alabilmek için para biriktiriyordu.", C: "Yüzmeye gidebiliriz **ancak** yanımdan ayrılmayacaksın.", D: "Okumak zihni açtığı için yararlıdır." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde yazım yanlışı vardır?',
-                    cevaplar: { A: "Konya Ovası’nın gölleri muhteşemdi!", B: "Fırat nehrinin nerede olduğunu bilmiyor.", C: "Ağrı Dağı’na hiç çıktınız mı?", D: "**Tuz Gölü’nde** balık var mı?" },
-                    dogruCevap: "D"
-                },
-                {
-                    metin: '"Her ne kadar adları denizatı olsa da bu canlılar tam anlamıyla bir balık türüdür... Bazıları serçe parmağı büyüklüğünde, bazıları ise iki elimizin uzunluğunda olabilir." Bu parçanın anlatımında aşağıdaki anlatım türlerinden hangisi kullanılmıştır?',
-                    cevaplar: { A: "Öyküleme", B: "Tartışma", C: "Açıklama", D: "Betimleme" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde fiil, Gereklilik kipi ile çekimlenmiştir?',
-                    cevaplar: { A: "Yarın bize mutlaka gel.", B: "Bu soruları hemen **çözmelisiniz**.", C: "Sen de babanla maça gitmişsin.", D: "Eve gelince dinlensin." },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: 'Aşağıdaki cümlelerin hangisinde "kısa çizgi (-)" yanlış kullanılmıştır?',
-                    cevaplar: { A: "Matematikte çıkarma işareti olarak kullanılmıştır.", B: "Sayılar arasındaki ilişkiyi göstermek için kullanılmıştır (20-30).", C: "**Türk-İran** ilişkileri doğrudur.", D: "Satır sonuna sığmayan kelimeleri bölmek için kullanılmıştır." },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: '"Geleceği satın alabilecek tek şey bugündür. (Samuel Jahnson)" Bu cümlede yay ayraçla ( ) hangi amaçla kullanılmıştır?',
-                    cevaplar: { A: "Tiyatrolarda konuşanın hareketini açıklamak için", B: "Cümledeki anlamı tamamlayan ek bilgiler için", C: "**Alıntıların aktarıldığı eseri, yazarı veya künye bilgilerini göstermek için**", D: "Cümlenin dışında kalan ek bilgileri göstermek için" },
-                    dogruCevap: "C"
-                },
-                {
-                    metin: '"Zürafa, kulağını 53 cm uzun-luğundaki dili ile temizler. / Bir balina, yavrusuna günde yaklaşık 90 litre süt verir." Bu bilgilerin yer aldığı bir metinde düşünceyi geliştirme yollarından hangisi kullanılmıştır?',
-                    cevaplar: { A: "Tanık gösterme", B: "**Sayısal verilerden yararlanma**", C: "Tanımlama", D: "Benzetme" },
-                    dogruCevap: "B"
-                },
-                {
-                    metin: '"İcatların bir kısmı, 20. yy. başında büyük ses getirir." cümlesinde altı çizili kısaltmanın yazımıyla ilgili yanlışlık aşağıdakilerden hangisidir?',
-                    cevaplar: { A: "Kısaltmanın büyük harfle yazılmaması.", B: "**Kısaltmadan sonra nokta konulması.**", C: "Kısaltmanın yazımında ünsüz kullanılması.", D: "Kısaltmanın büyük harflerle yazılması." },
-                    dogruCevap: "B"
-                }
+                { metin: 'Aşağıdaki cümlelerin hangisinde Benzetme (Teşbih) sanatı vardır?', cevaplar: { A: "Düşünür ağaçlar aylarca gelecek baharı.", B: "Şehre çöken karanlık, sokakta bir adam gördü.", C: "Dere kenarındaki pınardan akan **soğuk su gibi** akıyordu.", D: "Abartma sanatı kullanılmıştır." }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki fiillerden hangisi türemiş yapılıdır?', cevaplar: { A: "koşa", B: "taşıdım", C: "**incitmekten** (inç-i-tmek)", D: "oldular" }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde yazım yanlışı yapılmıştır?', cevaplar: { A: "**Penbe** renkli bir kazağı vardı.", B: "Dolambaçlı bir yoldan baraja doğru indik.", C: "İstanbul ve Safranbolu’ya hiç gittiniz mi?", D: "Saklanbaç oyunu küçükken çok oynadığımız bir oyundu." }, dogruCevap: "A" },
+                { metin: '"Yaratıcı yazı, düşlerin yerine sanatçının düş kurma biçimi olarak kurmacayı yarattı... Borges, bu durumu \'İlkel insan ve çocuk için düşler, uyanık yaşamın öyküleri-dir.\' diye açıklıyor." Bu paragrafta aşağıdaki düşünceyi geliştirme yollarından hangisi kullanılmıştır?', cevaplar: { A: "Örneklendirme", B: "Karşılaştırma", C: "Tanık gösterme", D: "Benzetme" }, dogruCevap: "C" },
+                { metin: 'Aşağıdakilerin hangisinde konuşmanın hareketlerini, durumunu açıklamak için yay ayraç ( ) kullanılmıştır?', cevaplar: { A: "Yazarların alıntı yaptığı eseri, yazarı veya künye bilgilerini göstermek için.", B: "İhtiyar (**Yavaş yavaş Kaymakam’a yaklaşır.**) Ne oluyor beyefendi?", C: "Bir sözü, alay, kinaye veya küçümseme anlamı kazandırmak için.", D: "Cümledeki anlamı tamamlayan ve cümlenin dışında kalan ek bilgiler için." }, dogruCevap: "B" },
+                { metin: '“Mendili ilk kapan oyunu kazanacaktı.” cümlesindeki altı çizili sözcük aşağıdaki anlamlardan hangisiyle kullanılmıştır?', cevaplar: { A: "Görür görmez öğrenmek", B: "Yer ayırmak", C: "**Birdenbire yakalayarak, çekerek almak**", D: "Koparmak, kıstırmak" }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki fiillerden hangisi farklı bir anlam özelliğine sahiptir?', cevaplar: { A: "**duracak** (Durum)", B: "süpürdü (İş)", C: "bekleriz (İş)", D: "taşıdım (İş)" }, dogruCevap: "A" },
+                { metin: '“Çocuklar buraya gelmekten bıkmışlar, artık başka bir yere gitmek istiyor.” cümlesindeki fiilin kipi, cümleye hangi anlamı katmıştır?', cevaplar: { A: "Kesinlik", B: "Gerçekleşmemiş beklenti", C: "Küçümseme", D: "Olasılık" }, dogruCevap: "B" },
+                { metin: '"Uzun süreli kronik stres, bağışıklık sistemini zayıflatıp sağlığımızı tehdit eden durumlara neden olur." Bu metnin ana düşüncesi aşağıdakilerden hangisidir?', cevaplar: { A: "Bağışıklık sistemi zayıflayınca grip olunur.", B: "Kalp krizi riski üst solunum yolu enfeksiyonundan yüksektir.", C: "**Stresin uzun vadede sağlığa ciddi zararları vardır.**", D: "Stres, omuz ağrılarına neden olur." }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde sözcüğün yanlış anlamda kullanılmasından kaynaklanan anlatım bozukluğu yoktur?', cevaplar: { A: "Yazar, son romanında çocukluk anılarına değinmiş. (Anı yerine \'anıları\' kullanılmalı)", B: "İzin gösteri salonuna girmek doğru değil.", C: "Bu yılki yaz tatilinde günlerin sayısı biraz daha fazla.", D: "Yazarın polisiye romanları çok satılıyor." }, dogruCevap: "D" },
+                { metin: '"Gözden ırak olan gönülden de ırak olur" atasözünün **karşıt anlamlısı** aşağıdakilerden hangisidir?', cevaplar: { A: "Demir tavında dövülür.", B: "Dost başa, düşman ayağa bakar.", C: "Üzümünü ye, bağını sorma.", D: "**Tencere yuvarlanmış kapağını bulmuş.**" }, dogruCevap: "D" },
+                { metin: '"Ben, kalabalık bir aile içinde bir çiftlikte büyüdüm. Etrafım bir sevgi çemberiyle sarılıydı." Bu parçayla ilgili olarak aşağıdakilerden hangisine ulaşılamaz?', cevaplar: { A: "Bir hikâyeden alınmıştır.", B: "**Atasözleri kullanılmıştır.**", C: "Anlatım birinci kişi ağzından yapılmıştır.", D: "Sebep-sonuç ilişkisi içeren cümleye yer verilmiştir." }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde koşul (şart) anlamı vardır?', cevaplar: { A: "Çok kar yağdığı için yollar kapandı.", B: "İyi bir araba alabilmek için para biriktiriyordu.", C: "Yüzmeye gidebiliriz **ancak** yanımdan ayrılmayacaksın.", D: "Okumak zihni açtığı için yararlıdır." }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde yazım yanlışı vardır?', cevaplar: { A: "Konya Ovası’nın gölleri muhteşemdi!", B: "Fırat nehrinin nerede olduğunu bilmiyor.", C: "Ağrı Dağı’na hiç çıktınız mı?", D: "**Tuz Gölü’nde** balık var mı?" }, dogruCevap: "D" },
+                { metin: '"Her ne kadar adları denizatı olsa da bu canlılar tam anlamıyla bir balık türüdür... Bazıları serçe parmağı büyüklüğünde, bazıları ise iki elimizin uzunluğunda olabilir." Bu parçanın anlatımında aşağıdaki anlatım türlerinden hangisi kullanılmıştır?', cevaplar: { A: "Öyküleme", B: "Tartışma", C: "Açıklama", D: "Betimleme" }, dogruCevap: "C" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde fiil, Gereklilik kipi ile çekimlenmiştir?', cevaplar: { A: "Yarın bize mutlaka gel.", B: "Bu soruları hemen **çözmelisiniz**.", C: "Sen de babanla maça gitmişsin.", D: "Eve gelince dinlensin." }, dogruCevap: "B" },
+                { metin: 'Aşağıdaki cümlelerin hangisinde "kısa çizgi (-)" yanlış kullanılmıştır?', cevaplar: { A: "Matematikte çıkarma işareti olarak kullanılmıştır.", B: "Sayılar arasındaki ilişkiyi göstermek için kullanılmıştır (20-30).", C: "**Türk-İran** ilişkileri doğrudur.", D: "Satır sonuna sığmayan kelimeleri bölmek için kullanılmıştır." }, dogruCevap: "C" },
+                { metin: '"Geleceği satın alabilecek tek şey bugündür. (Samuel Jahnson)" Bu cümlede yay ayraçla ( ) hangi amaçla kullanılmıştır?', cevaplar: { A: "Tiyatrolarda konuşanın hareketini açıklamak için", B: "Cümledeki anlamı tamamlayan ek bilgiler için", C: "**Alıntıların aktarıldığı eseri, yazarı veya künye bilgilerini göstermek için**", D: "Cümlenin dışında kalan ek bilgileri göstermek için" }, dogruCevap: "C" },
+                { metin: '"Zürafa, kulağını 53 cm uzun-luğundaki dili ile temizler. / Bir balina, yavrusuna günde yaklaşık 90 litre süt verir." Bu bilgilerin yer aldığı bir metinde düşünceyi geliştirme yollarından hangisi kullanılmıştır?', cevaplar: { A: "Tanık gösterme", B: "**Sayısal verilerden yararlanma**", C: "Tanımlama", D: "Benzetme" }, dogruCevap: "B" },
+                { metin: '"İcatların bir kısmı, 20. yy. başında büyük ses getirir." cümlesinde altı çizili kısaltmanın yazımıyla ilgili yanlışlık aşağıdakilerden hangisidir?', cevaplar: { A: "Kısaltmanın büyük harfle yazılması.", B: "**Kısaltmadan sonra nokta konulması.**", C: "Kısaltmanın yazımında ünsüz kullanılması.", D: "Kısaltmanın büyük harflerle yazılması." }, dogruCevap: "B" }
             ]
         }
     ];
+
+    // C) TÜM QUIZLERİ BİRLEŞTİR (Bu, quiz ID'si ile arama yapmak için gereklidir)
+    const tumQuizler = [...konuBazliQuizler, ...denemeSinavlari];
+
 
     // 2. QUIZ İŞLEVLERİ VE DEĞİŞKENLER
     const quizListContainer = document.getElementById('quiz-list');
@@ -1004,58 +362,66 @@
     const wrongCountDisplay = document.getElementById('wrong-count');
     const restartBtn = document.getElementById('restart-btn');
     const answerReviewContainer = document.getElementById('answer-review');
+    const listTitleElement = document.getElementById('list-title'); 
 
     let currentQuiz = null;
     let currentQuestionIndex = 0;
     let userAnswers = {}; 
 
-    // Quiz listesini yükle (Gruplama yaparak)
+    // --- URL Parametre Okuyucu ---
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    };
+
+    // --- GÜNCELLENMİŞ QUIZ LİSTESİ YÜKLEME FONKSİYONU (Ayrı Dizilerle Kesin Filtreli) ---
     function loadQuizList() {
         quizListContainer.innerHTML = '';
         
-        // Quizleri gruplama
-        const regularQuizzes = turkceQuizler.filter(q => q.id <= 10);
-        const mockExams = turkceQuizler.filter(q => q.id > 10);
+        const groupFilter = getUrlParameter('grup');
 
-        // 1. Konu Bazlı Quizler Başlığı
-        if (regularQuizzes.length > 0) {
-            const regularHeader = document.createElement('div');
-            // md:col-span-2 ile başlığın iki kolonu kaplaması sağlanır
-            regularHeader.className = 'md:col-span-2 text-xl font-bold mt-2 mb-3 text-gray-800 border-b pb-1';
-            regularHeader.textContent = '📚 Konu Bazlı Quizler (ID 1-10)';
-            quizListContainer.appendChild(regularHeader);
-
-            // Quiz Butonları
-            regularQuizzes.forEach(quiz => {
-                const quizButton = document.createElement('button');
-                quizButton.className = 'w-full text-left p-4 bg-gray-100 hover:bg-rose-100 border-2 border-rose-300 rounded-lg shadow font-medium text-gray-700 transition duration-150';
-                quizButton.textContent = `Quiz ${quiz.id}: ${quiz.konu} (${quiz.sorular.length} Soru)`;
-                quizButton.onclick = () => startQuiz(quiz.id);
-                quizListContainer.appendChild(quizButton);
-            });
-        }
+        let quizzesToDisplay = [];
+        let headerText = 'Test Seçimi';
         
-        // 2. Deneme Sınavları Başlığı
-        if (mockExams.length > 0) {
-            const denemeHeader = document.createElement('div');
-            denemeHeader.className = 'md:col-span-2 text-xl font-bold mt-8 mb-3 text-rose-600 border-b pb-1';
-            denemeHeader.textContent = '🏆 Deneme Sınavları (Tarama Testleri)';
-            quizListContainer.appendChild(denemeHeader);
-
-            // Deneme Sınavı Butonları
-            mockExams.forEach(quiz => {
-                const quizButton = document.createElement('button');
-                quizButton.className = 'w-full text-left p-4 bg-gray-100 hover:bg-rose-100 border-2 border-rose-300 rounded-lg shadow font-medium text-gray-700 transition duration-150';
-                quizButton.textContent = `Deneme ${quiz.id}: ${quiz.konu} (${quiz.sorular.length} Soru)`;
-                quizButton.onclick = () => startQuiz(quiz.id);
-                quizListContainer.appendChild(quizButton);
-            });
+        // Hangi diziyi göstereceğimize karar veriyoruz
+        if (groupFilter === 'deneme') {
+            quizzesToDisplay = denemeSinavlari;
+            headerText = '🏆 Deneme Sınavları (Tarama Testleri)';
+        } else if (groupFilter === 'konu') {
+            quizzesToDisplay = konuBazliQuizler;
+            headerText = '📚 Konu Bazlı Quizler';
+        } else {
+             // Parametre yoksa/geçersizse
+             listTitleElement.textContent = '❌ Lütfen Bir Grup Seçin';
+             quizListContainer.innerHTML = '<p class="md:col-span-2 text-red-600 font-semibold">Görüntülenecek quiz grubunu (Konu Bazlı veya Deneme) seçmek için ana menüye dönün.</p>';
+             return;
         }
+
+        // H2 başlığını filtreye göre güncelle
+        listTitleElement.textContent = headerText;
+
+        // Filtrelenmiş listeyi döngüye sok ve butonları oluştur
+        quizzesToDisplay.forEach(quiz => {
+            const quizButton = document.createElement('button');
+            quizButton.className = 'w-full text-left p-4 bg-gray-100 hover:bg-rose-100 border-2 border-rose-300 rounded-lg shadow font-medium text-gray-700 transition duration-150';
+            
+            // Buton metnini grubun ID'sine göre ayarla
+            const buttonType = groupFilter === 'deneme' ? 'Deneme' : 'Quiz';
+            
+            quizButton.textContent = `${buttonType} ${quiz.id}: ${quiz.konu} (${quiz.sorular.length} Soru)`;
+            quizButton.onclick = () => startQuiz(quiz.id);
+            quizListContainer.appendChild(quizButton);
+        });
     }
 
-    // Quiz başlat
+
+    // --- QUIZ AKIŞI FONKSİYONLARI ---
+
     function startQuiz(quizId) {
-        currentQuiz = turkceQuizler.find(q => q.id === quizId);
+        // Artık arama tumQuizler dizisinde yapılmalı
+        currentQuiz = tumQuizler.find(q => q.id === quizId);
         currentQuestionIndex = 0;
         userAnswers = {};
 
@@ -1067,15 +433,13 @@
         displayQuestion();
     }
 
-    // Soruyu ve şıkları göster
     function displayQuestion() {
         const questionData = currentQuiz.sorular[currentQuestionIndex];
         
         quizCounter.textContent = `Soru ${currentQuestionIndex + 1} / ${currentQuiz.sorular.length}`;
-        questionText.textContent = questionData.metin.replace(/\\n/g, '\n'); // Yeni satır karakterini dönüştürme
+        questionText.textContent = questionData.metin.replace(/\\n/g, '\n'); 
         answersContainer.innerHTML = '';
         
-        // Şıkları oluştur
         Object.entries(questionData.cevaplar).forEach(([key, value]) => {
             const answerDiv = document.createElement('div');
             answerDiv.className = `answer-option p-3 border-2 border-gray-200 rounded-lg flex items-center ${userAnswers[currentQuestionIndex] === key ? 'selected' : ''}`;
@@ -1088,38 +452,31 @@
         updateNavigationButtons();
     }
 
-    // Cevap seçimi
     function selectAnswer(key) {
         userAnswers[currentQuestionIndex] = key;
-        
-        // Şıkların seçilme durumunu güncelle
         answersContainer.querySelectorAll('.answer-option').forEach(div => {
             div.classList.remove('selected');
             if (div.dataset.answerKey === key) {
                 div.classList.add('selected');
             }
         });
-        updateNavigationButtons(); 
+        updateNavigationButtons();
     }
 
-    // Navigasyon butonlarını güncelle
     function updateNavigationButtons() {
         prevBtn.disabled = currentQuestionIndex === 0;
         
         if (currentQuestionIndex === currentQuiz.sorular.length - 1) {
             nextBtn.textContent = 'Quizi Bitir';
-            // Son soru cevaplanmışsa bitirilebilir
             nextBtn.disabled = userAnswers[currentQuestionIndex] === undefined;
             nextBtn.onclick = finishQuiz;
         } else {
             nextBtn.textContent = 'Sonraki →';
-            // Diğer sorularda serbest navigasyona izin ver
             nextBtn.disabled = false;
             nextBtn.onclick = goToNextQuestion;
         }
     }
 
-    // Sonraki soruya git
     function goToNextQuestion() {
         if (currentQuestionIndex < currentQuiz.sorular.length - 1) {
             currentQuestionIndex++;
@@ -1127,7 +484,6 @@
         }
     }
 
-    // Önceki soruya git
     function goToPrevQuestion() {
         if (currentQuestionIndex > 0) {
             currentQuestionIndex--;
@@ -1135,9 +491,7 @@
         }
     }
     
-    // Quiz bitir
     function finishQuiz() {
-        // Kontrol: Son soru cevaplanmışsa bitir
         if (userAnswers[currentQuestionIndex] === undefined) {
              alert('Lütfen son soruyu cevaplayın.');
              return;
@@ -1147,8 +501,6 @@
         resultArea.classList.remove('hidden');
         
         let correctCount = 0;
-        
-        // Cevapları kontrol et ve sonuçları hazırla
         answerReviewContainer.innerHTML = '<h3 class="text-xl font-semibold border-b pb-2 text-gray-700">Cevap İncelemesi:</h3>';
         
         currentQuiz.sorular.forEach((question, index) => {
@@ -1159,11 +511,8 @@
                 correctCount++;
             }
             
-            // İnceleme kartını oluştur
             const reviewItem = document.createElement('div');
             reviewItem.className = `p-3 rounded-lg border-2 ${isCorrect ? 'border-emerald-500 bg-emerald-50' : 'border-red-500 bg-red-50'}`;
-            
-            // Soru metnindeki \n karakterlerini düzelt
             const formattedQuestionText = question.metin.replace(/\\n/g, '<br>');
 
             reviewItem.innerHTML = `
@@ -1184,15 +533,13 @@
     restartBtn.addEventListener('click', () => {
         resultArea.classList.add('hidden');
         quizSelectionArea.classList.remove('hidden');
-        loadQuizList();
+        loadQuizList(); // Yeni filtrelenmiş listeyi tekrar yükle
     });
 
-    // Navigasyon butonlarının olay dinleyicilerini ekle
     prevBtn.addEventListener('click', goToPrevQuestion);
     
     // Uygulama başlangıcı
     document.addEventListener('DOMContentLoaded', loadQuizList);
 </script>
-
 </body>
 </html>
