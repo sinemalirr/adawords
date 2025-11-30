@@ -473,6 +473,20 @@
             
             appData.todayTime++;
             updateUI();
+
+            // HER 10 SANİYEDE VERİTABANINA KAYDETME MANTIĞI
+            saveCounter++;
+            if (saveCounter >= 10) { // 10 saniyede bir kaydet
+                updateDoc(getUserDataRef(), {
+                    todayTime: appData.todayTime // Sadece süreyi günceller
+                }).then(() => {
+                    console.log(`[Timer] Süre başarıyla kaydedildi: ${appData.todayTime}s`);
+                }).catch(e => {
+                    console.error("[Timer] Süre kaydetme hatası:", e);
+                });
+                saveCounter = 0; // Sayacı sıfırla
+            }
+            // --- KAYIT SONU ---
             
             if (appData.todayTime >= TARGET_TIME && !appData.dayCompleted) {
                 completeDay();
