@@ -1,20 +1,22 @@
-// js/sure-takip-turkce.js - KESİN ÇÖZÜM VERİSİ (Seri Takibi ve Kalıcılık)
+// js/sure-takip-turkce.js - 15 DAKİKA KURALINA UYGUN KESİN ÇÖZÜM
 
 const DERS_ADI = "turkce";
-// Günlük serinin sayılması için sayfada kalınması gereken minimum süre (saniye)
-const MIN_SURE_SERI_SAYACI = 60; // 60 saniye = 1 dakika
+// GÜNLÜK SERİNİN SAYILMASI İÇİN KRİTİK EŞİK: 15 dakika = 900 saniye
+const MIN_SURE_SERI_SAYACI = 900; 
 
 const sureSayacElementi = document.getElementById('sure-sayac');
 const userEmailDisplay = document.getElementById('user-email-display');
 const streakContainer = document.getElementById('streak-container'); 
-const rewardSection = document.getElementById('reward-section'); // turkce.html'den
+const rewardSection = document.getElementById('reward-section'); 
+const dailyProgressContainer = document.getElementById('daily-progress'); // turkce.html'e eklenecek
 
 let toplamSureSaniye = 0;
-let bugunCalisilanSure = 0; // Seriyi takip etmek için bugün kaç saniye çalışıldı
+// Firebase'den çekilen veya kaydedilen değer
+let bugunCalisilanSure = 0; 
 let timerInterval = null;
-let sureKaydiGerekli = false;
 let mevcutSeri = 0; 
 let lastStudyDate = '';
+let isStreakCompletedToday = false; // Bugün 15 dakikalık koşul tamamlandı mı?
 
 
 // 1. Tarih ve Zaman İşlevleri
@@ -31,41 +33,49 @@ function formatTime(saniye) {
     return `${pad(saat)}:${pad(dakika)}:${pad(saniyeKalan)}`;
 }
 
-// 2. Seri (Streak) Güncelleme Mantığı
-function checkAndUpdateStreak(data) {
+function updateDailyProgressUI() {
+    if (!dailyProgressContainer) return;
+    
+    // Yüzde hesaplama
+    let progressPercent = Math.min(100, (bugunCalisilanSure / MIN_SURE_SERI_SAYACI) * 100);
+    
+    // UI Güncelleme
+    dailyProgressContainer.innerHTML = `
+        <span class="font-semibold">${formatTime(bugunCalisilanSure)} / 15:00</span>
+        <div class="h-2 bg-gray-200 rounded-full mt-1 overflow-hidden">
+            <div class="h-full bg-green-500 transition-all duration-500" style="width: ${progressPercent}%;"></div>
+        </div>
+        <p class="text-xs text-gray-500 mt-1">${isStreakCompletedToday ? '✅ Bugünün Serisi Tamamlandı!' : 'Günlük 15 Dakika Hedefi'}</p>
+    `;
+}
+
+// 2. Seri (Streak) Kontrolü
+function checkStreak(data) {
     const today = getTodayDateString();
     
-    // Veriden gelen son çalışma tarihi ve seri
     mevcutSeri = data[DERS_ADI + '_streak'] || 0;
     lastStudyDate = data[DERS_ADI + '_last_study_date'] || '';
     
-    // 1. Durum: Bugün zaten çalışıldıysa (sayaç 1 dakikayı geçtiyse) seriyi ellemiyoruz.
     if (lastStudyDate === today) {
-        // Seriyi zaten artırmışız, sadece güncel seriyi görüntülüyoruz
-        return; 
-    }
+        // Bugün zaten seri tamamlanmış ve sayılmış.
+        isStreakCompletedToday = true;
+    } else {
+        // Bugün daha önce çalışılmamış. bugunCalisilanSure'yi sıfırla
+        bugunCalisilanSure = data[DERS_ADI + '_daily_time'] || 0;
+        isStreakCompletedToday = false;
+        
+        // Dünden sonra bugün çalışılmadıysa seriyi sıfırla
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayString = yesterday.toISOString().slice(0, 10);
 
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayString = yesterday.toISOString().slice(0, 10);
-
-    let newStreak = mevcutSeri;
-
-    if (lastStudyDate === yesterdayString) {
-        // 2. Durum: Dün çalışılmışsa, seriyi 1 artırırız
-        newStreak += 1;
-    } else if (lastStudyDate !== today) {
-        // 3. Durum: Dün çalışılmamışsa, seriyi 1'e sıfırlarız (eğer hiç çalışılmadıysa da 1 olur)
-        newStreak = 1;
-    }
-    
-    mevcutSeri = newStreak;
-    // UI'da seriyi göster
-    if (streakContainer) {
-        streakContainer.textContent = `${mevcutSeri} Gün`;
+        if (lastStudyDate !== yesterdayString) {
+             mevcutSeri = 0; // Seri kırıldı
+        }
     }
     
-    // Ödül kontrolü (turkce.html'de görünür)
+    // UI'ı seriyi ve ödülü göstermek üzere güncelle
+    if (streakContainer) streakContainer.textContent = `${mevcutSeri} Gün`;
     if (rewardSection) {
         if (mevcutSeri >= 15) {
              rewardSection.classList.remove('hidden');
@@ -73,38 +83,51 @@ function checkAndUpdateStreak(data) {
              rewardSection.classList.add('hidden');
         }
     }
+    updateDailyProgressUI();
 }
 
 
 // 3. Firebase'e Kayıt Fonksiyonu
 function sureyiFirebaseKaydet() {
-    if (!auth.currentUser || !sureKaydiGerekli) return; 
+    if (!auth.currentUser) return; 
 
     const userID = auth.currentUser.uid;
     const dersRef = db.collection(DERS_TAKIP_COLLECTION).doc(userID);
+    const today = getTodayDateString();
     
     let updateData = {
         [DERS_ADI + '_sure']: toplamSureSaniye, // Toplam süreyi kaydet (kalıcı)
+        [DERS_ADI + '_daily_time']: bugunCalisilanSure // Bugün çalışılan toplam süreyi kaydet
     };
     
-    // Eğer bugün 1 dakikadan fazla çalışılmışsa, seriyi kaydetme zamanı gelmiştir.
-    if (bugunCalisilanSure >= MIN_SURE_SERI_SAYACI && lastStudyDate !== getTodayDateString()) {
+    // KRİTİK KONTROL: Eğer bugün 15 dakikalık (900 saniye) eşik geçildiyse VE daha önce sayılmadıysa
+    if (bugunCalisilanSure >= MIN_SURE_SERI_SAYACI && !isStreakCompletedToday) {
         
-        // Seriyi sadece süre kaydında değil, veri çekilirken kontrol ettik. 
-        // Burada sadece kaydı basıyoruz.
+        // Seriyi artır
+        mevcutSeri += 1;
+        
+        // Kayıt verilerini güncelle
         updateData[DERS_ADI + '_streak'] = mevcutSeri;
-        updateData[DERS_ADI + '_last_study_date'] = getTodayDateString();
+        updateData[DERS_ADI + '_last_study_date'] = today;
         
-        // UI'ı serinin arttığını yansıtacak şekilde güncelle
-        if (streakContainer) {
-             streakContainer.textContent = `${mevcutSeri} Gün`;
+        // Bayrağı güncelle (Bu sayım bir daha yapılmasın)
+        isStreakCompletedToday = true;
+        
+        // Arayüzü güncelle
+        if (streakContainer) streakContainer.textContent = `${mevcutSeri} Gün`;
+        
+        // Ödül kontrolünü tekrar yap
+        if (rewardSection) {
+            if (mevcutSeri >= 15) {
+                rewardSection.classList.remove('hidden');
+            }
         }
     }
     
     dersRef.set(updateData, { merge: true }) 
     .then(() => {
-        console.log(`${DERS_ADI} süre kaydedildi. Günlük süre: ${bugunCalisilanSure}s`);
-        sureKaydiGerekli = false;
+        // console.log(`${DERS_ADI} süre/seri kaydedildi. Bugün: ${formatTime(bugunCalisilanSure)}`);
+        updateDailyProgressUI();
     })
     .catch((error) => {
         console.error("Süre/Seri kaydı hatası:", error);
@@ -118,7 +141,11 @@ function sayaciBaslat() {
 
     timerInterval = setInterval(() => {
         toplamSureSaniye += 1;
-        bugunCalisilanSure += 1; // Bugün çalışılan süreyi de takip et
+        
+        // Sadece bugün seri tamamlanmadıysa, bugünkü süreyi artır.
+        if (!isStreakCompletedToday) {
+            bugunCalisilanSure += 1;
+        }
         
         if (sureSayacElementi) {
             sureSayacElementi.textContent = formatTime(toplamSureSaniye);
@@ -126,7 +153,6 @@ function sayaciBaslat() {
         
         // Her 10 saniyede bir kaydet
         if (toplamSureSaniye % 10 === 0) {
-            sureKaydiGerekli = true;
             sureyiFirebaseKaydet();
         }
     }, 1000);
@@ -136,8 +162,7 @@ function sayaciBaslat() {
 // 5. Ana Başlatma ve Veri Çekme İşlevi
 auth.onAuthStateChanged(user => {
     if (!user) {
-        // Oturum kapalıysa dersler.html'e yönlendir
-        window.location.href = '../dersler.html'; // turkce_ic/ alt sayfaları için '../' gerekli
+        window.location.href = '../dersler.html'; 
         return; 
     }
     
@@ -150,14 +175,14 @@ auth.onAuthStateChanged(user => {
         .then(doc => {
             const data = doc.exists ? doc.data() : {};
             
-            // Verileri yükle
+            // Toplam Süreyi yükle
             toplamSureSaniye = data[DERS_ADI + '_sure'] || 0;
             if (sureSayacElementi) {
                 sureSayacElementi.textContent = formatTime(toplamSureSaniye);
             }
             
-            // Seriyi kontrol et ve yükle
-            checkAndUpdateStreak(data);
+            // Seriyi kontrol et (bugünkü çalışma durumu ve kırılma kontrolü)
+            checkStreak(data);
             
             // Süre yüklendikten sonra sayacı başlat
             sayaciBaslat();
