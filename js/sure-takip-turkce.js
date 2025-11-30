@@ -1,23 +1,27 @@
-// js/sure-takip-turkce.js - GÜNCELLENMİŞ VERSİYON (Streak Takibi Eklendi)
+// js/sure-takip-turkce.js - KESİN ÇÖZÜM VERİSİ (Seri Takibi ve Kalıcılık)
 
-// 1. Sabitler
 const DERS_ADI = "turkce";
-const MIN_KAYIT_SURESI_SANIYE = 10; // 10 saniyeden fazla süre kayıt edilecek.
+// Günlük serinin sayılması için sayfada kalınması gereken minimum süre (saniye)
+const MIN_SURE_SERI_SAYACI = 60; // 60 saniye = 1 dakika
+
 const sureSayacElementi = document.getElementById('sure-sayac');
 const userEmailDisplay = document.getElementById('user-email-display');
-const streakContainer = document.getElementById('streak-container'); // turkce.html'den
+const streakContainer = document.getElementById('streak-container'); 
+const rewardSection = document.getElementById('reward-section'); // turkce.html'den
 
 let toplamSureSaniye = 0;
+let bugunCalisilanSure = 0; // Seriyi takip etmek için bugün kaç saniye çalışıldı
 let timerInterval = null;
 let sureKaydiGerekli = false;
-let mevcutSeri = 0; // Güncel seri (streak) değeri
+let mevcutSeri = 0; 
+let lastStudyDate = '';
 
-// Tarih işlemlerini kolaylaştıran yardımcı fonksiyon
+
+// 1. Tarih ve Zaman İşlevleri
 function getTodayDateString() {
-    return new Date().toISOString().slice(0, 10); // YYYY-MM-DD formatı
+    return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 }
 
-// 2. Süre Formatlama Fonksiyonu
 function formatTime(saniye) {
     const saat = Math.floor(saniye / 3600);
     const dakika = Math.floor((saniye % 3600) / 60);
@@ -27,13 +31,18 @@ function formatTime(saniye) {
     return `${pad(saat)}:${pad(dakika)}:${pad(saniyeKalan)}`;
 }
 
-// 3. Seri (Streak) Güncelleme ve Kaydetme Fonksiyonu
-function updateStreak(lastStudyDate) {
+// 2. Seri (Streak) Güncelleme Mantığı
+function checkAndUpdateStreak(data) {
     const today = getTodayDateString();
     
+    // Veriden gelen son çalışma tarihi ve seri
+    mevcutSeri = data[DERS_ADI + '_streak'] || 0;
+    lastStudyDate = data[DERS_ADI + '_last_study_date'] || '';
+    
+    // 1. Durum: Bugün zaten çalışıldıysa (sayaç 1 dakikayı geçtiyse) seriyi ellemiyoruz.
     if (lastStudyDate === today) {
-        // Zaten bugün çalışılmış, seriyi değiştirmeye gerek yok
-        return mevcutSeri; 
+        // Seriyi zaten artırmışız, sadece güncel seriyi görüntülüyoruz
+        return; 
     }
 
     const yesterday = new Date();
@@ -43,52 +52,58 @@ function updateStreak(lastStudyDate) {
     let newStreak = mevcutSeri;
 
     if (lastStudyDate === yesterdayString) {
-        // Dünden sonra bugün devam ediyor -> Seriyi 1 artır
+        // 2. Durum: Dün çalışılmışsa, seriyi 1 artırırız
         newStreak += 1;
-    } else {
-        // Dün çalışılmamış (veya hiç çalışılmamış) -> Seriyi 1'e sıfırla
+    } else if (lastStudyDate !== today) {
+        // 3. Durum: Dün çalışılmamışsa, seriyi 1'e sıfırlarız (eğer hiç çalışılmadıysa da 1 olur)
         newStreak = 1;
     }
     
-    // Veritabanına yeni seri ve tarihi kaydet
-    db.collection(DERS_TAKIP_COLLECTION).doc(auth.currentUser.uid).set({
-        [DERS_ADI + '_streak']: newStreak,
-        [DERS_ADI + '_last_study_date']: today 
-    }, { merge: true });
-    
     mevcutSeri = newStreak;
-    
-    // Arayüzü güncelle (sadece turkce.html'de çalışır)
+    // UI'da seriyi göster
     if (streakContainer) {
         streakContainer.textContent = `${mevcutSeri} Gün`;
-        // 15 Gün kontrolü
+    }
+    
+    // Ödül kontrolü (turkce.html'de görünür)
+    if (rewardSection) {
         if (mevcutSeri >= 15) {
-             document.getElementById('reward-section').classList.remove('hidden');
+             rewardSection.classList.remove('hidden');
+        } else {
+             rewardSection.classList.add('hidden');
         }
     }
-
-    return newStreak;
 }
 
 
-// 4. Firebase'e Süre Kaydetme Fonksiyonu
+// 3. Firebase'e Kayıt Fonksiyonu
 function sureyiFirebaseKaydet() {
     if (!auth.currentUser || !sureKaydiGerekli) return; 
 
     const userID = auth.currentUser.uid;
     const dersRef = db.collection(DERS_TAKIP_COLLECTION).doc(userID);
     
-    // Seriyi güncelle
-    updateStreak(getTodayDateString()); // Bugün çalıştığımızı teyit et
+    let updateData = {
+        [DERS_ADI + '_sure']: toplamSureSaniye, // Toplam süreyi kaydet (kalıcı)
+    };
     
-    // Veritabanına toplam süreyi kaydet
-    dersRef.set({
-        [DERS_ADI + '_sure']: toplamSureSaniye,
-        [DERS_ADI + '_streak']: mevcutSeri,
-        [DERS_ADI + '_last_study_date']: getTodayDateString() 
-    }, { merge: true }) 
+    // Eğer bugün 1 dakikadan fazla çalışılmışsa, seriyi kaydetme zamanı gelmiştir.
+    if (bugunCalisilanSure >= MIN_SURE_SERI_SAYACI && lastStudyDate !== getTodayDateString()) {
+        
+        // Seriyi sadece süre kaydında değil, veri çekilirken kontrol ettik. 
+        // Burada sadece kaydı basıyoruz.
+        updateData[DERS_ADI + '_streak'] = mevcutSeri;
+        updateData[DERS_ADI + '_last_study_date'] = getTodayDateString();
+        
+        // UI'ı serinin arttığını yansıtacak şekilde güncelle
+        if (streakContainer) {
+             streakContainer.textContent = `${mevcutSeri} Gün`;
+        }
+    }
+    
+    dersRef.set(updateData, { merge: true }) 
     .then(() => {
-        console.log(`${DERS_ADI} süre/seri kaydedildi. Seri: ${mevcutSeri}`);
+        console.log(`${DERS_ADI} süre kaydedildi. Günlük süre: ${bugunCalisilanSure}s`);
         sureKaydiGerekli = false;
     })
     .catch((error) => {
@@ -97,18 +112,20 @@ function sureyiFirebaseKaydet() {
 }
 
 
-// 5. Sayaç Başlatma Fonksiyonu
+// 4. Sayaç Başlatma
 function sayaciBaslat() {
     if (timerInterval) return;
 
     timerInterval = setInterval(() => {
         toplamSureSaniye += 1;
+        bugunCalisilanSure += 1; // Bugün çalışılan süreyi de takip et
+        
         if (sureSayacElementi) {
             sureSayacElementi.textContent = formatTime(toplamSureSaniye);
         }
         
         // Her 10 saniyede bir kaydet
-        if (toplamSureSaniye % MIN_KAYIT_SURESI_SANIYE === 0) {
+        if (toplamSureSaniye % 10 === 0) {
             sureKaydiGerekli = true;
             sureyiFirebaseKaydet();
         }
@@ -116,11 +133,11 @@ function sayaciBaslat() {
 }
 
 
-// 6. Ana Başlatma ve Veri Çekme İşlevi
+// 5. Ana Başlatma ve Veri Çekme İşlevi
 auth.onAuthStateChanged(user => {
     if (!user) {
         // Oturum kapalıysa dersler.html'e yönlendir
-        window.location.href = 'dersler.html'; 
+        window.location.href = '../dersler.html'; // turkce_ic/ alt sayfaları için '../' gerekli
         return; 
     }
     
@@ -129,31 +146,25 @@ auth.onAuthStateChanged(user => {
         userEmailDisplay.textContent = `(${user.email})`;
     }
     
-    // Firebase'den mevcut süreyi ve seriyi çek
     db.collection(DERS_TAKIP_COLLECTION).doc(userID).get()
         .then(doc => {
-            if (doc.exists) {
-                const data = doc.data();
-                
-                // Toplam Süreyi yükle
-                toplamSureSaniye = data[DERS_ADI + '_sure'] || 0;
-                if (sureSayacElementi) {
-                    sureSayacElementi.textContent = formatTime(toplamSureSaniye);
-                }
-                
-                // Seriyi yükle
-                mevcutSeri = data[DERS_ADI + '_streak'] || 0;
-                const lastStudyDate = data[DERS_ADI + '_last_study_date'] || '';
-
-                // Seriyi kontrol et ve gerekirse güncelle (Örn: Dün çalıştıysa +1, çalışmadıysa 1'e sıfırla)
-                updateStreak(lastStudyDate);
+            const data = doc.exists ? doc.data() : {};
+            
+            // Verileri yükle
+            toplamSureSaniye = data[DERS_ADI + '_sure'] || 0;
+            if (sureSayacElementi) {
+                sureSayacElementi.textContent = formatTime(toplamSureSaniye);
             }
+            
+            // Seriyi kontrol et ve yükle
+            checkAndUpdateStreak(data);
+            
             // Süre yüklendikten sonra sayacı başlat
             sayaciBaslat();
         });
 });
 
-// 7. Sayfadan Ayrılma Durumunda Son Kez Kaydetme
+// 6. Sayfadan Ayrılma Durumunda Son Kez Kaydetme (Görünürlük veya Kapatma)
 window.addEventListener('beforeunload', sureyiFirebaseKaydet);
 document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
