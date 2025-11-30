@@ -1,4 +1,3 @@
-// js/firebase-init.js
 
 // 1. Firebase Yapılandırması (Sizin Verileriniz)
 const firebaseConfig = {
