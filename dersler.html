@@ -71,19 +71,11 @@
 <script src="js/firebase-init.js"></script>
 <script>
     // dersler.html için özel JavaScript
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            // Kullanıcı oturum açmışsa
-            document.getElementById('user-info').textContent = user.email;
-        } else {
-            // Oturum açmamışsa giriş sayfasına yönlendir
-            window.location.href = 'index.html';
-        }
-    });
 
+    // Çıkış yap butonu
     document.getElementById('logout-btn').addEventListener('click', () => {
         auth.signOut().then(() => {
-            // Çıkış yapıldıktan sonra giriş sayfasına yönlendir
+            // Çıkış yapıldıktan sonra index.html'ye yönlendir
             window.location.href = 'index.html';
         }).catch((error) => {
             alert("Çıkış yapılırken bir hata oluştu: " + error.message);
