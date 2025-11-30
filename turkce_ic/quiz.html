@@ -92,7 +92,7 @@
 <script src="../js/sure-takip-turkce.js"></script> 
 
 <script>
-    // 1. QUIZ VERİLERİ (Bana gönderdiğiniz tüm test verileri)
+    // 1. QUIZ VERİLERİ (Tüm 10 test burada tanımlanmıştır)
     const turkceQuizler = [
         // Quiz-1: Sözcükte Anlam
         {
@@ -100,7 +100,7 @@
             konu: "Sözcükte Anlam (Gerçek, Mecaz, Deyim, Zıt)",
             sorular: [
                 {
-                    metin: '"Kasa" sözcüğü aşağıdaki cümlelerin hangi ikisinde aynı anlamda kullanılmıştır?\n1. Kasadan önemli belgeleri çıkardı.\n2. Meyveleri kasalara yerleştirdik.\n3. Kamyonun kasa-sında yolculuk yaptık.\n4. Babam parasını kasaya koydu.',
+                    metin: '"Kasa" sözcüğü aşağıdaki cümlelerin hangi ikisinde aynı anlamda kullanılmıştır?\\n1. Kasadan önemli belgeleri çıkardı.\\n2. Meyveleri kasalara yerleştirdik.\\n3. Kamyonun kasa-sında yolculuk yaptık.\\n4. Babam parasını kasaya koydu.',
                     cevaplar: { A: "1 ve 2", B: "2 ve 3", C: "2 ve 4", D: "3 ve 4" },
                     dogruCevap: "B"
                 },
@@ -115,7 +115,7 @@
                     dogruCevap: "C"
                 },
                 {
-                    metin: '“Can” sözcüğü numaralanmış cümlelerin hangisinde **deyim içinde kullanılmamıştır**?\n1. Üzümlü kek olsa da yesek, canım çekti.\n2. Canımı dişime takıp bu sınavı kazanacağım.\n3. Bu konuyu can kulağıyla dinledim.\n4. Bizim evde beş can, geçinip gidiyoruz.',
+                    metin: '“Can” sözcüğü numaralanmış cümlelerin hangisinde **deyim içinde kullanılmamıştır**?\\n1. Üzümlü kek olsa da yesek, canım çekti.\\n2. Canımı dişime takıp bu sınavı kazanacağım.\\n3. Bu konuyu can kulağıyla dinledim.\\n4. Bizim evde beş can, geçinip gidiyoruz.',
                     cevaplar: { A: "1", B: "2", C: "3", D: "4" },
                     dogruCevap: "D"
                 },
@@ -244,7 +244,7 @@
                     dogruCevap: "D"
                 },
                 {
-                    metin: 'Aşağıdaki cümlelerdeki fiillerin anlam özelliklerini tespit ediniz ve farklı olanı bulunuz:\n1. Her gün erken saatte kalkarak çalışmayı seviyordu. (Durum)\n2. Düzenli okudukça zihnimizde yeni fikirler **yeşerir**. (Oluş)\n3. Kendi varlığımızı anlayabilmek için doğaya **bakmalıyız**. (İş)\n4. Başarılı kişiler, başkalarının düşüncelerine de kulak **verirler**. (İş)',
+                    metin: 'Aşağıdaki cümlelerdeki fiillerin anlam özelliklerini tespit ediniz ve farklı olanı bulunuz:\\n1. Her gün erken saatte kalkarak çalışmayı seviyordu. (Durum)\\n2. Düzenli okudukça zihnimizde yeni fikirler **yeşerir**. (Oluş)\\n3. Kendi varlığımızı anlayabilmek için doğaya **bakmalıyız**. (İş)\\n4. Başarılı kişiler, başkalarının düşüncelerine de kulak **verirler**. (İş)',
                     cevaplar: { A: "1", B: "2", C: "3", D: "4" },
                     dogruCevap: "B"
                 },
@@ -273,17 +273,17 @@
                 {
                     metin: 'Aşağıdaki cümlelerin hangisinde **yazım yanlışı** vardır?',
                     cevaplar: { A: "Yemeğini yeyince tabağını mutfağa götür.", B: "İçeride koyu bir sohbete başlamışlardı.", C: "“Yol” deyince sorunun cevabını buldum.", D: "Yarışmayı arkadaşı **kazandığı** için çok mutlu oldu." },
-                    dogruCevap: "D" // Orijinal anahtara uyulmuştur.
+                    dogruCevap: "D"
                 },
                 {
                     metin: 'Aşağıdaki cümlelerin hangisinde **yazım yanlışı** vardır?',
                     cevaplar: { A: "Bu ayın **onbeşinde** tatile çıkıyoruz.", B: "Yeni işinde yüzliralık indirim kazandı.", C: "**Yapdığım** alışverişle yüz liralık indirim kazandım.", D: "**Sınıfdakilerin** çoğu onuncu soruyu yanlış cevaplamış." },
-                    dogruCevap: "C" // Orijinal anahtara uyulmuştur.
+                    dogruCevap: "C"
                 },
                 {
                     metin: 'Aşağıdaki cümlelerin hangisinde **anlam kayması** vardır?',
                     cevaplar: { A: "Yarın okulu ziyaret edeceğiz.", B: "Ebru, saat yediye doğru eve döndü.", C: "Önümüzdeki hafta Sinop’tan **ayrılacağız**.", D: "Her gün buraları **terk eder**." },
-                    dogruCevap: "C" // Orijinal anahtara uyulmuştur.
+                    dogruCevap: "C"
                 },
                 {
                     metin: 'Aşağıdaki cümlelerin hangisinde "**ki**"nin yazımı yanlıştır?',
@@ -293,7 +293,7 @@
                 {
                     metin: 'Aşağıdaki cümlelerin hangisinde **noktalama yanlışı** vardır?',
                     cevaplar: { A: "Soğuktan titreyen çocuğun haline acıdım.", B: "Şans bana ne zaman gülecek?", C: "Yangına itfaiye ekipleri müdahale etti.", D: "İlkbaharda açan çiçeklere dönmüşsün." },
-                    dogruCevap: "D" // Soru işareti olduğu varsayılmıştır.
+                    dogruCevap: "D"
                 },
                 {
                     metin: '“Hayatın çeşitli güçlüklerine karşı üç şey hediye edilmiştir( )Ümit( )uyku ve gülmek( )” cümlesinde yay ayraçla ( ) belirtilen yerlere sırasıyla aşağıdaki noktalama işaretlerinden hangileri getirilmelidir?',
@@ -405,7 +405,7 @@
                     dogruCevap: "C"
                 },
                 {
-                    metin: 'Aşağıdaki cümlelerin hangisinde anlatım **birinci kişi** ağzından yapılmıştır?\nI. Köyün güzel kızı, obanın güzel oğlunu bir gün kırlarda gezerken görmüş.\nII. Denize doğru baktı. Yazlıkta gizlenen birinden çok düş kırıklığına uğramış eski günlere özlem çeken aptal bir aşık gibi gördü kendini bir an.',
+                    metin: 'Aşağıdaki cümlelerin hangisinde anlatım **birinci kişi** ağzından yapılmıştır?\\nI. Köyün güzel kızı, obanın güzel oğlunu bir gün kırlarda gezerken görmüş.\\nII. Denize doğru baktı. Yazlıkta gizlenen birinden çok düş kırıklığına uğramış eski günlere özlem çeken aptal bir aşık gibi gördü kendini bir an.',
                     cevaplar: { A: "Köyün güzel kızı, obanın güzel oğlunu bir gün kırlarda gezerken görmüş.", B: "**Şehirde beni güler yüzle misafir ediyorlardı.**", C: "Üçüncü bakıştan sonra obanın oğlunun güzelliğine vurulmuş.", D: "Denize doğru baktı." },
                     dogruCevap: "B"
                 },
@@ -536,7 +536,7 @@
                 {
                     metin: '(I) İnsan, doğar. (II) Sonra beyninde bir sürü bilgi biriktirir. (III) Öğrendiği bilgiler, beyninde bir süzgeçten geçer, sonra yeni bir fikir ortaya çıkar. (IV) Öğrendiği her şey, onun yeni şeyler üretmesini sağlar. Yukarıdaki söz gruplarıyla anlamlı ve kurallı bir cümle oluşturulduğunda sıralama aşağıdakilerden hangisi olur?',
                     cevaplar: { A: "I - II - III - IV", B: "I - IV - II - III", C: "II - III - IV - I", D: "IV - I - III - II" },
-                    dogruCevap: "B" // Cevap anahtarına uyulmuştur.
+                    dogruCevap: "B"
                 },
                 {
                     metin: '"Bir yazar, eserlerini verirken nelere dikkat etmelidir?" Bu soruya karşılık gelebilecek paragrafın anlatımında aşağıdaki anlatım türlerinden hangisi ağır basmalıdır?',
@@ -551,123 +551,122 @@
             ]
         },
         // Quiz-9: 7. SINIF TÜRKÇE – PARAGRAF TESTİ – 4
-       // --- Quiz-9: 7. SINIF TÜRKÇE – PARAGRAF TESTİ – 4 ---
-    {
-        id: 9,
-        konu: "Paragraf Testi - 4",
-        sorular: [
-            {
-                metin: '"Kimi eserler var ki değeri hiçbir şekilde ödenemez... Bu eser karşısında Alman Araştırmacı Anna Marie Schimmel, \'Almanya yıkılır, tekrar inşa edilir fakat bu kutlu min-\' demiştir." Bu paragrafın **ana düşüncesi** aşağıdakilerden hangisidir?',
-                cevaplar: { A: "Ülkelerin kalkınması için yapılan harcamaların bir kısmı boşa gitmektedir.", B: "**Tarihi değeri olan eserler korunmalıdır.**", C: "Ülkeler yaptıkları harcamaların bir kısmını çocuklarının eğitimine ayırmalıdır.", D: "Yeni nesillerin yetiştirilmesi için yapılan harcamalar, milletlerin geleceğini koruyan kaynaklardır." },
-                dogruCevap: "B"
-            },
-            {
-                metin: '(1) Tatil işte böyle bir değişikliktir. (2) İnsan; rüzgârlarla başka diyarlara savrulan... bir de kar tanesi vardır gökyüzünde. (3) Günü, saati farklı biçimde değerlendirmektir. (4) Tatil, kişinin en temel ihtiyaçlarındandır. Bu parçadaki numaralanmış cümlelerle anlamlı bir paragraf oluşturulmak istenirse doğru sıralama nasıl olmalıdır?',
-                cevaplar: { A: "4 – 1 – 3 – 2", B: "1 – 3 – 4 – 2", C: "**4 – 3 – 1 – 2**", D: "2 – 4 – 3 – 1" },
-                dogruCevap: "C" // Cevap anahtarına uyulmuştur.
-            },
-            {
-                metin: '(I) Arkadaşlık, akıllı telefonlarla yaşam daha da kolaylaştı. (II) Bu telefonlar istenilen her yerde iletişim olanağı sunuyor. (III) İnternet üzerinden rahatlıkla bilgiye ulaşmayı sağlıyor. (IV) **Bu bilgilere kısa sürede ulaşmak insanları tembelleştiriyor.** (V) Zengin uygulama çeşitliliği ile işleri kolaylaştırıyor. Bu parçadaki numaralanmış cümlelerden hangisi **anlatımın akışını bozmaktadır**?',
-                cevaplar: { A: "I", B: "II", C: "III", D: "**IV**" },
-                dogruCevap: "D"
-            },
-            {
-                metin: 'Aşağıdaki cümlelerin hangisinde yer alan altı çizili sözcük **terim anlamıyla kullanılmamıştır**?',
-                cevaplar: { A: "Yeni aldığı makineyi **test** etmek için kullandı.", B: "Romanın son **bölümünde** okuyucuyu şaşırtan olaylar var.", C: "Dedesini **sayar**, onun bir dediğini iki etmezdi.", D: "Araba ile yokuş aşağı inmek de çok zordur." },
-                dogruCevap: "C" // Saymak fiilinin terim anlamı olmaması nedeniyle C olarak düzeltildi.
-            },
-            {
-                metin: '"Her bir yanı ışıl ışıl / Yeşil örtü ne de yeşil / Buysa eğer kural koşul / İşte çevre buna derim" Bu şiirle ilgili olarak aşağıdakilerden hangisi söylenebilir?',
-                cevaplar: { A: "Şiirde sadece renkler üzerine durulmuştur.", B: "**Şiirin ana düşüncesi çevrenin önemidir.**", C: "Şiirde abartma sanatı kullanılmıştır.", D: "Şair, duygusal bir anlatım kullanmıştır." },
-                dogruCevap: "B"
-            },
-            {
-                metin: '"Maddi ve manevi yıkımlar karşısında da güçlü bir şekilde kendini gösteren annenin kollayışı, yavrularını muhafaza etmeye çalışması..." Bu paragrafın **ana düşüncesi** aşağıdakilerden hangisidir?',
-                cevaplar: { A: "Çocukları bilinçsiz yetiştirmek.", B: "**Annelerin fedakârlığı.**", C: "Dünya değiştiği için annelik zorlaştı.", D: "Yolların çamur içinde kalması." },
-                dogruCevap: "B"
-            },
-            {
-                metin: 'Aşağıdaki dizelerin hangisinde **Kişileştirme (Teşhis)** sanatı vardır?',
-                cevaplar: { A: "Dereden akan soğuk su gibi.", B: "Göklere çıkarsam seni, kimse görmesin.", C: "**Gün bitti** / Akşam serinliğiyle başlıyor memleketim.", D: "Teyzemiz bizi çok iyi karşılıyor." },
-                dogruCevap: "C"
-            },
-            {
-                metin: '(1) Her edebi eserin güzelliği, kendi içinde organik bir bütün oluşundan kaynaklanır. (2) Eserlerinde ki organik unsurlar arasında kurala uygunluk, mükemmeliyeti sağlar. (3) Bu bütünlüğü sağlayan eserler başarılı sayılmaz. (4) Her sanatçının kendine göre bir hayatı vardır. Bu metin **iki paragrafa ayrılmak** istenirse ikinci paragraf kaç numaralı cümleyle başlar?',
-                cevaplar: { A: "1", B: "2", C: "3", D: "**4**" },
-                dogruCevap: "D"
-            },
-            {
-                metin: '"Güneşlenmek denince bazı insanların aklına hemen deniz kıyıları gelir. Oysa güneş ışınları dağlarda deniz kenarındakinden daha az değildir. Hatta bazı tedbirler alınmazsa dağlarda deri, deniz kenarındakinden daha çabuk esmerleşir." Bu parçadaki numaralanmış cümlelerin hangilerinde **karşılaştırma** yapılmıştır?',
-                cevaplar: { A: "1 ve 2", B: "1 ve 3", C: "**2 ve 3**", D: "3 ve 4" },
-                dogruCevap: "C"
-            },
-            {
-                metin: 'Aşağıdaki cümlelerin hangisinde yüklem **Ek Fiil ile çekimlenmiştir**?',
-                cevaplar: { A: "Babam, oğluna göl ile ilgili bir şeyler anlatmaktadır.", B: "**Hayriye Hanım, bir buçuk yıldır evliydi.**", C: "Rusya ile Türkiye arasında anlaşma sağlandı.", D: "Sınavdaki en yüksek notu Sıla aldı." },
-                dogruCevap: "B"
-            }
-        ]
-    }, // <-- QUIZ 9 BİTİŞİ
-    
-    // --- Quiz-10: 7. SINIF TÜRKÇE – PARAGRAF TESTİ – 5 (YENİ EKLEME) ---
-    {
-        id: 10,
-        konu: "Paragraf Testi - 5",
-        sorular: [
-            {
-                metin: 'Aşağıdaki dizelerin hangisinde Abartma (Mübalağa) sanatı kullanılmıştır?',
-                cevaplar: { A: "Dereden akan soğuk su gibi.", B: "Taze ruhuyla coşkunluğu var.", C: "**Yorgunluktan dizleri titriyordu.**", D: "Kuş cıvıltıları çevreyi sardı." },
-                dogruCevap: "C"
-            },
-            {
-                metin: '(I) Kitap okumayı sevmeyen birinin yazar olması imkânsızdır. (II) Okudukça yazarın dünyasını keşfeder. (III) Okul, kitap okumayı teşvik etmeli. (IV) Okulda verilen kitaplar yazarın dünyasını geliştirir. (V) Okudukça kelime dağarcığı zenginleşir. Bu parçadaki numaralanmış cümlelerin anlamlı bir bütün oluşturulabilmesi için hangi ikisinin birbiriyle yer değiştirmesi gerekir?',
-                cevaplar: { A: "I. ve II.", B: "II. ve IV.", C: "III. ve V.", D: "**IV. ve V.**" },
-                dogruCevap: "D"
-            },
-            {
-                metin: '(I) Hayvanların yaşam kalitesinin artırılması için çizgi film ve sinema merakları ve yönetmen olma hayali çok önemlidir. (II) Bu nedenle, hayvanların yaşam kalitesini artırmanın en önemli yollarından biri, onların yaşam kalitesini artırmaktır. (III) Hayvanların sağlıklı ve mutlu olmaları, doğal yaşam alanlarına bağlıdır. (IV) Hayvanların yaşam kalitesini artırmak, çevrenin korunmasına da katkı sağlar. (V) Hayvanların yaşam kalitesini artırmak, herkesin sorumluluğundadır. Bu parçadaki numaralanmış cümlelerden hangisi **düşüncenin akışını bozmaktadır**?',
-                cevaplar: { A: "I.", B: "II.", C: "III.", D: "IV." },
-                dogruCevap: "A"
-            },
-            {
-                metin: 'Aşağıdaki cümlelerin hangisinde **amaç-sonuç** ilişkisi vardır?',
-                cevaplar: { A: "Çok kar yağdığı için yollar kapandı.", B: "**Ameliyat olmak için yurt dışına gitti.**", C: "Yüzmek zihni açtığı için yararlıdır.", D: "Kendi başına kaldığı için çok korkmuş." },
-                dogruCevap: "B"
-            },
-            {
-                metin: '(I) Tıbbi araştırmalar göstermektedir ki kronik stres, bireyde korku, endişe ve panik atak semptomları yaratmaktadır. (II) Komşuluk kültürü zayıfladığı için bu sorunlar ortaya çıkmaktadır. (III) Stres, kişinin kendisiyle ve çevresiyle olan ilişkisini zedeleyerek insanı huzursuz etmektedir. (IV) İnsanların çoğu, bu durumlara tepki olarak kendine zarar verecek davranışlar sergilemektedir. Bu parçadaki numaralanmış cümlelerden hangisi **düşüncenin akışını bozmaktadır**?',
-                cevaplar: { A: "I.", B: "II.", C: "III.", D: "IV." },
-                dogruCevap: "B"
-            },
-            {
-                metin: '"Zola, gençliğini 19. yüzyılın ikinci yarısında Fransız toplumuyla yaşayan olayları kayıtsız kalmaz, romanlarında ve gazetelerindeki makalelerinde toplumsal sorunları irdeler." Bu parçadan yola çıkarak Zola\'nın eserleriyle ilgili aşağıdakilerden hangisine ulaşılabilir?',
-                cevaplar: { A: "Zola'nın eserleri sadece güncel olaylara değinir.", B: "**Zola'nın eserleri, toplumsal gerçekliği yansıtmaktadır.**", C: "Zola'nın eserleri sadece roman türündedir.", D: "Zola, eserlerinde sadece kendi hayatını anlatmıştır." },
-                dogruCevap: "B"
-            },
-            {
-                metin: 'Aşağıdaki cümlelerin hangisinde **I. Tekil Şahıs** vardır?',
-                cevaplar: { A: "Herkesin sorunlarıyla yakın-dan ilgilenileceği bir durumdur.", B: "Bu eserlere ilgi gösterilmesi gerekir.", C: "**Bu konuya sadece birinci tekil kişi değil, ikinci tekil kişi de dahil.**", D: "İnsanlar, yazarın eserlerini okumalıdır." },
-                dogruCevap: "C"
-            },
-            {
-                metin: '(I) Romantizmin yayılarak kuvvetli bir duyguya dönüşmesi ve duyguların birbiriyle çatışması en önemli unsurlardan biridir. (II) Bu nedenle sanatçıların romanı yazarken dikkat etmesi gerekir. (III) İnsanlar, yazarın duygularını okuduklarında anlamalı ve anlamlandırmalıdırlar. (IV) Duyguların, yazarın eserlerinde olduğu kadar okuyucular tarafından da anlaşılması önemlidir. (V) Yazarların duygularına okurun dikkat etmesi önemlidir. Yukarıdaki numaralanmış cümlelerin anlamlı bir bütün oluşturulabilmesi için hangi ikisinin birbiriyle yer değiştirmesi gerekir?',
-                cevaplar: { A: "I. ve II.", B: "II. ve III.", C: "III. ve IV.", D: "**IV. ve V.**" },
-                dogruCevap: "D"
-            },
-            {
-                metin: '"Gözden ırak olan gönülden de ırak olur" atasözünün **karşıt anlamlısı** aşağıdakilerden hangisidir?',
-                cevaplar: { A: "Demir tavında dövülür.", B: "Dost başa, düşman ayağa bakar.", C: "Üzümünü ye, bağını sorma.", D: "**Tencere yuvarlanmış kapağını bulmuş** (Yakın olanlar bir araya gelir anlamında)." },
-                dogruCevap: "D"
-            },
-            {
-                metin: '(1) Çayın tütününden üretilen rakamların fazlalığı zaman içinde artmıştır. (2) Bu nedenle ise hızla devam eden bir artış söz konusudur. (3) Her iki unsur da bir hareketlilik durumu oluşturuyor. (4) Orta Çağ\'da da aynı kullanım artmakta. (5) Bu nedenle ise çay tütününü ülkemizde üretim oranının çok düşük olduğunu söyleyemeyiz. Yukarıdaki numaralanmış cümlelerin anlamlı bir bütün oluşturulabilmesi için hangi ikisinin birbiriyle yer değiştirmesi gerekir?',
-                cevaplar: { A: "I. ve II.", B: "II. ve III.", C: "**III. ve V.**", D: "IV. ve V." },
-                dogruCevap: "C"
-            }
-        ]
-    }
+        {
+            id: 9,
+            konu: "Paragraf Testi - 4",
+            sorular: [
+                {
+                    metin: '"Kimi eserler var ki değeri hiçbir şekilde ödenemez... Bu eser karşısında Alman Araştırmacı Anna Marie Schimmel, \'Almanya yıkılır, tekrar inşa edilir fakat bu kutlu min-\' demiştir." Bu paragrafın **ana düşüncesi** aşağıdakilerden hangisidir?',
+                    cevaplar: { A: "Ülkelerin kalkınması için yapılan harcamaların bir kısmı boşa gitmektedir.", B: "**Tarihi değeri olan eserler korunmalıdır.**", C: "Ülkeler yaptıkları harcamaların bir kısmısnı çocuklarının eğitimine ayırmalıdır.", D: "Yeni nesillerin yetiştirilmesi için yapılan harcamalar, milletlerin geleceğini koruyan kaynaklardır." },
+                    dogruCevap: "B"
+                },
+                {
+                    metin: '(1) Tatil işte böyle bir değişikliktir. (2) İnsan; rüzgârlarla başka diyarlara savrulan... bir de kar tanesi vardır gökyüzünde. (3) Günü, saati farklı biçimde değerlendirmektir. (4) Tatil, kişinin en temel ihtiyaçlarındandır. Bu parçadaki numaralanmış cümlelerle anlamlı bir paragraf oluşturulmak istenirse doğru sıralama nasıl olmalıdır?',
+                    cevaplar: { A: "4 – 1 – 3 – 2", B: "1 – 3 – 4 – 2", C: "**4 – 3 – 1 – 2**", D: "2 – 4 – 3 – 1" },
+                    dogruCevap: "C" 
+                },
+                {
+                    metin: '(I) Arkadaşlık, akıllı telefonlarla yaşam daha da kolaylaştı. (II) Bu telefonlar istenilen her yerde iletişim olanağı sunuyor. (III) İnternet üzerinden rahatlıkla bilgiye ulaşmayı sağlıyor. (IV) **Bu bilgilere kısa sürede ulaşmak insanları tembelleştiriyor.** (V) Zengin uygulama çeşitliliği ile işleri kolaylaştırıyor. Bu parçadaki numaralanmış cümlelerden hangisi **anlatımın akışını bozmaktadır**?',
+                    cevaplar: { A: "I", B: "II", C: "III", D: "**IV**" },
+                    dogruCevap: "D"
+                },
+                {
+                    metin: 'Aşağıdaki cümlelerin hangisinde yer alan altı çizili sözcük **terim anlamıyla kullanılmamıştır**?',
+                    cevaplar: { A: "Yeni aldığı makineyi **test** etmek için kullandı.", B: "Romanın son **bölümünde** okuyucuyu şaşırtan olaylar var.", C: "Dedesini **sayar**, onun bir dediğini iki etmezdi.", D: "Araba ile yokuş aşağı inmek de çok zordur." },
+                    dogruCevap: "C" 
+                },
+                {
+                    metin: '"Her bir yanı ışıl ışıl / Yeşil örtü ne de yeşil / Buysa eğer kural koşul / İşte çevre buna derim" Bu şiirle ilgili olarak aşağıdakilerden hangisi söylenebilir?',
+                    cevaplar: { A: "Şiirde sadece renkler üzerine durulmuştur.", B: "**Şiirin ana düşüncesi çevrenin önemidir.**", C: "Şiirde abartma sanatı kullanılmıştır.", D: "Şair, duygusal bir anlatım kullanmıştır." },
+                    dogruCevap: "B"
+                },
+                {
+                    metin: '"Maddi ve manevi yıkımlar karşısında da güçlü bir şekilde kendini gösteren annenin kollayışı, yavrularını muhafaza etmeye çalışması..." Bu paragrafın **ana düşüncesi** aşağıdakilerden hangisidir?',
+                    cevaplar: { A: "Çocukları bilinçsiz yetiştirmek.", B: "**Annelerin fedakârlığı.**", C: "Dünya değiştiği için annelik zorlaştı.", D: "Yolların çamur içinde kalması." },
+                    dogruCevap: "B"
+                },
+                {
+                    metin: 'Aşağıdaki dizelerin hangisinde **Kişileştirme (Teşhis)** sanatı vardır?',
+                    cevaplar: { A: "Dereden akan soğuk su gibi.", B: "Göklere çıkarsam seni, kimse görmesin.", C: "**Gün bitti** / Akşam serinliğiyle başlıyor memleketim.", D: "Teyzemiz bizi çok iyi karşılıyor." },
+                    dogruCevap: "C"
+                },
+                {
+                    metin: '(1) Her edebi eserin güzelliği, kendi içinde organik bir bütün oluşundan kaynaklanır. (2) Eserlerinde ki organik unsurlar arasında kurala uygunluk, mükemmeliyeti sağlar. (3) Bu bütünlüğü sağlayan eserler başarılı sayılmaz. (4) Her sanatçının kendine göre bir hayatı vardır. Bu metin **iki paragrafa ayrılmak** istenirse ikinci paragraf kaç numaralı cümleyle başlar?',
+                    cevaplar: { A: "1", B: "2", C: "3", D: "**4**" },
+                    dogruCevap: "D"
+                },
+                {
+                    metin: '"Güneşlenmek denince bazı insanların aklına hemen deniz kıyıları gelir. Oysa güneş ışınları dağlarda deniz kenarındakinden daha az değildir. Hatta bazı tedbirler alınmazsa dağlarda deri, deniz kenarındakinden daha çabuk esmerleşir." Bu parçadaki numaralanmış cümlelerin hangilerinde **karşılaştırma** yapılmıştır?',
+                    cevaplar: { A: "1 ve 2", B: "1 ve 3", C: "**2 ve 3**", D: "3 ve 4" },
+                    dogruCevap: "C"
+                },
+                {
+                    metin: 'Aşağıdaki cümlelerin hangisinde yüklem **Ek Fiil ile çekimlenmiştir**?',
+                    cevaplar: { A: "Babam, oğluna göl ile ilgili bir şeyler anlatmaktadır.", B: "**Hayriye Hanım, bir buçuk yıldır evliydi.**", C: "Rusya ile Türkiye arasında anlaşma sağlandı.", D: "Sınavdaki en yüksek notu Sıla aldı." },
+                    dogruCevap: "B"
+                }
+            ]
+        },
+        // Quiz-10: 7. SINIF TÜRKÇE – PARAGRAF TESTİ – 5
+        {
+            id: 10,
+            konu: "Paragraf Testi - 5",
+            sorular: [
+                {
+                    metin: 'Aşağıdaki dizelerin hangisinde Abartma (Mübalağa) sanatı kullanılmıştır?',
+                    cevaplar: { A: "Dereden akan soğuk su gibi.", B: "Taze ruhuyla coşkunluğu var.", C: "**Yorgunluktan dizleri titriyordu.**", D: "Kuş cıvıltıları çevreyi sardı." },
+                    dogruCevap: "C"
+                },
+                {
+                    metin: '(I) Kitap okumayı sevmeyen birinin yazar olması imkânsızdır. (II) Okudukça yazarın dünyasını keşfeder. (III) Okul, kitap okumayı teşvik etmeli. (IV) Okulda verilen kitaplar yazarın dünyasını geliştirir. (V) Okudukça kelime dağarcığı zenginleşir. Bu parçadaki numaralanmış cümlelerin anlamlı bir bütün oluşturulabilmesi için hangi ikisinin birbiriyle yer değiştirmesi gerekir?',
+                    cevaplar: { A: "I. ve II.", B: "II. ve IV.", C: "III. ve V.", D: "**IV. ve V.**" },
+                    dogruCevap: "D"
+                },
+                {
+                    metin: '(I) Hayvanların yaşam kalitesinin artırılması için çizgi film ve sinema merakları ve yönetmen olma hayali çok önemlidir. (II) Bu nedenle, hayvanların yaşam kalitesini artırmanın en önemli yollarından biri, onların yaşam kalitesini artırmaktır. (III) Hayvanların sağlıklı ve mutlu olmaları, doğal yaşam alanlarına bağlıdır. (IV) Hayvanların yaşam kalitesini artırmak, çevrenin korunmasına da katkı sağlar. (V) Hayvanların yaşam kalitesini artırmak, herkesin sorumluluğundadır. Bu parçadaki numaralanmış cümlelerden hangisi **düşüncenin akışını bozmaktadır**?',
+                    cevaplar: { A: "I.", B: "II.", C: "III.", D: "IV." },
+                    dogruCevap: "A"
+                },
+                {
+                    metin: 'Aşağıdaki cümlelerin hangisinde **amaç-sonuç** ilişkisi vardır?',
+                    cevaplar: { A: "Çok kar yağdığı için yollar kapandı.", B: "**Ameliyat olmak için yurt dışına gitti.**", C: "Yüzmek zihni açtığı için yararlıdır.", D: "Kendi başına kaldığı için çok korkmuş." },
+                    dogruCevap: "B"
+                },
+                {
+                    metin: '(I) Tıbbi araştırmalar göstermektedir ki kronik stres, bireyde korku, endişe ve panik atak semptomları yaratmaktadır. (II) Komşuluk kültürü zayıfladığı için bu sorunlar ortaya çıkmaktadır. (III) Stres, kişinin kendisiyle ve çevresiyle olan ilişkisini zedeleyerek insanı huzursuz etmektedir. (IV) İnsanların çoğu, bu durumlara tepki olarak kendine zarar verecek davranışlar sergilemektedir. Bu parçadaki numaralanmış cümlelerden hangisi **düşüncenin akışını bozmaktadır**?',
+                    cevaplar: { A: "I.", B: "II.", C: "III.", D: "IV." },
+                    dogruCevap: "B"
+                },
+                {
+                    metin: '"Zola, gençliğini 19. yüzyılın ikinci yarısında Fransız toplumuyla yaşayan olayları kayıtsız kalmaz, romanlarında ve gazetelerindeki makalelerinde toplumsal sorunları irdeler." Bu parçadan yola çıkarak Zola\'nın eserleriyle ilgili aşağıdakilerden hangisine ulaşılabilir?',
+                    cevaplar: { A: "Zola'nın eserleri sadece güncel olaylara değinir.", B: "**Zola'nın eserleri, toplumsal gerçekliği yansıtmaktadır.**", C: "Zola'nın eserleri sadece roman türündedir.", D: "Zola, eserlerinde sadece kendi hayatını anlatmıştır." },
+                    dogruCevap: "B"
+                },
+                {
+                    metin: 'Aşağıdaki cümlelerin hangisinde **I. Tekil Şahıs** vardır?',
+                    cevaplar: { A: "Herkesin sorunlarıyla yakın-dan ilgilenileceği bir durumdur.", B: "Bu eserlere ilgi gösterilmesi gerekir.", C: "**Bu konuya sadece birinci tekil kişi değil, ikinci tekil kişi de dahil.**", D: "İnsanlar, yazarın eserlerini okumalıdır." },
+                    dogruCevap: "C"
+                },
+                {
+                    metin: '(I) Romantizmin yayılarak kuvvetli bir duyguya dönüşmesi ve duyguların birbiriyle çatışması en önemli unsurlardan biridir. (II) Bu nedenle sanatçıların romanı yazarken dikkat etmesi gerekir. (III) İnsanlar, yazarın duygularını okuduklarında anlamalı ve anlamlandırmalıdırlar. (IV) Duyguların, yazarın eserlerinde olduğu kadar okuyucular tarafından da anlaşılması önemlidir. (V) Yazarların duygularına okurun dikkat etmesi önemlidir. Yukarıdaki numaralanmış cümlelerin anlamlı bir bütün oluşturulabilmesi için hangi ikisinin birbiriyle yer değiştirmesi gerekir?',
+                    cevaplar: { A: "I. ve II.", B: "II. ve III.", C: "III. ve IV.", D: "**IV. ve V.**" },
+                    dogruCevap: "D"
+                },
+                {
+                    metin: '"Gözden ırak olan gönülden de ırak olur" atasözünün **karşıt anlamlısı** aşağıdakilerden hangisidir?',
+                    cevaplar: { A: "Demir tavında dövülür.", B: "Dost başa, düşman ayağa bakar.", C: "Üzümünü ye, bağını sorma.", D: "**Tencere yuvarlanmış kapağını bulmuş** (Yakın olanlar bir araya gelir anlamında)." },
+                    dogruCevap: "D"
+                },
+                {
+                    metin: '(1) Çayın tütününden üretilen rakamların fazlalığı zaman içinde artmıştır. (2) Bu nedenle ise hızla devam eden bir artış söz konusudur. (3) Her iki unsur da bir hareketlilik durumu oluşturuyor. (4) Orta Çağ\'da da aynı kullanım artmakta. (5) Bu nedenle ise çay tütününü ülkemizde üretim oranının çok düşük olduğunu söyleyemeyiz. Yukarıdaki numaralanmış cümlelerin anlamlı bir bütün oluşturulabilmesi için hangi ikisinin birbiriyle yer değiştirmesi gerekir?',
+                    cevaplar: { A: "I. ve II.", B: "II. ve III.", C: "**III. ve V.**", D: "IV. ve V." },
+                    dogruCevap: "C"
+                }
+            ]
+        }
+    ];
 
-    // 2. QUIZ İŞLEVLERİ VE DEĞİŞKENLER
+    // 2. QUIZ İŞLEVLERİ VE DEĞİŞKENLER (Quiz mantığı, HTML elementleriyle uyumlu)
     const quizListContainer = document.getElementById('quiz-list');
     const quizSelectionArea = document.getElementById('quiz-selection-area');
     const quizArea = document.getElementById('quiz-area');
@@ -685,7 +684,7 @@
 
     let currentQuiz = null;
     let currentQuestionIndex = 0;
-    let userAnswers = {}; // { questionIndex: "A", 1: "B" }
+    let userAnswers = {}; 
 
     // Quiz listesini yükle
     function loadQuizList() {
@@ -718,12 +717,13 @@
         const questionData = currentQuiz.sorular[currentQuestionIndex];
         
         quizCounter.textContent = `Soru ${currentQuestionIndex + 1} / ${currentQuiz.sorular.length}`;
-        questionText.textContent = questionData.metin;
+        questionText.textContent = questionData.metin.replace(/\\n/g, '\n'); // Yeni satır karakterini dönüştürme
         answersContainer.innerHTML = '';
         
         // Şıkları oluştur
         Object.entries(questionData.cevaplar).forEach(([key, value]) => {
             const answerDiv = document.createElement('div');
+            // Seçili sınıfını ekle
             answerDiv.className = `answer-option p-3 border-2 border-gray-200 rounded-lg flex items-center ${userAnswers[currentQuestionIndex] === key ? 'selected' : ''}`;
             answerDiv.innerHTML = `<span class="font-bold mr-3 text-rose-500">${key})</span> ${value}`;
             answerDiv.dataset.answerKey = key;
@@ -745,6 +745,7 @@
                 div.classList.add('selected');
             }
         });
+        updateNavigationButtons(); 
     }
 
     // Navigasyon butonlarını güncelle
@@ -753,9 +754,13 @@
         
         if (currentQuestionIndex === currentQuiz.sorular.length - 1) {
             nextBtn.textContent = 'Quizi Bitir';
+            // Son soru cevaplanmışsa bitirilebilir
+            nextBtn.disabled = userAnswers[currentQuestionIndex] === undefined;
             nextBtn.onclick = finishQuiz;
         } else {
             nextBtn.textContent = 'Sonraki →';
+            // Diğer sorularda serbest navigasyona izin ver
+            nextBtn.disabled = false;
             nextBtn.onclick = goToNextQuestion;
         }
     }
@@ -778,6 +783,12 @@
     
     // Quiz bitir
     function finishQuiz() {
+        // Kontrol: Son soru cevaplanmışsa bitir
+        if (userAnswers[currentQuestionIndex] === undefined) {
+             alert('Lütfen son soruyu cevaplayın.');
+             return;
+        }
+
         quizArea.classList.add('hidden');
         resultArea.classList.remove('hidden');
         
@@ -797,9 +808,13 @@
             // İnceleme kartını oluştur
             const reviewItem = document.createElement('div');
             reviewItem.className = `p-3 rounded-lg border-2 ${isCorrect ? 'border-emerald-500 bg-emerald-50' : 'border-red-500 bg-red-50'}`;
+            
+            // Soru metnindeki \n karakterlerini düzelt
+            const formattedQuestionText = question.metin.replace(/\\n/g, '<br>');
+
             reviewItem.innerHTML = `
                 <p class="font-bold text-gray-800 mb-1">Soru ${index + 1}:</p>
-                <p class="whitespace-pre-line text-sm mb-2">${question.metin.substring(0, 100)}...</p>
+                <p class="whitespace-pre-line text-sm mb-2">${formattedQuestionText}</p>
                 <p class="text-sm">Senin Cevabın: <span class="font-bold ${isCorrect ? 'text-emerald-700' : 'text-red-700'}">${userAnswer || 'Boş'}</span></p>
                 <p class="text-sm">Doğru Cevap: <span class="font-bold text-emerald-700">${question.dogruCevap}</span></p>
             `;
@@ -822,7 +837,7 @@
     prevBtn.addEventListener('click', goToPrevQuestion);
     
     // Uygulama başlangıcı
-    loadQuizList();
+    document.addEventListener('DOMContentLoaded', loadQuizList);
 </script>
 
 </body>
