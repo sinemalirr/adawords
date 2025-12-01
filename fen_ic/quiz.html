@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fen Bilimleri Quiz ve Denemeler</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; min-height: 100vh; }
+        .quiz-card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+        }
+        .answer-option {
+            transition: all 0.1s ease;
+            cursor: pointer;
+        }
+        .answer-option:hover {
+            background-color: #ecfdf5; /* emerald-50 */
+        }
+        .selected {
+            background-color: #a7f3d0; /* emerald-200 */
+            border-color: #34d399; /* emerald-500 */
+        }
+        .correct {
+            background-color: #a7f3d0; /* emerald-200 */
+            border-color: #34d399; /* emerald-500 */
+        }
+        .wrong {
+            background-color: #fecaca; /* red-200 */
+            border-color: #f87171; /* red-400 */
+        }
+    </style>
+</head>
+<body>
+
+<div class="w-full max-w-4xl mx-auto p-6 md:p-10 mt-8">
+    <header class="pb-4 border-b border-gray-200 mb-6">
+        <a href="../fen.html" class="text-emerald-600 hover:text-emerald-800 text-xl mb-4 inline-block">← Fen Bilimleri Ana Menü</a>
+        <h1 class="text-3xl font-extrabold text-gray-800">Fen Bilimleri Quiz ve Testler 🧪</h1>
+        <p class="text-sm text-gray-500 mt-2">Aşağıdan bir test seçin ve kendinizi deneyin.</p>
+    </header>
+
+    <div id="quiz-selection-area" class="quiz-card mb-8">
+        <h2 id="section-title" class="text-2xl font-semibold mb-4 text-gray-700"></h2>
+        <div id="quiz-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            </div>
+    </div>
+
+    <div id="quiz-area" class="hidden">
+        <div class="flex justify-between items-center mb-4">
+            <span id="quiz-title" class="text-xl font-bold text-emerald-600"></span>
+            <span id="quiz-counter" class="text-lg font-medium text-gray-500">Soru 1 / 10</span>
+        </div>
+        
+        <div class="quiz-card">
+            <p id="question-text" class="text-xl mb-6 font-medium text-gray-800 whitespace-pre-line"></p>
+            
+            <div id="answers-container" class="space-y-3">
+                </div>
+            
+            <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
+                <button id="prev-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-150" disabled>
+                    ← Önceki
+                </button>
+                <button id="next-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-6 rounded-lg transition duration-150">
+                    Sonraki →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="result-area" class="hidden quiz-card text-center">
+        <h2 class="text-3xl font-bold mb-4 text-emerald-600">Test Sonuçları 🎉</h2>
+        <p class="text-xl text-gray-700 mb-2">Doğru Sayısı: <span id="correct-count" class="font-extrabold text-emerald-600"></span></p>
+        <p class="text-xl text-gray-700 mb-6">Yanlış Sayısı: <span id="wrong-count" class="font-extrabold text-red-600"></span></p>
+        <button id="restart-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition duration-150">
+            Yeni Test Seç
+        </button>
+        <div id="answer-review" class="mt-8 text-left space-y-4">
+            <h3 class="text-xl font-semibold border-b pb-2 text-gray-700">Cevap İncelemesi:</h3>
+        </div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<script src="../js/firebase-init.js"></script>
+<script src="../js/sure-takip-fen.js"></script> 
+
+<script>
+    // 1. QUIZ VERİLERİ (Quizler.docx dosyasından çıkarılmıştır)
+    const fenKonuQuizler = [
+        {
+            id: 1,
+            konu: "TEST 1: Hücre ve Gök Cisimleri",
+            sorular: [
+                { metin: "Küçük kütleli bir yıldız olan Güneş’in yaşamının sonlanma aşamaları ile ilgili olarak aşağıdakilerden hangisi doğrudur?", cevaplar: { A: "Doğrudan süpernova patlaması geçirerek kara deliğe dönüşecektir.", B: "Merkezi küçülürken dış kabuğu genişleyecek ve kırmızı dev evresine geçecektir.", C: "Yaşamını nötron yıldızı (pulsar) olarak tamamlayacaktır.", D: "Gaz ve tozdan oluşan bulutsulara geri dönecektir." [cite_start]}, dogruCevap: "B" }, // [cite: 3, 4, 5, 33]
+                { metin: "Aşağıda hücrenin temel kısımları ile ilgili verilen ifadelerden hangisi yanlıştır?", cevaplar: { A: "Hücre zarı, hücreyi dış etkenlerden koruyan, canlı ve seçici geçirgen bir yapıdır.", B: "Sitoplazma, çekirdek ile hücre zarı arasını dolduran yarı saydam ve akışkan bir sıvıdır.", C: "Çekirdek, hücrenin yönetim ve denetim merkezi olup, kalıtsal özellikleri belirleyen yapıları içerir.", D: "Hücre çeperi, bütün canlı hücrelerde bulunan esnek bir yapıdır." [cite_start]}, dogruCevap: "D" }, // [cite: 6, 7, 8, 9, 10, 33]
+                [cite_start]{ metin: "Fen bilimleri dersinde yapılan iş kavramıyla ilgili, I. Cismin yer değiştirmesi, uygulanan kuvvetle aynı doğrultuda olmalıdır. II. Düz yolda sırtımızda çanta taşırken, çantaya uyguladığımız kuvvet hareket yönüne dik olduğu için iş yapmış sayılmayız. III. Bir duvarı ittiğimiz halde hareket ettiremezsek fiziksel anlamda iş yapmış sayılmayız. ifadelerinden hangileri doğrudur?", cevaplar: { A: "Yalnız I", B: "I ve II", C: "II ve III", D: "I, II ve III" }, dogruCevap: "D" }, // [cite: 11, 12, 13, 14]
+                [cite_start]{ metin: "Aşağıdakilerden hangisi homojen karışım (çözelti) örneği olabilir?", cevaplar: { A: "Zeytinyağlı su", B: "Sis", C: "Kolonya", D: "Çamurlu su" }, dogruCevap: "C" }, // [cite: 15, 33]
+                { metin: "Aşağıda verilen organellerden hangisinin görevi yanlış tanımlanmıştır?", cevaplar: { A: "Ribozom: Hücrede protein sentezlemede görevlidir ve en küçük organeldir.", B: "Mitokondri: Hücrenin enerji üretim merkezidir.", C: "Kloroplast: Sadece hayvan hücrelerinde bulunur ve enerji üretir.", D: "Golgi Aygıtı: Salgı maddelerinin üretiminden ve paketlenmesinden sorumludur." [cite_start]}, dogruCevap: "C" }, // [cite: 16, 17, 18, 33]
+                { metin: "Katı basıncı ile ilgili verilen aşağıdaki bilgilerden hangisi yanlıştır?", cevaplar: { A: "Basınç, birim yüzeye dik olarak etki eden kuvvete denir.", B: "Uygulanan kuvvet (ağırlık) sabit tutulursa, yüzey alanı küçüldükçe basınç artar.", C: "Katı basıncı, cismin ağırlığı ile doğru orantılıdır.", D: "Bir tuğla yatay konumdan dikey konuma getirildiğinde tabana uyguladığı basınç azalır." [cite_start]}, dogruCevap: "D" }, // [cite: 19, 20, 21, 33]
+                [cite_start]{ metin: "Aşağıdaki gök cisimlerinden hangisi ısı ve ışık kaynağı değildir?", cevaplar: { A: "Güneş", B: "Yıldızlar", C: "Gezegenler", D: "Büyükayı takımyıldızı içerisindeki yıldızlar" }, dogruCevap: "C" }, // [cite: 22, 23, 33]
+                { metin: "Bir çözeltideki çözünme hızını artırmak için kullanılan yöntemlerden hangisi temas yüzeyini artırma ilkesine dayanır?", cevaplar: { A: "Suyu 50 °C’de kullanmak", B: "Çözeltiyi kaşıkla karıştırmak", C: "Tuzu toz halinde kullanmak yerine iri kaya tuzu kullanmak", D: "Şekeri küp şeker yerine pudra şekeri şeklinde kullanmak." [cite_start]}, dogruCevap: "D" }, // [cite: 24, 25, 33]
+                [cite_start]{ metin: "Vücudumuzun denge ve uyumlu kas hareketlerini düzenleyen merkezi sinir sistemi organı hangisidir?", cevaplar: { A: "Beyin", B: "Omurilik", C: "Omurilik soğanı", D: "Beyincik" }, dogruCevap: "D" }, // [cite: 26, 27, 28, 33]
+                { metin: "Aşağıda verilen ifadelerden hangisi yanlıştır?", cevaplar: { A: "Beyaz cisimler üzerine düşen ışığın tamamını yansıtır.", B: "Koyu renkli cisimler, açık renkli cisimlere göre ışığı daha az soğurur.", C: "Cisimler yansıttıkları ışığın renginde görülürler.", D: "Siyah cisimler, üzerine düşen ışığın tamamını soğurur." [cite_start]}, dogruCevap: "B" } // [cite: 29, 30, 31, 33]
+            ]
+        },
+        {
+            id: 2,
+            konu: "TEST 2: Kuvvet, Çözünme ve Duyu Organları",
+            sorular: [
+                { metin: "Mitoz bölünme ile ilgili olarak aşağıdakilerden hangisi yanlıştır?", cevaplar: { A: "Mitoz, bir hücreden kalıtsal yapısı başlangıçtaki hücreyle aynı olan iki yeni hücre meydana getirir.", B: "Mitoz bölünme, çok hücreli canlılarda büyüme ve gelişmeyi sağlar.", C: "Tekrar eden mitoz bölünmeler sonucunda hücrelerin kromozom sayısı değişmez.", D: "Mitoz bölünme sadece üreme ana hücrelerinde görülür." [cite_start]}, dogruCevap: "D" }, // [cite: 36, 37, 38, 63]
+                [cite_start]{ metin: "Aşağıdaki karışımlardan hangisinin bileşenlerine ayrılmasında buharlaştırma yöntemi kullanılmalıdır?", cevaplar: { A: "Kumlu su (Katı-Sıvı Heterojen)", B: "Tuzlu su (Katı-Sıvı Homojen/Çözelti)", C: "Zeytinyağı-su karışımı (Sıvı-Sıvı Heterojen)", D: "Kum-talaş karışımı (Katı-Katı Heterojen)" }, dogruCevap: "B" }, // [cite: 39, 63]
+                { metin: "Bir cismin kütlesi ve ağırlığı ile ilgili aşağıdakilerden hangisi kesinlikle doğrudur?", cevaplar: { A: "Kütle dinamometre ile ölçülür.", B: "Ağırlık bulunulan yere göre değişmez.", C: "Aynı ortamda kütlesi büyük olan cismin ağırlığı da büyük olur.", D: "Dünya'da 10 kg kütleye sahip bir cisim Ay’da da 6 kg ağırlığa sahip olur." [cite_start]}, dogruCevap: "C" }, // [cite: 40, 41, 42, 63]
+                { metin: "Aşağıdaki durumlardan hangisi, sonradan kazanılan (şartlı) reflekslere örnek olarak verilebilir?", cevaplar: { A: "Yüksek seste irkilme", B: "Bisiklet sürmek", C: "Göz bebeğinin ışıkta küçülmesi", D: "İğne batırılan elin geri çekilmesi." [cite_start]}, dogruCevap: "B" }, // [cite: 43, 44, 63]
+                [cite_start]{ metin: "Çözünme hızına etki eden faktörlerle ilgili, aynı miktarda suya 10 g şeker eklenerek hazırlanan deney düzeneklerinden hangisinde çözünme hızı en fazla olur?", cevaplar: { A: "20 °C, küp şeker, karıştırılmadan", B: "30 °C, toz şeker, karıştırılarak", C: "15 °C, toz şeker, karıştırılmadan", D: "25 °C, küp şeker, karıştırılarak" }, dogruCevap: "B" }, // [cite: 45, 46, 63]
+                [cite_start]{ metin: "Gözde görüntünün algılanması sürecinde; I. Işık, kornea (saydam tabaka) tarafından kırılır. II. Duyu almaçlarının yoğun olduğu sarı leke üzerinde görüntü ters oluşur. III. Görüntü, sinirler aracılığıyla beyindeki görme merkezine iletilir ve beyinde düz algılanır. Yukarıdaki aşamalardan hangileri doğrudur?", cevaplar: { A: "Yalnız I", B: "I ve II", C: "II ve III", D: "I, II ve III" }, dogruCevap: "D" }, // [cite: 47, 48, 49, 50, 63]
+                { metin: "Aşağıdaki yargılardan hangisi bir karışımı tanımlayan yanlış bir ifadedir?", cevaplar: { A: "Karışımlar, kendini oluşturan maddelerin özelliklerini korur.", B: "Karışımlar fiziksel yollarla bileşenlerine ayrılabilirler.", C: "Karışımlar homojen veya heterojen olabilirler.", D: "Karışımlar saf maddeler olup formülle gösterilirler." [cite_start]}, dogruCevap: "D" }, // [cite: 51, 52, 63]
+                { metin: "Kulakta dengeyi sağlayan yapılar ile ilgili olarak aşağıdakilerden hangisi doğrudur?", cevaplar: { A: "Östaki borusu; orta kulağı yutağa bağlar ve dış ortamdaki basınç değişiminde uyum sağlamasına yardımcı olur.", B: "Yarım daire kanalları; iç kulakta bulunur ve işitme sinirlerini içerir.", C: "Çekiç, örs, üzengi; iç kulakta dengeyi sağlayan kemiklerdir.", D: "Ses, salyangozdaki oval pencere tarafından algılanır." [cite_start]}, dogruCevap: "A" }, // [cite: 53, 54, 55, 56, 63]
+                [cite_start]{ metin: "Yıldızların sıcaklıklarına göre renklendirilmesi ile ilgili yapılan eşleştirmelerden hangisi yanlıştır?", cevaplar: { A: "En Sıcak: Mavi - Beyaz", B: "Orta Sıcaklıkta: Sarı", C: "Soğuk: Kırmızı", D: "Çok Soğuk: Turuncu" }, dogruCevap: "D" }, // [cite: 57, 58, 63]
+                { metin: "Biyoçeşitliliği tehdit eden unsurlarla ilgili aşağıdakilerden hangisi çevre bilimcinin göldeki kirliliği önlemek için önerebileceği bir çözüm olamaz?", cevaplar: { A: "Fabrika atıklarının doğaya zarar verilmeden yok edilmesi.", B: "Gölde sayısı azalan canlılarla ilgili iyileştirme çalışmaları yapılması.", C: "Göle atık bırakan fabrikaların sayısının artırılması.", D: "İyileştirme çalışmalarında farklı biyolojik yöntemlerin kullanılması." [cite_start]}, dogruCevap: "C" } // [cite: 59, 60, 61, 63]
+            ]
+        },
+        {
+            id: 3,
+            konu: "TEST 3: Basınç, Aynalar ve Karışım Ayırma",
+            sorular: [
+                { metin: "Aşağıdaki durumlardan hangisinde fiziksel anlamda iş yapılmış sayılmaz?", cevaplar: { A: "Bir sandığı çekerek zeminde sürüklemek.", B: "Bir aracı iterek hareket ettirmek.", C: "Omzunda çanta taşıyan bir kişinin düz yolda yürümesi.", D: "Yerden alınan bir kolinin yukarıdaki bir rafa konulması." [cite_start]}, dogruCevap: "C" }, // [cite: 66, 67, 68, 95]
+                [cite_start]{ metin: "Aynalarla ilgili olarak, bir cismin her zaman düz ve cisimden küçük görüntüsünü veren ayna çeşidi hangisidir?", cevaplar: { A: "Düz Ayna (Görüntü boyu eşittir)", B: "Çukur Ayna (Yakınsa büyük ve düz olabilir)", C: "Tümsek Ayna (Daima küçük ve düzdür)", D: "Periskop aynası" }, dogruCevap: "C" }, // [cite: 69, 70, 95]
+                { metin: "Bir öğrenci, çözünenin tanecik boyutunun çözünme hızına etkisini incelemek istiyor. Aşağıdaki deney düzeneklerinden hangilerini birlikte kullanırsa amacına ulaşır?", cevaplar: { A: "Sıcaklık ve su miktarı farklı, şeker cinsi aynı olan iki düzenek", B: "Şeker miktarı, su sıcaklığı ve karıştırma durumu aynı; sadece şekerin cinsi (küp/toz) farklı olan iki düzenek.", C: "Karıştırma durumu, şeker cinsi ve su miktarı aynı; sıcaklıkları farklı olan iki düzenek.", D: "Sadece karıştırma durumu farklı olan iki düzenek." [cite_start]}, dogruCevap: "B" }, // [cite: 71, 72, 73, 74, 95]
+                [cite_start]{ metin: "Katı cisimlerin zemine uyguladığı basınç ile ilgili, I. Basıncı azaltmak için yüzey alanı artırılmalıdır. II. Basıncı artırmak için yüzey alanı azaltılmalıdır (Bıçağın keskin yüzeyi gibi). III. Katı basıncı, cismin bulunduğu gezegenin çekim kuvvetine bağlı değildir. ifadelerinden hangileri doğrudur?", cevaplar: { A: "Yalnız I", B: "I ve II", C: "II ve III", D: "I, II ve III" }, dogruCevap: "B" }, // [cite: 75, 76, 77, 95]
+                [cite_start]{ metin: "Bir grup öğrenci, farklı renkteki (K, L, M, N) kutuların içine eşit miktarda su koyarak güneş ışığı altında eşit süre bekletmiştir. Suların sıcaklıkları arasındaki ilişki L > M > N > K olduğuna göre, ışığı en fazla soğuran kutu hangisidir ve bu kutu hangi renkte olabilir?", cevaplar: { A: "K kutusu; Beyaz", B: "L kutusu; Siyah", C: "M kutusu; Kırmızı", D: "N kutusu; Yeşil" }, dogruCevap: "B" }, // [cite: 78, 79, 80, 95]
+                { metin: "Kültür balıkçılığında kullanılan bir su tankındaki suyun dip kısmında bulunan Y noktasındaki sıvı basıncı, X gazının musluğu açıldığında nasıl değişir?", cevaplar: { A: "Değişmez, çünkü basınç sadece yoğunluğa ve derinliğe bağlıdır.", B: "Artar, çünkü gaz basıncı sıvı yüzeyine etki ederek toplam basıncı artırır.", C: "Azalır, çünkü gaz sıvı yoğunluğunu değiştirir.", D: "Gaz musluğu açıldığında Y noktasındaki sıvı basıncı bilgisi mevcut kaynaklarda bulunmamaktadır." [cite_start]}, dogruCevap: "D" }, // [cite: 81, 82, 83, 95]
+                { metin: "Aşağıdakilerden hangisi hava direncini azaltmak için tasarlanmış durumlara örnek verilebilir?", cevaplar: { A: "Formula 1 araçlarının aerodinamik yapısı.", B: "Paraşütlerin büyük yüzey alanına sahip olması.", C: "Kış lastiklerinin yüzeyindeki derin oluklar.", D: "Yağmur damlasının sabit süratle yere inmesi." [cite_start]}, dogruCevap: "A" }, // [cite: 84, 85, 95]
+                [cite_start]{ metin: "Çukur aynaların kullanım alanları düşünüldüğünde, görüntüyü büyütme özelliğinden faydalanılan alanlar hangileridir?", cevaplar: { A: "Dikiz aynaları (Tümsek ayna)", B: "Mağaza güvenlik aynaları (Tümsek ayna)", C: "Makyaj aynaları ve Dişçi aynaları", D: "Kavşak aynaları (Tümsek ayna)" }, dogruCevap: "C" }, // [cite: 86, 87, 95]
+                { metin: "Homojen karışımlar (çözeltiler) ile ilgili olarak, I. Karışımı oluşturan maddelerin dağılımı her yerde aynıdır. II. En az bir çözücü ve bir çözünen gereklidir. III. Çözünen maddeler özelliklerini kaybederler. ifadelerinden hangileri doğrudur?", cevaplar: { A: "Yalnız I", B: "I ve II", C: "II ve III", D: "I, II ve III." [cite_start]}, dogruCevap: "B" }, // [cite: 88, 89, 90, 95]
+                { metin: "Takımyıldızlar ile ilgili verilen aşağıdaki bilgilerden hangisi yanlıştır?", cevaplar: { A: "Birbirlerine göre konumları her zaman aynı kalan yıldız gruplarıdır.", B: "Gökyüzü gözlemlerini kolaylaştırmaktadırlar.", C: "Dünyadan bakıldığında bir varlığa benzetilerek adlandırılmışlardır (Büyükayı, Avcı vb.).", D: "Bir takımyıldızı oluşturan yıldızlar, birbirleriyle eşit mesafede bulunan yıldızlar topluluğudur." [cite_start]}, dogruCevap: "D" } // [cite: 91, 92, 93, 95]
+            ]
+        },
+        {
+            id: 4,
+            konu: "TEST 4: Denetleyici Sistemler, Hücre Farkları ve Görüntü Oluşumu",
+            sorular: [
+                [cite_start]{ metin: "Hücre bölünmeleri ile ilgili olarak, I. Mitoz bölünme vücut hücrelerinde görülür. II. Mayoz bölünme ile oluşan üreme hücreleri n kromozomludur. III. Mitoz bölünme sonucunda oluşan hücrelerin kalıtsal yapısı ana hücre ile aynıdır. ifadelerinden hangileri doğrudur?", cevaplar: { A: "Yalnız I", B: "I ve III", C: "II ve III", D: "I, II ve III" }, dogruCevap: "D" }, // [cite: 98, 99, 100, 124]
+                [cite_start]{ metin: "Aşağıdakilerden hangisi omurilik soğanının kontrol ettiği istem dışı hareketlerden biri değildir?", cevaplar: { A: "Hapşırma", B: "Yutkunma", C: "Bisiklete binme", D: "Solunum" }, dogruCevap: "C" }, // [cite: 101, 102, 124]
+                [cite_start]{ metin: "I. Hücre zarı dış etkilerden korur ve madde alışverişini kontrol eder. II. Hücre çeperi cansız, kalın ve tam geçirgen bir yapıdadır. III. Bitki hücreleri köşeli, hayvan hücreleri yuvarlak şekle sahiptir. Yukarıda verilen ifadelerden hangileri doğrudur?", cevaplar: { A: "Yalnız II", B: "I ve II", C: "II ve III", D: "I, II ve III" }, dogruCevap: "D" }, // [cite: 103, 104, 105, 124]
+                { metin: "Düz aynada oluşan görüntü ile ilgili aşağıdakilerden hangisi yanlıştır?", cevaplar: { A: "Görüntü cisimle aynı boydadır.", B: "Görüntü düz ve sanaldır.", C: "Cisim aynaya yaklaştıkça görüntü aynadan uzaklaşır.", D: "Görüntü, aynaya göre simetriktir (sağ/sol tersliği)." [cite_start]}, dogruCevap: "C" }, // [cite: 106, 107, 124]
+                [cite_start]{ metin: "Aşağıda karışım türlerine ve örneklerine ait yapılan eşleştirmelerden hangisi yanlıştır?", cevaplar: { A: "Homojen Karışım: Hava (Gaz-Gaz Çözeltisi)", B: "Heterojen Karışım: Süt", C: "Homojen Karışım: Tuzlu su", D: "Heterojen Karışım: Kolonya" }, dogruCevap: "D" }, // [cite: 108, 109, 124]
+                { metin: "Göz kusurlarından Renk körlüğü (Daltonizm) ile ilgili aşağıdakilerden hangisi doğrudur?", cevaplar: { A: "Görüntünün sarı leke yerine kör noktaya düşmesi sonucu oluşur.", B: "Kalıtsal bir hastalıktır ve genellikle yeşil/kırmızı renkleri ayırt edememe şeklinde görülür.", C: "Göz merceğinin ışığı az kırması sonucu oluşur.", D: "Tedavisi, kalın kenarlı merceklerle yapılabilir." [cite_start]}, dogruCevap: "B" }, // [cite: 110, 111, 112, 113, 124]
+                [cite_start]{ metin: "Çimlenme olayı için gerekli olan temel çevresel şartlar nelerdir?", cevaplar: { A: "Işık, Karbondioksit, Su", B: "Su, Oksijen, Uygun Sıcaklık", C: "Güneş ışığı, Uygun sıcaklık, Oksijen", D: "Su, Karbondioksit, Işık" }, dogruCevap: "B" }, // [cite: 114, 115, 124]
+                [cite_start]{ metin: "Aşağıdaki duyu organlarından hangisi hem koku hem de tat almada rol oynar?", cevaplar: { A: "Burun ve Dil beraber çalışır.", B: "Yalnızca Dil", C: "Yalnızca Burun", D: "Göz ve Kulak" }, dogruCevap: "A" }, // [cite: 116, 117, 124]
+                [cite_start]{ metin: "Yer çekimine karşı iş yapılabilmesi için cismin yer çekimi kuvvetinin tersi yönde hareket etmesi gerekir. Buna göre aşağıdakilerden hangisinde yer çekimine karşı iş yapılmıştır?", cevaplar: { A: "Bir sandığı yatay zeminde çekmek", B: "Merdiven çıkmak", C: "Elimizde tuttuğumuz tepsiyi düz yolda taşımak", D: "Arabayı iterek düz yolda hareket ettirmek" }, dogruCevap: "B" }, // [cite: 118, 119, 124]
+                { metin: "Bir göl çevresinde araştırma yapan çevre bilimci, gölün renginde ve kokusunda değişim, canlı sayısında ise azalma olduğunu gözlemlemiştir. Bu durumun nedeni nedir?", cevaplar: { A: "Fabrika atıklarının göle bırakılması.", B: "Gölde biyolojik yöntemlerle iyileştirme yapılması.", C: "Nesli tükenmekte olan canlıların artması.", D: "Göl kenarına yeni bir yerleşim yeri kurulması." [cite_start]}, dogruCevap: "A" } // [cite: 120, 121, 122, 124]
+            ]
+        },
+        {
+            id: 5,
+            konu: "TEST 5: Karışımlar, Ağırlık ve Refleksler",
+            sorular: [
+                [cite_start]{ metin: "Aşağıdaki karışım ayırma yöntemlerinden hangisi yoğunluk farkına dayanır?", cevaplar: { A: "Kum-talaş karışımına su ekleyerek yüzdürme", B: "Tuzlu sudan tuzu buharlaştırma", C: "Çaydan yaprakları ayırmak için süzme", D: "Kükürt tozu ile karışmış demir tozunu mıknatısla ayırma" }, dogruCevap: "A" }, // [cite: 127, 158]
+                [cite_start]{ metin: "Ağırlık ve Kütle kavramları ile ilgili, I. Kütle, bulunduğu yere göre değişmezken, ağırlık bulunduğu yere göre değişir. II. Ağırlık birimi Newton (N)'dur. III. Dünya'nın merkezine doğru yer çekimi kuvvetinin yönü doğrusal olarak hareket eder. Yukarıdaki ifadelerden hangileri doğrudur?", cevaplar: { A: "Yalnız I", B: "I ve II", C: "II ve III", D: "I, II ve III" }, dogruCevap: "D" }, // [cite: 128, 129, 130, 158]
+                [cite_start]{ metin: "Bir gök cismi ile ilgili şu özellikler verilmiştir: ◦ Isı ve ışık kaynağı değildir. ◦ Gökyüzündeki konumu zamanla değişir. ◦ Uyduları olabilir. Bu gök cismi aşağıdakilerden hangisi olabilir?", cevaplar: { A: "Kuyruklu yıldız", B: "Gezegen", C: "Yıldız", D: "Bulutsu" }, dogruCevap: "B" }, // [cite: 131, 132, 133, 134, 158]
+                { metin: "Maddelerin çözünme hızını artırmak için yapılan bir deneyde, iki kapta aynı miktar suda çözünen şekerin miktarı (m) ve çözünme süresi zaman grafikteki gibi verilmiştir. ◦ Grafiğe göre I kabındaki çözünme hızı, III kabındaki çözünme hızından fazladır. Buna göre I ve III kapları arasındaki fark aşağıdakilerden hangisi olabilir?", cevaplar: { A: "I kabının sıcaklığı III kabından düşüktür.", B: "I kabındaki su miktarı III kabından azdır.", C: "I kabındaki şekerin tanecik boyutu III kabından küçüktür (Örn: Toz şeker > Küp şeker).", D: "I kabında karıştırma yapılmamış, III kabında yapılmıştır." [cite_start]}, dogruCevap: "C" }, // [cite: 135, 136, 137, 138, 139, 158]
+                { metin: "Aşağıdakilerden hangisi mayoz bölünmenin canlılar için önemini açıklar?", cevaplar: { A: "Yaraların iyileşmesini sağlar.", B: "Büyüme ve gelişmeyi sağlar.", C: "Kalıtsal özelliklerin aktarılmasını ve tür içi çeşitliliği sağlar.", D: "Bir hücreden kalıtsal yapısı aynı olan iki hücre oluşmasını sağlar." [cite_start]}, dogruCevap: "C" }, // [cite: 140, 141, 158]
+                { metin: "Tümsek aynaların en önemli özelliği ve kullanım alanı ile ilgili aşağıdakilerden hangisi doğrudur?", cevaplar: { A: "Işığı toplayarak yansıtır ve güneş ocaklarında kullanılır.", B: "Cisimden büyük ve düz görüntü verir ve makyaj aynası olarak kullanılır.", C: "Daha geniş görüş alanı sağlar ve taşıtlarda yan ayna olarak kullanılır.", D: "Cisimle aynı boyda, düz ve simetrik görüntü verir ve evlerde kullanılır." [cite_start]}, dogruCevap: "C" }, // [cite: 142, 143, 144, 145, 158]
+                { metin: "Ayağına diken batan bir kişinin, ayağını hemen çekmesi (I) ve daha sonra acıyı hissetmesi (II) olayları hangi organların denetiminde gerçekleşir?", cevaplar: { A: "I: Beyin, II: Omurilik", B: "I: Omurilik, II: Beyin", C: "I: Beyincik, II: Omurilik soğanı", D: "Her ikisi de doğrudan beyin tarafından yönetilir." [cite_start]}, dogruCevap: "B" }, // [cite: 146, 147, 158]
+                { metin: "Sıvı basıncı ile ilgili aşağıdaki ifadelerden hangisi yanlıştır?", cevaplar: { A: "Sıvı yüksekliği artarsa, kabın tabanına etkiyen sıvı basıncı artar.", B: "Sıvı basıncı sıvının yoğunluğu ile doğru orantılıdır.", C: "Sıvı basıncı, yer çekimine bağlıdır.", D: "Sıvı basıncı, sıvının yoğunluğu ile ters orantılıdır." [cite_start]}, dogruCevap: "D" }, // [cite: 148, 149, 150, 158]
+                [cite_start]{ metin: "Bitki ve hayvan hücrelerinin karşılaştırılmasıyla ilgili verilen tablonun bir kısmı aşağıdadır: Hücre çeperi bitki hücrelerinde bulunur. (Doğru) Kofullar bitki hücrelerinde küçük, hayvan hücrelerinde büyüktür. Hayvan hücrelerinde sentrozom bulunmaz. Kloroplast bitki hücrelerinde bulunur. (Doğru) Buna göre tablonun tamamının doğru olması için kaç tane hatalı işaretleme yapılmıştır?", cevaplar: { A: "1", B: "2", C: "3", D: "4" }, dogruCevap: "B" }, // [cite: 151, 152, 153, 154, 158]
+                [cite_start]{ metin: "Aşağıdakilerden hangisi Türkiye'nin nesli tükenme tehlikesi altında olan canlı türlerinden biridir?", cevaplar: { A: "Asya fili (Nesli tükenen)", B: "T-Rex (Nesli tükenen)", C: "Beyaz orkide", D: "Mamut" }, dogruCevap: "C" } // [cite: 155, 156, 158]
+            ]
+        },
+        {
+            id: 6,
+            konu: "TEST 6: Yıldızlar, İş, Basınç ve Karışım Özellikleri",
+            sorular: [
+                [cite_start]{ metin: "Yıldızların yaşam evreleri ile ilgili olarak, Büyük Kütleli Yıldızların yaşamının sonunda gerçekleşen olaylar sırasıyla nasıldır?", cevaplar: { A: "Kırmızı Dev → Gezegenimsi Bulutsu → Beyaz Cüce", B: "Kırmızı Süperdev → Süpernova → Nötron yıldızı veya Kara Delik", C: "Kırmızı Dev → Süpernova → Kara Delik", D: "Bulutsu → Küçük Kütleli Yıldız → Kırmızı Dev" }, dogruCevap: "B" }, // [cite: 161, 162, 189]
+                { metin: "Aşağıdakilerden hangisi fiziksel anlamda iş yapılabilmesi için gereken iki temel koşuldur?", cevaplar: { A: "Cisme kuvvet uygulanması ve cismin yer değiştirmesi.", B: "Cisme kuvvet uygulanması ve cismin yavaşlaması.", C: "Cisme kuvvet uygulanması ve cismin kuvvetin yönünde hareket etmesi.", D: "Cisimle kuvvetin ters yönde olması." [cite_start]}, dogruCevap: "C" }, // [cite: 163, 164, 165, 189]
+                { metin: "Birleşik kaplar içerisindeki sıvı seviyeleri eşitlendiğinde, kabın tabanındaki sıvı basıncı hakkında ne söylenebilir?", cevaplar: { A: "Sıvı basıncı, sıvı miktarına bağlı olduğu için değişmez.", B: "Sıvı basıncı, sıvının yüksekliğine (derinliğine) bağlı olduğu için seviyeler eşitlenene kadar basınç değişim gösterir.", C: "Birleşik kaplarda sıvı yüksekliği aynı olduğu sürece basınç her noktada eşittir.", D: "Kaynaklar, birleşik kaplarda sıvı basıncının nasıl değişeceğine dair kesin bir bilgi sunmamaktadır." [cite_start]}, dogruCevap: "B" }, // [cite: 166, 167, 168, 169, 189]
+                { metin: "Işığın soğurulması (emilmesi) olayı ile ilgili aşağıdakilerden hangisi doğrudur?", cevaplar: { A: "Beyaz renkli cisimler, siyah renkli cisimlere göre ışığı daha fazla soğurur.", B: "Cisimler, üzerine gelen beyaz ışıktan sadece kendi rengindeki ışığı yansıtır.", C: "Işığın soğurulmasıyla enerji kaybolur.", D: "Koyu renkli cisimler, ışığın büyük bir kısmını yansıtır." [cite_start]}, dogruCevap: "B" }, // [cite: 170, 171, 172, 173, 189]
+                [cite_start]{ metin: "Karışımlarla ilgili olarak, I. Karışımı oluşturan maddeler her oranda karışabilir. II. Karışımlar saf madde değildir. III. Karışımlar formül veya sembollerle ifade edilir. ifadelerinden hangileri doğrudur?", cevaplar: { A: "Yalnız II", B: "I ve II", C: "II ve III", D: "I, II ve III" }, dogruCevap: "B" }, // [cite: 174, 175, 189]
+                [cite_start]{ metin: "Yıkanmış pirinci sudan ayırmak için kullanılan yöntem aşağıdakilerden hangisidir?", cevaplar: { A: "Damıtma", B: "Buharlaştırma", C: "Süzme (Katı + sıvı heterojen karışım)", D: "Mıknatısla ayırma" }, dogruCevap: "C" }, // [cite: 176, 177, 189]
+                { metin: "Sinir sisteminin bir parçası olarak Omurilik'in temel görevi nedir?", cevaplar: { A: "Öğrenme ve hafıza merkezi olmak.", B: "Vücudun denge hareketlerini düzenlemek.", C: "Refleks davranışları kontrol etmek.", D: "İç organların istem dışı çalışmasını yönetmek." [cite_start]}, dogruCevap: "C" }, // [cite: 178, 179, 189]
+                { metin: "Düz aynalar hangi alanlarda kullanılmaz?", cevaplar: { A: "Kuaförler, evler, alışveriş merkezleri.", B: "Periskoplar (Denizaltılarda su üstünü görmek için).", C: "Kavşak aynaları.", D: "Tepegöz ve projeksiyon makineleri." [cite_start]}, dogruCevap: "C" }, // [cite: 180, 181, 189]
+                { metin: "Hava; azot, oksijen ve diğer gazlardan oluşan bir karışımdır. Bu karışım türü nedir ve neden bu şekilde adlandırılır?", cevaplar: { A: "Heterojen karışım; çünkü bileşenleri eşit dağılmamıştır.", B: "Homojen karışım; çünkü tek bir madde gibi görünür ve bileşenleri her yere eşit dağılmıştır.", C: "Homojen karışım; çünkü sadece iki bileşenden oluşur.", D: "Heterojen karışım; çünkü farklı cins atomlar içerir." [cite_start]}, dogruCevap: "B" }, // [cite: 182, 183, 184, 185, 189]
+                { metin: "Işığın kırılması olayında, az yoğun bir ortamdan (hava) çok yoğun bir ortama (su) geçen ışık ışınları nasıl kırılır?", cevaplar: { A: "Kırılmaya uğramaz.", B: "Normalden uzaklaşarak kırılır.", C: "Normale yaklaşarak kırılır.", D: "Gözlemci, cisimleri gerçek konumundan daha uzakta görür." [cite_start]}, dogruCevap: "C" } // [cite: 186, 187, 189]
+            ]
+        },
+        {
+            id: 7,
+            konu: "TEST 7: Hücre Organelleri, Denetleyici Sistemler ve Uzay",
+            sorular: [
+                { metin: "Aşağıda görevleri verilen organel-görev eşleştirmelerinden hangisi yanlıştır?", cevaplar: { A: "Mitokondri: Enerji üretimi merkezi.", B: "Ribozom: Protein sentezi.", C: "Kloroplast: Besin ve oksijen üretimi (Fotosentez).", D: "Sentrozom: Bitki hücrelerinde bölünmeyi sağlar." [cite_start]}, dogruCevap: "D" }, // [cite: 192, 193]
+                { metin: "Aşağıdakilerden hangisi Beyincik'in zedelenmesi durumunda ortaya çıkabilecek bir sonuçtur?", cevaplar: { A: "Büyüme hormonunun salgılanamaması.", B: "Hapşırma ve yutkunma gibi istem dışı hareketlerin durması.", C: "Öğrenme, hafıza ve düşünme yeteneğinin kaybolması.", D: "Kas hareketlerinin düzensizleşmesi ve denge kaybı." [cite_start]}, dogruCevap: "D" }, // [cite: 194, 195, 196]
+                [cite_start]{ metin: "Yıldızların sıcaklıkları, renkleriyle yakından ilişkilidir. Buna göre Güneş'in orta sıcaklıkta bir yıldız olduğu düşünülürse, rengi hangi seçenekte doğru verilmiştir?", cevaplar: { A: "Mavi - Beyaz (En sıcak)", B: "Sarı (Orta sıcaklık)", C: "Kırmızı (Soğuk)", D: "Turuncu" }, dogruCevap: "B" }, // [cite: 197, 198]
+                [cite_start]{ metin: "Aşağıda verilenlerden hangisi, uzay çalışmaları sayesinde günlük yaşama kazandırılmış bir teknoloji değildir?", cevaplar: { A: "Teflon tencere", B: "Tükenmez kalem", C: "Navigasyon cihazı", D: "Kağıt" }, dogruCevap: "D" }, // [cite: 199, 200]
+                { metin: "Deri duyu organıyla ilgili aşağıdakilerden hangisi yanlıştır?", cevaplar: { A: "Vücudu dış etkilere karşı korur.", B: "Terleme ile boşaltıma yardımcı olur.", C: "Sadece sıcaklık ve soğukluk duyularını algılayan duyu almaçları içerir.", D: "Duyu almaçları (reseptörler) derinin alt derisinde bulunur." [cite_start]}, dogruCevap: "C" }, // [cite: 201, 202]
+                [cite_start]{ metin: "Tuzlu sudan tuzu elde etmek için kullanılan yöntem buharlaştırma yöntemidir. Bu yöntem hangi tip karışımların ayrılmasında kullanılır?", cevaplar: { A: "Sıvı + Sıvı Heterojen karışımlar", B: "Katı + Katı Heterojen karışımlar", C: "Katı + Sıvı Homojen karışımlar (Çözeltiler)", D: "Gaz + Sıvı Çözeltiler" }, dogruCevap: "C" }, // [cite: 203, 204]
+                [cite_start]{ metin: "Çukur aynanın bir özelliği olan ışığı tek bir noktada toplama yeteneğinden faydalanılan kullanım alanı hangisidir?", cevaplar: { A: "Araba yan aynası (Tümsek ayna)", B: "Mağaza güvenlik aynası (Tümsek ayna)", C: "Güneş ocağı", D: "Ev aynası (Düz ayna)" }, dogruCevap: "C" }, // [cite: 205, 206]
+                [cite_start]{ metin: "Bir öğrenci, karıştırmanın çözünme hızına etkisini incelemek istiyor. Aşağıdaki değişkenlerden hangisi bu deneyde bağımsız değişken (değiştirilen değişken) olmalıdır?", cevaplar: { A: "Suyun sıcaklığı", B: "Şekerin cinsi (küp/toz)", C: "Karıştırma yapılıp yapılmaması", D: "Çözünen şeker miktarı" }, dogruCevap: "C" }, // [cite: 207, 208]
+                { metin: "Mitoz bölünmenin 3. evresinde gerçekleşen kardeş kromatitlerin birbirinden ayrılması olayının temel önemi nedir?", cevaplar: { A: "Sitoplazma bölünmesinin tamamlanmasını sağlamak.", B: "Kalıtsal çeşitliliğe neden olmak.", C: "Hücrelerin kromozom sayısının sabit kalmasını sağlamak.", D: "DNA miktarını yarıya indirmek." [cite_start]}, dogruCevap: "C" }, // [cite: 209, 210]
+                { metin: "Geri dönüşüm uygulamalarının çevresel faydaları göz önüne alındığında, aşağıdakilerden hangisi geri dönüşümün yararlarından biri değildir?", cevaplar: { A: "Doğal kaynaklarımızın korunmasını sağlamak.", B: "Enerji tasarrufu sağlamak.", C: "Atık miktarını azaltmak.", D: "Atmosferdeki zehirli gaz miktarının artmasına neden olmak." [cite_start]}, dogruCevap: "D" } // [cite: 211, 212, 213, 215]
+            ]
+        },
+        {
+            id: 8,
+            konu: "TEST 8: Kuvvet, Ağırlık, Elektrik ve Işık Soğurması",
+            sorular: [
+                { metin: "Ağırlık ve kütle ile ilgili aşağıdaki ifadelerden hangisi yanlıştır?", cevaplar: { A: "Ağırlık bulunulan yere göre değişir.", B: "Dünya’da 10 kg kütleye sahip bir cismin kütlesi Ay’da da 10 kg’dır.", C: "Dünya'nın cisimlere uyguladığı yer çekimi kuvvetinin yönü Dünya'nın merkezine doğrudur.", D: "Aynı ortamda kütlesi büyük olan cismin ağırlığı daha küçük olur." [cite_start]}, dogruCevap: "D" }, // [cite: 218, 219, 220, 221, 250]
+                [cite_start]{ metin: "Sıvıların basınç özelliklerinden yararlanılarak çalışan hidrolik sistemlere (cendereler) bakıldığında, aşağıdakilerden hangisi bu sistemlerin çalışmasında etkili olan niceliklerden biri değildir?", cevaplar: { A: "Sıvı basıncı", B: "Katı basıncı", C: "Gaz basıncı", D: "Kaldırma kuvveti" }, dogruCevap: "C" }, // [cite: 222, 223, 250]
+                [cite_start]{ metin: "I. Ampermetre devreye seri bağlanır. II. Voltmetre devreye paralel bağlanır. III. Ampermetre, gerilimi (potansiyel farkı) ölçer. Elektrik devre elemanları ile ilgili yukarıdaki bilgilerden hangileri doğrudur?", cevaplar: { A: "Yalnız I", B: "I ve II", C: "II ve III", D: "I, II ve III" }, dogruCevap: "B" }, // [cite: 224, 225, 250]
+                { metin: "Özdeş ampul ve piller kullanılarak oluşturulan bir elektrik devresinde, 'Seri bağlı devrede ampul sayısı artarsa ampul parlaklığı azalır.' hipotezini test etmek isteyen bir öğrenci, hangi iki devreyi karşılaştırmalıdır?", cevaplar: { A: "Pil sayısı ve ampul sayısı aynı olan iki seri bağlı devre.", B: "Pil sayısı sabit tutulup, ampul sayısı farklı olan iki seri bağlı devre.", C: "Ampul sayısı sabit tutulup, pil sayısı farklı olan iki seri bağlı devre.", D: "Bir seri bağlı devre ile bir paralel bağlı devre." [cite_start]}, dogruCevap: "B" }, // [cite: 226, 227, 228, 229, 230, 231, 250]
+                { metin: "Işık soğurulması (emilmesi) ile ilgili olarak, ◦ Koyu renkli cisimler, ışığı daha fazla soğurur. ◦ Açık renkli cisimler, ışığın çoğunu yansıtır. Bu bilgiye dayanarak, güneş ışığı altında bekletilen aynı cins ve eşit miktardaki sulardan hangisinin sıcaklık artışı en fazla olur?", cevaplar: { A: "İçinde bulunduğu kutu siyah olan su.", B: "İçinde bulunduğu kutu beyaz olan su.", C: "İçinde bulunduğu kutu kırmızı olan su.", D: "İçinde bulunduğu kutu sarı olan su." [cite_start]}, dogruCevap: "A" }, // [cite: 232, 233, 234, 235, 236, 250]
+                [cite_start]{ metin: "Güneş, aşağıdaki yıldız sonlanma süreçlerinden hangisini takip etmesi beklenen yıldız tipine örnektir?", cevaplar: { A: "Kırmızı Süperdev → Süpernova → Kara delik", B: "Kırmızı Dev → Gezegenimsi bulutsu → Beyaz Cüce", C: "Süpernova → Nötron yıldızı", D: "Doğrudan kara deliğe dönüşüm" }, dogruCevap: "B" }, // [cite: 237, 238, 250]
+                { metin: "Aşağıdakilerden hangisi, mitoz bölünmenin çok hücreli canlılar için sağladığı faydalardan biri değildir?", cevaplar: { A: "Büyüme ve gelişmeyi sağlama.", B: "Yıpranan dokuların onarılmasını sağlama.", C: "Üreme hücrelerinin oluşumunu sağlama.", D: "Kesilen kertenkele kuyruğunun yenilenmesini sağlama." [cite_start]}, dogruCevap: "C" }, // [cite: 239, 240, 250]
+                [cite_start]{ metin: "Çözünme hızı ile ilgili yapılan bir deneyde, iki farklı sıcaklıktaki suya eşit miktarda tuz eklenmiştir. Yüksek sıcaklıktaki suda tuz daha hızlı çözünmüştür. Bu deneyde sıcaklığın çözünme hızına etkisini göstermek için değiştirilen (bağımsız) değişken nedir?", cevaplar: { A: "Çözünen madde miktarı", B: "Karıştırma", C: "Su sıcaklığı", D: "Çözücü miktarı" }, dogruCevap: "C" }, // [cite: 241, 242, 243, 250]
+                [cite_start]{ metin: "İnsanlarda üreme sürecinde, zigotun oluşumundan sonra başlayan büyüme ve gelişme aşamalarında hangi hücre bölünmesi türü etkilidir?", cevaplar: { A: "Mayoz bölünme", B: "Eşeysiz üreme", C: "Mitoz bölünme", D: "Tomurcuklanma" }, dogruCevap: "C" }, // [cite: 244, 245, 250]
+                { metin: "Takımyıldızlarla ilgili olarak aşağıdakilerden hangisi doğrudur?", cevaplar: { A: "Takımyıldızdaki yıldızlar birbirlerine çok yakındır.", B: "Takımyıldızlar yalnızca Kuzey Yarım Küre'den gözlemlenebilir (Örn: Büyükayı).", C: "İsimlerini genellikle hayvanlara veya nesnelere benzeyen görünümlerinden almışlardır.", D: "Büyükayı, 7 tanesi büyük ve parlak olmak üzere toplam 93 yıldızdan oluşur." [cite_start]}, dogruCevap: "D" } // [cite: 246, 247, 248, 250]
+            ]
+        },
+        {
+            id: 9,
+            konu: "TEST 9: Hücre, Çözelti, Basınç ve Duyu Organları",
+            sorular: [
+                { metin: "Hücrenin temel kısımlarından olan sitoplazma ile ilgili aşağıdakilerden hangisi doğrudur?", cevaplar: { A: "Hücrenin yaşamsal faaliyetlerini gerçekleştiren yönetici moleküldür.", B: "Çekirdek ile hücre zarı arasını dolduran yarı saydam, yumurta akı kıvamında bir sıvıdır.", C: "İçinde hiçbir özelleşmiş yapı bulunmaz.", D: "Sadece hayvan hücrelerinde bulunur." [cite_start]}, dogruCevap: "B" }, // [cite: 253, 254, 255, 280]
+                { metin: "Aşağıdakilerden hangisi katı, sıvı ve gaz basınçlarını kullanan araçlar ve yöntemlerle ilgili yanlış bir ifadedir?", cevaplar: { A: "Katılar, üzerlerine uygulanan kuvveti aynı doğrultuda iletir.", B: "Birim yüzeye dik olarak etki eden kuvvete basınç denir.", C: "Oto tamircilerindeki kaldıraçlar, sıvıların basıncı iletme özelliğinden yararlanarak çalışır.", D: "Katı basıncı, yüzey alanı ile doğru orantılıdır (Ters orantılıdır)." [cite_start]}, dogruCevap: "D" }, // [cite: 256, 257, 258, 280]
+                { metin: "Mayoz bölünme ile mitoz bölünme arasındaki temel farklar göz önüne alındığında, aşağıdakilerden hangisi yanlıştır?", cevaplar: { A: "Mayozda kalıtsal çeşitlilik görülürken, mitozda görülmez.", B: "Mayoz sonucunda kromozom sayısı yarıya inerken, mitozda değişmez.", C: "Mayoz sadece üreme ana hücrelerinde görülürken, mitoz vücut hücrelerinde görülür.", D: "Mayozda 1 kez DNA eşlenmesi, 1 kez çekirdek ve sitoplazma bölünmesi görülür (Mayozda 1 kez DNA eşlenmesi, 2 kez çekirdek ve sitoplazma bölünmesi görülür)." [cite_start]}, dogruCevap: "D" }, // [cite: 259, 260, 261, 262, 280]
+                { metin: "Işık kirliliğini azaltmak için alınabilecek tedbirlerle ilgili olarak aşağıdakilerden hangisi yanlış bir davranıştır?", cevaplar: { A: "Kapalı mekanlarda mümkün olduğunca gün ışığından yararlanmak.", B: "Işığın göğe yönelmesini kesmek ve aydınlatılacak yere yöneltmek.", C: "Zamanlayıcılarla gereksiz reklam ışıklandırmalarını gece yarısından sonra kapatmak.", D: "Sokak aydınlatmalarında üst kısmı açık olan (göğe ışık saçan) lambaları tercih etmek." [cite_start]}, dogruCevap: "D" }, // [cite: 263, 264, 265, 280]
+                [cite_start]{ metin: "Aşağıdakilerden hangisi tamamen yoğunluk farkından yararlanılarak ayrılan heterojen karışım türlerine örnektir?", cevaplar: { A: "Tuzlu su", B: "Zeytinyağı-su karışımı (Ayırma hunisi)", C: "Kumlu su", D: "Kolonya" }, dogruCevap: "B" }, // [cite: 266, 267, 280]
+                [cite_start]{ metin: "Koku almaçları, kokuyu alabilmek için gaz halindeki koku taneciklerinin burundaki hangi sıvı içinde çözünmesini bekler?", cevaplar: { A: "Tükürük", B: "Mukus salgısı", C: "Ağ tabaka", D: "Östaki sıvısı" }, dogruCevap: "B" }, // [cite: 268, 269, 280]
+                { metin: "Çözelti kavramı ve özellikleri ile ilgili aşağıdakilerden hangisi yanlıştır?", cevaplar: { A: "Çözeltiler homojen karışımlar olup saf değillerdir.", B: "Çözeltilerde çözücü ve çözünen olmak üzere iki kısım bulunur.", C: "Çözünen maddeler, çözelti içinde özelliklerini tamamen kaybederler (Özelliklerini korurlar).", D: "Katı-katı çözeltilere örnek olarak bronz verilebilir." [cite_start]}, dogruCevap: "C" }, // [cite: 270, 271, 272, 280]
+                [cite_start]{ metin: "Bir öğrenci, el fenerinde ışığı tek bir noktada toplayarak aydınlatmayı sağlamak istemektedir. Bu amaçla hangi ayna çeşidini kullanmalıdır?", cevaplar: { A: "Düz ayna", B: "Tümsek ayna (Işığı dağıtır)", C: "Çukur ayna (Işığı toplar)", D: "Periskop aynası" }, dogruCevap: "C" }, // [cite: 273, 274, 280]
+                [cite_start]{ metin: "İnsan üremesinde, yumurta ana hücresi ve sperm ana hücresi hangi bölünmeyi geçirerek üreme hücrelerini (sperm ve yumurta) oluşturur ve bu hücrelerin kromozom sayısı ne olur?", cevaplar: { A: "Mitoz bölünme; 2n kromozomlu", B: "Mayoz bölünme; n kromozomlu", C: "Mitoz bölünme; n kromozomlu", D: "Mayoz bölünme; 2n kromozomlu" }, dogruCevap: "B" }, // [cite: 275, 276, 280]
+                [cite_start]{ metin: "İşitme kaybına yol açabilecek durumlardan hangileri kaynaklarda belirtilmiştir? I. Kulak zarı bozuklukları II. Orta kulakta kemik kaynaşması III. İç kulak zedelenmeleri", cevaplar: { A: "Yalnız I", B: "I ve II", C: "II ve III", D: "I, II ve III" }, dogruCevap: "D" } // [cite: 277, 278, 280]
+            ]
+        },
+        {
+            id: 10,
+            konu: "TEST 10: Mitoz, Mayoz ve Elektrik Devreleri",
+            sorular: [
+                [cite_start]{ metin: "Mayoz bölünme ile ilgili olarak, I. Kromozom sayısının yarıya inmesiyle tür içi kromozom sayısının sabit kalmasını sağlar. II. Ergenlik dönemiyle başlar ve üreme dönemi boyunca devam eder. III. Sadece n kromozomlu hücrelerde görülür. ifadelerinden hangileri doğrudur?", cevaplar: { A: "Yalnız I", B: "I ve II", C: "II ve III", D: "I, II ve III" }, dogruCevap: "B" }, // [cite: 283, 284, 285, 308]
+                { metin: "Aşağıdakilerden hangisi hücre çeperi (hücre duvarı) ile ilgili doğru bir ifadedir?", cevaplar: { A: "Hayvan hücrelerinde hücre zarı dışında bulunur.", B: "Selüloz adı verilen ölü bir maddeden yapılmıştır.", C: "Esnek ve seçici geçirgen özelliktedir.", D: "Tüm canlı hücrelerde bulunur." [cite_start]}, dogruCevap: "B" }, // [cite: 286, 287, 308]
+                { metin: "Mitoz bölünmenin temel amaçları göz önüne alındığında, aşağıdakilerden hangisi mitoz bölünme ile gerçekleşen bir olay değildir?", cevaplar: { A: "Çok hücreli canlılarda büyüme.", B: "Kertenkelenin kopan kuyruğunun yerine yeni kuyruk oluşması.", C: "Tek hücreli canlılarda üreme.", D: "Üreme ana hücrelerinden n kromozomlu gamet oluşumu (Mayoz ile olur)." [cite_start]}, dogruCevap: "D" }, // [cite: 288, 289, 290, 308]
+                { metin: "Aşağıdakilerden hangisi düz aynanın özelliklerinden biri değildir?", cevaplar: { A: "Görüntü, cisme göre simetriktir.", B: "Görüntü, cismin boyu ile aynıdır.", C: "Görüntü, her zaman düz ve sanaldır.", D: "Işınları dağıtarak daha geniş görüş alanı sağlar (Tümsek ayna özelliği)." [cite_start]}, dogruCevap: "D" }, // [cite: 291, 292, 308]
+                [cite_start]{ metin: "Göz yuvarlağının kısımları düşünüldüğünde, görme olayının gerçekleşmesi için ortamda zorunlu olarak bulunması gereken faktör nedir?", cevaplar: { A: "Işık", B: "Gölge", C: "Nem", D: "Ses" }, dogruCevap: "A" }, // [cite: 293, 294, 308]
+                { metin: "Seri bağlı bir elektrik devresinde, bir ampulün devreden çıkarılması (patlaması) durumunda, diğer ampullerin durumu hakkında ne söylenebilir?", cevaplar: { A: "Diğer ampullerin parlaklığı artar.", B: "Diğer ampullerin parlaklığı azalır.", C: "Diğer bütün ampuller söner.", D: "Diğer ampullerin durumu değişmez." [cite_start]}, dogruCevap: "C" }, // [cite: 295, 296, 308]
+                { metin: "Aşağıdakilerden hangisi kuvvetin etkisiyle yapılan işin artırılması için yapılabilecek bir eylem değildir?", cevaplar: { A: "Uygulanan kuvveti artırmak (İş, kuvvetle doğru orantılıdır).", B: "Cismin aldığı yolu artırmak (İş, yolla doğru orantılıdır).", C: "Uygulanan kuvveti azaltmak.", D: "Cisme kuvvet yönünde yol aldırmak." [cite_start]}, dogruCevap: "C" }, // [cite: 297, 298, 299, 308]
+                [cite_start]{ metin: "Karışımları ayırma yöntemlerinden damıtma hangi karışım türünün ayrılmasında, hangi özelliğinden faydalanılarak kullanılır?", cevaplar: { A: "Katı-sıvı çözelti / Yoğunluk farkı", B: "Sıvı-sıvı çözelti / Kaynama noktası farkı", C: "Katı-katı karışım / Yoğunluk farkı", D: "Sıvı-sıvı heterojen karışım / Yoğunluk farkı" }, dogruCevap: "B" }, // [cite: 300, 301, 308]
+                [cite_start]{ metin: "Sıcaklık ile çözünme hızı arasındaki ilişki düşünüldüğünde, aynı miktarda tuzun en hızlı çözünmesi için hangi sıcaklıktaki çözücü (su) tercih edilmelidir?", cevaplar: { A: "15 ºC", B: "25 ºC", C: "30 ºC", D: "50 ºC" }, dogruCevap: "D" }, // [cite: 302, 303, 308]
+                { metin: "Bir öğrenci, elinde tuttuğu kitabı yerden alıp yukarıdaki bir rafa yerleştiriyor. Bu olayda fiziksel anlamda iş yapılmış sayılır, çünkü:", cevaplar: { A: "Cisim çok ağır olduğu için yorulmuştur.", B: "Yer çekimi kuvvetinin tersi yönünde hareket ettirilmiştir.", C: "Yatay düzlemde sabit süratle yol almıştır.", D: "Kitap sadece yer değiştirmiştir." [cite_start]}, dogruCevap: "B" } // [cite: 304, 305, 306, 307, 308]
+            ]
+        },
+        {
+            id: 11,
+            konu: "TEST 11: Hücre, İş ve Boşaltım",
+            sorular: [
+                { metin: "Bir hücreden (K) iki yeni hücre (L ve M) oluştuğu ve oluşan hücrelerin kalıtsal yapılarının K hücresi ile aynı olduğu bilinmektedir. Buna göre bu bölünme ile ilgili aşağıdaki ifadelerden hangisi yanlıştır?", cevaplar: { A: "Bu olay mitoz bölünmeye ait evrelerdir.", B: "Çok hücreli canlılarda büyüme ve onarımı sağlar.", C: "Oluşan L ve M hücrelerinin kromozom sayısı, K hücresinin kromozom sayısının yarısı kadardır.", D: "Önce çekirdek bölünmesi, sonrasında sitoplazma bölünmesi gerçekleşmiştir." [cite_start]}, dogruCevap: "C" }, // [cite: 310, 311, 312, 313, 345]
+                { metin: "Boşaltım sistemi organlarının görevleri ile ilgili aşağıdakilerden hangisi doğrudur?", cevaplar: { A: "Böbrek atardamarı, zehirli atıkları en az miktarda taşıyan damardır.", B: "Üreterden gelen idrar, idrar kesesinde birikir ve yeteri kadar biriktiğinde üretra yoluyla vücut dışına atılır.", C: "İdrar kanalı (üreter), idrar kesesinde oluşan idrarı böbreğe geri taşır.", D: "Karaciğer, kandaki üreyi süzerek idrarı oluşturur." [cite_start]}, dogruCevap: "B" }, // [cite: 314, 315, 316, 345]
+                { metin: "Fen bilimleri anlamında yapılan iş tanımı ve örnekleriyle ilgili hangi ifade yanlıştır?", cevaplar: { A: "İş yapılabilmesi için cisme kuvvet uygulanmalı ve cisim uygulanan bu kuvvet doğrultusunda yer değiştirmelidir.", B: "Omzunda çanta taşıyan çocuk, çantaya uyguladığı kuvvet doğrultusunda hareket etmediği için fen anlamında iş yapmaz.", C: "Bir duvarı ittiğimiz halde hareket ettiremezsek fiziksel anlamda iş yapmış sayılmayız.", D: "Ağır bir sandığı yatay zeminde çekmek, yer çekimi kuvvetine karşı iş yapmaya örnektir." [cite_start]}, dogruCevap: "D" }, // [cite: 317, 318, 319, 320, 321, 345]
+                [cite_start]{ metin: "Çözünme hızı, çözünen maddenin temas yüzeyi arttıkça artar. Buna göre aynı sıcaklıkta suda çözünme hızı en yüksek olması beklenen madde cinsi aşağıdakilerden hangisidir?", cevaplar: { A: "Küp şeker", B: "Kaya tuzu", C: "Toz şeker", D: "Pudra şekeri" }, dogruCevap: "D" }, // [cite: 322, 323, 345]
+                [cite_start]{ metin: "Görme olayının gerçekleşmesi için cisimden yansıyan ışık ışınları; saydam tabakadan, göz bebeğinden, göz merceğinden ve camsı cisimden geçerek ağ tabakaya ulaşır. Buna göre, görme olayının gerçekleşebilmesi için aşağıdaki faktörlerden hangisinin ortamda bulunması zorunludur?", cevaplar: { A: "Ses", B: "Gölge", C: "Nem", D: "Işık" }, dogruCevap: "D" }, // [cite: 324, 325, 345]
+                { metin: "Büyük kütleli yıldızların yaşam evrelerinin sonlanma aşamasıyla ilgili aşağıdakilerden hangisi doğrudur?", cevaplar: { A: "Yaşamlarını nötron yıldızı (pulsar) veya kara delik olarak sonlandırırlar.", B: "Yaşamları, Kırmızı Dev evresine geçtikten sonra Beyaz Cüce olarak biter.", C: "Yıldızın yaşamının nasıl sonlanacağı, ömrünün sonundaki sıcaklığına bağlıdır.", D: "Süpernova patlaması, sadece küçük kütleli yıldızlarda görülür." [cite_start]}, dogruCevap: "A" }, // [cite: 326, 327, 328, 329, 345]
+                [cite_start]{ metin: "Işık ışınlarını dağıtarak yansıtan ve oluşan görüntüsü daima düz ve cisimden küçük olan ayna çeşidi hangisidir?", cevaplar: { A: "Düz Ayna", B: "Çukur Ayna", C: "Tümsek Ayna", D: "Periskop aynası" }, dogruCevap: "C" }, // [cite: 330, 331, 345]
+                [cite_start]{ metin: "Çiçekli bir bitkide üreme sürecinde; döllenme sonucu oluşan zigot hangi yapıya, yumurtalık ise hangi yapıya dönüşür?", cevaplar: { A: "Zigot → Tohum; Yumurtalık → Embriyo", B: "Zigot → Embriyo; Yumurtalık → Meyve", C: "Zigot → Meyve; Yumurtalık → Tohum", D: "Zigot → Tohum taslağı; Yumurtalık → Çiçek" }, dogruCevap: "B" }, // [cite: 332, 333, 334, 345]
+                { metin: "Katı basıncı yüzey alanı ile ters orantılıdır. Buna göre, aşağıdaki ifadelerden hangisi katı basıncıyla ilgili doğru bir bilgiyi içermez?", cevaplar: { A: "Bir tuğla, dar yüzeyi üzerine konulduğunda, geniş yüzeyine göre daha fazla basınç uygular.", B: "Katı cisimler üzerlerine uygulanan kuvveti aynı doğrultuda iletir.", C: "Basıncı artırmak için temas yüzeyi azaltılmalıdır.", D: "Basınç, cismin ağırlığı sabit tutulurken yüzey alanı arttıkça artar (Yüzey alanı arttıkça basınç azalır)." [cite_start]}, dogruCevap: "D" }, // [cite: 335, 336, 337, 338, 345]
+                { metin: "İnsanda boşaltım sistemi organları ve bu organların sağlığıyla ilgili aşağıdakilerden hangisi yanlıştır?", cevaplar: { A: "Karaciğer, proteinlerin hücrede kullanımı sonucu oluşan çok zehirli amonyağın daha az zehirli üreye dönüşmesini sağlar.", B: "Böbrek yetmezliği, böbreklerin görevlerini yapamaz hale gelmesiyle ortaya çıkar.", C: "İdrar yolu iltihabı ve yetersiz sıvı alımı böbrek taşı oluşumuna neden olabilir.", D: "Böbrek yetmezliği teşhisi konulan hastalar için diyaliz tedavisi veya böbrek nakli gerekebilir." [cite_start]}, dogruCevap: "A" } // [cite: 339, 340, 341, 342, 343, 345]
+            ]
+        },
+        {
+            id: 12,
+            konu: "TEST 12: Işık, Çözünme ve Duyu Organları",
+            sorular: [
+                [cite_start]{ metin: "Aynı miktarda toz şekeri, biri 20 °C diğeri 30 °C olan eşit miktardaki suya atmak suretiyle yapılan bir deneyde, çözünme hızına etki eden hangi faktör araştırılmaktadır?", cevaplar: { A: "Karıştırmanın etkisi", B: "Tanecik boyutunun etkisi", C: "Sıcaklığın etkisi", D: "Çözünen miktarının etkisi" }, dogruCevap: "C" }, // [cite: 348, 349, 372]
+                { metin: "Bir cismin renginin algılanması ve ışığın soğurulmasıyla ilgili olarak aşağıdakilerden hangisi yanlıştır?", cevaplar: { A: "Koyu renkli cisimler, ışığın çoğunu soğurur.", B: "Beyaz ışık, kırmızı, turuncu, sarı, yeşil, mavi ve mor renklerin bileşiminden oluşur (KuTuSaYaMaM).", C: "Beyaz bir cisim üzerine düşen mavi ışık altında mavi görünür.", D: "Siyah bir cisim, üzerine düşen beyaz ışığı yansıttığı için siyah görünür (Siyah cisim ışığın tamamını soğurur, yansıtmaz)." [cite_start]}, dogruCevap: "D" }, // [cite: 350, 351, 352, 353, 372]
+                [cite_start]{ metin: "Hangi ayna çeşidi, ışınları bir noktada toplayarak yansıtır ve bu özelliği nedeniyle teleskoplarda ve güneş ocaklarında kullanılır?", cevaplar: { A: "Düz Ayna", B: "Tümsek Ayna", C: "Çukur Ayna", D: "Kırıcı Ayna" }, dogruCevap: "C" }, // [cite: 354, 355, 372]
+                [cite_start]{ metin: "Popülasyon tanımı düşünüldüğünde, aşağıdakilerden hangisi bir popülasyon örneği olamaz?", cevaplar: { A: "Bir ormandaki ceylanlar", B: "Bir göldeki tüm hayvanlar (Farklı türler)", C: "Bir denizdeki levrekler", D: "Bir dağdaki papatyalar" }, dogruCevap: "B" }, // [cite: 356, 357, 372]
+                [cite_start]{ metin: "Kulak zarı bozuklukları, orta kulakta kemik kaynaşması ve iç kulak zedelenmeleri gibi durumlar neye neden olabilir?", cevaplar: { A: "Denge bozukluğuna", B: "İşitme kaybına", C: "İç kulak iltihabına", D: "Sadece kulak çınlamasına" }, dogruCevap: "B" }, // [cite: 358, 359, 372]
+                [cite_start]{ metin: "Aşağıdaki göz kusurlarından hangisi, kırmızı ve yeşil renkleri ayırt edememe şeklinde ortaya çıkan, kalıtsal bir hastalıktır?", cevaplar: { A: "Miyop", B: "Hipermetrop", C: "Renk körlüğü (Daltonizm)", D: "Şaşılık" }, dogruCevap: "C" }, // [cite: 360, 361, 372]
+                { metin: "Bir maddeyi oluşturan tanecikler ne kadar küçük olursa, temas yüzeyi o kadar fazla olur ve çözünme o kadar hızlı gerçekleşir. Bu duruma örnek olarak aşağıdakilerden hangisi verilebilir?", cevaplar: { A: "Sıcak çayın soğuk çaydan hızlı çözmesi.", B: "Çayın karıştırılarak hızlı çözünmesi.", C: "Pudra şekerinin küp şekerden daha hızlı çözünmesi.", D: "Çözünen madde miktarının artırılması." [cite_start]}, dogruCevap: "C" }, // [cite: 362, 363, 364, 372]
+                [cite_start]{ metin: "Büyüme ve gelişmeye etki eden temel faktörler ile çimlenme için gerekli koşullar farklıdır. Çimlenme için zorunlu olan üç temel şart nedir?", cevaplar: { A: "Işık, Karbondioksit, Su", B: "Su, Oksijen, Uygun Sıcaklık (SOS)", C: "Işık, Uygun sıcaklık, Oksijen", D: "Su, Karbondioksit, Uygun sıcaklık" }, dogruCevap: "B" }, // [cite: 365, 366, 372]
+                [cite_start]{ metin: "Yapay uyduların kullanım amaçları arasında aşağıdakilerden hangisi bulunmaz?", cevaplar: { A: "Haberleşme ve iletişim", B: "Gözlem ve keşif", C: "Kendi merkezinde nükleer tepkime (Yıldız özelliği)", D: "Hava tahminlerinde bulunma" }, dogruCevap: "C" }, // [cite: 367, 372]
+                { metin: "Basınç ile ilgili verilen aşağıdaki boşluk doldurma ifadelerinden hangisi yanlıştır?", cevaplar: { A: "Katı basıncı, yüzey alanı ile ters orantılıdır.", B: "Bir maddenin kütlesi bulunulan yere göre değişmez.", C: "Ağırlık dinamometre ile ölçülür.", D: "Denizlerde derinliklere inildikçe sıvı basıncı azalır (Derinlik arttıkça sıvı basıncı artar)." [cite_start]}, dogruCevap: "D" } // [cite: 368, 369, 370, 372]
+            ]
+        },
+        {
+            id: 13,
+            konu: "TEST 13: Gök Cisimleri, Basınç ve Sinir Sistemi",
+            sorular: [
+                [cite_start]{ metin: "Merkezi sinir sistemi organlarından hangisi, Acıkma, susama, uyku ve uyanıklık gibi olayları düzenlerken; öğrenme, düşünme, hafıza ve hayal kurma merkezidir?", cevaplar: { A: "Beyin", B: "Beyincik (Denge)", C: "Omurilik (Refleks)", D: "Omurilik soğanı (İstem dışı hareketler)" }, dogruCevap: "A" }, // [cite: 375, 376, 377, 405]
+                { metin: "Işık ışınları çok yoğun ortamdan (su) az yoğun ortama (hava) geçerken normalden nasıl kırılır?", cevaplar: { A: "Normale yaklaşarak kırılır.", B: "Normalden uzaklaşarak kırılır.", C: "Kırılmaya uğramaz (Dik gelmediği sürece).", D: "Gelme açısı kırılma açısından küçük olur." [cite_start]}, dogruCevap: "B" }, // [cite: 377, 378, 405]
+                { metin: "Bir cismin ağırlığının tüm gezegenlerde aynı olmamasının temel nedeni aşağıdakilerden hangisidir?", cevaplar: { A: "Cismin kütlesi bulunduğu yere göre değiştiği için.", B: "Cismin ağırlığı, bulunduğu gezegenin çekim kuvvetine (yer çekimine) bağlı olduğu için.", C: "Cismin hacmi ve yoğunluğu değiştiği için.", D: "Ağırlık, cismin bulunduğu ortama göre değişmez." [cite_start]}, dogruCevap: "B" }, // [cite: 379, 380, 381, 405]
+                { metin: "Aşağıdakilerden hangisi, yenilenme (rejenerasyon) olayı ile ilgili doğru bir ifadedir?", cevaplar: { A: "Yassı solucanın kesilmesiyle oluşan yeni solucanların kalıtsal yapısı farklıdır.", B: "Kertenkelenin kopan kuyruğunun yenilenmesi, üreme olarak kabul edilen bir rejenerasyon örneğidir.", C: "Kesilen bir parmak derisinin yenilenmesi ve karaciğerin kendini yenilemesi rejenerasyondur, ancak üreme sayılmaz.", D: "Rejenerasyon sadece tek hücreli canlılarda görülür." [cite_start]}, dogruCevap: "C" }, // [cite: 382, 383, 384, 385, 386, 405]
+                { metin: "Işık soğurulması uygulamalarından biri olan Güneş panelleri tasarlanırken, ışığı en çok soğuran renk tercih edilmelidir. Bu nedenle, çöllerde yaşayan insanların genellikle beyaz kıyafetler giymesi hangi ilkeyle çelişir?", cevaplar: { A: "Beyaz renk ışığı soğurmaz, yansıtır; bu da ısınmayı engeller.", B: "Beyaz ışığın tüm renklerin bileşiminden oluşması.", C: "Siyah rengin soğurma kapasitesinin en düşük olması.", D: "Güneş panellerinin ışığı yansıtması gerekir." [cite_start]}, dogruCevap: "A" }, // [cite: 387, 388, 389, 390, 405]
+                { metin: "Aşağıdakilerden hangisi, Kutup Yıldızı'nın özelliklerinden biri değildir?", cevaplar: { A: "Küçükayı takımyıldızının en parlak yıldızıdır.", B: "Geceleyin yön bulmada kullanılır ve daima kuzeyi gösterir.", C: "Yörüngede yalpalanma hareketi gösterir.", D: "Ay'ın dolunay evresinde bile görülmesi engellenir." [cite_start]}, dogruCevap: "D" }, // [cite: 391, 392, 393, 405]
+                { metin: "Boşaltım sistemi sağlığını korumak için alınması gereken tedbirlerle ilgili aşağıdakilerden hangisi yanlıştır?", cevaplar: { A: "Günde en az 2 litre su içilmelidir.", B: "Aşırı tuz tüketiminden uzak durulmalıdır.", C: "Çürüyen dişlerin tedavi edilmesi böbrek sağlığını olumsuz etkilemez (Çürük dişler tedavi edilmelidir).", D: "Baharatlı yiyecekleri bol miktarda tüketmekten kaçınılmalıdır." [cite_start]}, dogruCevap: "D" }, // [cite: 394, 395, 396, 405]
+                { metin: "Sıcak bir cisme dokunan kişinin elini hızla geri çekmesi (refleks) ve daha sonra acıyı hissetmesi olaylarının kontrol merkezleri sırasıyla hangi seçenekte doğru verilmiştir?", cevaplar: { A: "Omurilik, Beyin.", B: "Beyin, Omurilik.", C: "Omurilik soğanı, Beyincik.", D: "Beyincik, Omurilik." [cite_start]}, dogruCevap: "A" }, // [cite: 397, 398, 405]
+                [cite_start]{ metin: "Hücrenin en küçük yapı ve görev birimi hücredir. Hücrenin yönetim ve kalıtım merkezi olup, büyüme, gelişme ve bölünme gibi olayları kontrol eden temel kısım nedir?", cevaplar: { A: "Sitoplazma", B: "Hücre zarı", C: "Çekirdek", D: "Koful" }, dogruCevap: "C" }, // [cite: 399, 400, 405]
+                { metin: "Birbirine karışmış sıvı-sıvı çözeltilerinin ayrılmasında (örneğin ham petrolün ayrılması), kullanılan yöntem hangisidir ve hangi ilkeye dayanır?", cevaplar: { A: "Ayırma Hunisi / Yoğunluk farkı.", B: "Buharlaştırma / Kaynama noktası farkı (Sadece katı-sıvı için).", C: "Damıtma / Kaynama noktası farkı.", D: "Süzme / Tanecik boyutu farkı." [cite_start]}, dogruCevap: "C" } // [cite: 401, 402, 403, 405]
+            ]
+        },
+        {
+            id: 14,
+            konu: "TEST 14: Karışımlar, Mitoz ve Denetleyici Sistemler",
+            sorular: [
+                { metin: "Sitoplazma ile ilgili verilen aşağıdaki ifadelerden hangisi doğrudur?", cevaplar: { A: "Hücrenin dış kısmında bulunur ve seçici geçirgendir.", B: "Çekirdek ile hücre zarının arasını dolduran yumurta akı kıvamında, yarı saydam ve akışkan bir sıvıdır.", C: "Hücrenin kalıtsal özelliklerini belirleyen yapıları içerir.", D: "Sadece bitki hücrelerinde fotosentez yaparak besin üretir." [cite_start]}, dogruCevap: "B" }, // [cite: 408, 409, 410, 434]
+                [cite_start]{ metin: "Aşağıdakilerden hangisi, eşeysiz üreme çeşitlerinden biri olan tomurcuklanarak çoğalan canlılara örnektir?", cevaplar: { A: "Amip", B: "Paramesyum", C: "Hidra", D: "Öglena" }, dogruCevap: "C" }, // [cite: 411, 434]
+                { metin: "Aşağıdakilerden hangisi mitoz bölünme için doğru bir ifadedir?", cevaplar: { A: "Mayoz bölünme ile oluşan üreme hücreleri ile kalıtsal özellikler aktarılır.", B: "Mitoz bölünme, vücutta oluşan kırıkların iyileşmesi gibi hasarlı dokuları onarması ile gerçekleşir.", C: "Yassı solucanın kesilmesiyle oluşan yeni bireylerin kalıtsal yapısı birbirinden farklıdır.", D: "Mitoz bölünme sonucunda oluşan hücrelerin kromozom sayısı ana hücrenin yarısı kadardır." [cite_start]}, dogruCevap: "B" }, // [cite: 412, 413, 414, 415, 434]
+                [cite_start]{ metin: "Omurilik soğanının kontrol ettiği olaylarla ilgili hangisi yanlıştır?", cevaplar: { A: "Solunum", B: "Kusma", C: "Dans etme (Öğrenilmiş davranış)", D: "Yutkunma" }, dogruCevap: "C" }, // [cite: 416, 434]
+                [cite_start]{ metin: "Aşağıdakilerden hangisi bir çözelti (homojen karışım) değildir?", cevaplar: { A: "Kolonya", B: "Tuzlu su", C: "Ayran (Heterojen karışım)", D: "Hava" }, dogruCevap: "C" }, // [cite: 417, 434]
+                { metin: "Karışımları ayırma yöntemlerinden Buharlaştırma yöntemi ile ilgili aşağıdakilerden hangisi doğrudur?", cevaplar: { A: "Birbiri içinde çözünmeyen sıvı-sıvı karışımlarını ayırmada kullanılır.", B: "Katı-sıvı çözeltilerinde sıvıyı buharlaştırarak katıyı elde etmeye yarar (Örn: Tuzlu sudan tuz).", C: "Yoğunluk farkından yararlanılır.", D: "Ham petrolün ayrıştırılmasında kullanılır (Damıtma)." [cite_start]}, dogruCevap: "B" }, // [cite: 418, 419, 420, 434]
+                { metin: "Bir cam prizmaya beyaz ışık gönderildiğinde, beyaz ışığın ayrıldığı renkler doğru sırada nasıl adlandırılır?", cevaplar: { A: "Mavi, mor, sarı, yeşil, kırmızı (Sıra önemlidir)", B: "Kırmızı, turuncu, sarı, yeşil, mavi, mor (KuTuSaYaMaM).", C: "Kırmızı, yeşil, mavi (Ana renkler).", D: "Sadece kırmızı ve mavi renklere ayrılır." [cite_start]}, dogruCevap: "B" }, // [cite: 421, 422, 423, 434]
+                { metin: "Deniz altıların ön kısımlarının aerodinamik şekilde tasarlanmasının nedeni nedir?", cevaplar: { A: "Hava direncini azaltmak.", B: "Hava basıncını artırmak.", C: "Su direncini azaltmak.", D: "Su kaldırma kuvvetini artırmak." [cite_start]}, dogruCevap: "C" }, // [cite: 424, 425, 434]
+                { metin: "Çukur aynalarla ilgili verilen aşağıdaki bilgilerden hangisi yanlıştır?", cevaplar: { A: "Yansıtıcı yüzeyleri çukurdur (İç bükey).", B: "Makyaj aynalarında büyütme özelliği nedeniyle kullanılır.", C: "Cisim çukur aynadan uzaklaştıkça görüntünün büyüklüğü giderek azalır.", D: "Görüntü her zaman cisimden büyüktür (Görüntü cisimden küçük ve ters olabilir)." [cite_start]}, dogruCevap: "D" }, // [cite: 426, 427, 428, 434]
+                { metin: "Bir insanın her iki böbreği de görev yapamaz hale geldiğinde diyaliz tedavisi uygulanır. Diyaliz makinesi ile ilgili verilen ifadelerin doğruluk durumu nedir?", cevaplar: { A: "Hasta, kanı temizlenmek üzere belli aralıklarla diyaliz makinesine bağlanır.", B: "Diyaliz tedavisi sadece böbrek iltihabında kullanılır.", C: "Böbrek nakli yapılıncaya kadar diyalize ihtiyaç duyulmaz.", D: "Diyaliz makinesi böbrek yetmezliğini tamamen tedavi eder." [cite_start]}, dogruCevap: "A" } // [cite: 429, 430, 431, 432, 434]
+            ]
+        },
+        {
+            id: 15,
+            konu: "TEST 15: Bölünme, Ağırlık/Kütle ve Denge",
+            sorular: [
+                { metin: "Canlıların kendilerine benzer bireyler meydana getirmesine üreme denir. Üreme, eşeyli üreme ve eşeysiz üreme olmak üzere iki çeşittir. Eşeyli üreme sırasında görülen olayların sırası doğru verilmiştir?", cevaplar: { A: "Mayoz bölünme → Döllenme → Mitoz bölünme.", B: "Mitoz bölünme → Döllenme → Mayoz bölünme.", C: "Döllenme → Mayoz bölünme → Mitoz bölünme.", D: "Mayoz bölünme → Mitoz bölünme → Döllenme." [cite_start]}, dogruCevap: "A" }, // [cite: 437, 438, 439, 440, 467]
+                { metin: "Ağırlık ve kütle kavramları ile ilgili aşağıdakilerden hangisi yanlıştır?", cevaplar: { A: "Kütle bulunduğu yere göre değişmez.", B: "Aynı ortamda kütlesi büyük olan cismin ağırlığı da büyük olur.", C: "Ağırlık, yer çekimi kuvvetinin etkisiyle oluşur.", D: "Kütle dinamometre ile, ağırlık terazi ile ölçülür (Tersidir)." [cite_start]}, dogruCevap: "D" }, // [cite: 441, 442, 443, 467]
+                { metin: "Bitki ve hayvan hücreleri karşılaştırıldığında, aşağıda verilen hangi özellik bitki hücrelerine ait bir farklılık gösterir?", cevaplar: { A: "Kendi besinlerini üretemezler.", B: "Sitoplazmaları yarı saydam ve akışkan bir sıvıdır.", C: "Köşeli bir şekle sahiptir.", D: "Kendilerini çepeçevre saran, seçici geçirgen bir hücre zarına sahiptir." [cite_start]}, dogruCevap: "C" }, // [cite: 444, 445, 446, 467]
+                { metin: "Aşağıdaki durumlardan hangisinde, yer çekimi kuvveti yönünde iş yapılmıştır?", cevaplar: { A: "Çantayı yerden alıp yukarı rafa koymak (Yer çekimine karşı iş).", B: "Merdivenlerden yukarı çıkmak (Yer çekimine karşı iş).", C: "Havaya atılan bir topun yere doğru düşmesi (Kuvvet yönünde hareket olduğu için iş yapılmıştır).", D: "Halteri yerden kaldırıp taşımak (Yer çekimine karşı iş)." [cite_start]}, dogruCevap: "C" }, // [cite: 447, 448, 449, 450, 467]
+                { metin: "Merkezi sinir sistemi organlarından Beyincik'in zedelenmesi durumunda aşağıdakilerden hangisi beklenir?", cevaplar: { A: "Solunum ve sindirim sistemlerinin çalışması durur (Omurilik soğanı).", B: "Vücuttaki kas hareketleri düzensizleşir ve denge kaybı görülür.", C: "Hafıza ve öğrenme bozuklukları ortaya çıkar (Beyin).", D: "Refleks hareketleri tamamen durur (Omurilik)." [cite_start]}, dogruCevap: "B" }, // [cite: 451, 452, 453, 467]
+                { metin: "Tümsek aynalar, çukur aynalara göre ışığı nasıl yansıtır ve bu aynada cisim yaklaştıkça görüntünün boyu nasıl değişir?", cevaplar: { A: "Işığı toplayarak yansıtır; görüntü boyu değişmez.", B: "Işığı dağıtarak yansıtır; görüntü boyu daima cisimden küçüktür.", C: "Işığı dağıtarak yansıtır; görüntü boyu büyür.", D: "Işığı toplayarak yansıtır; görüntü boyu küçülür." [cite_start]}, dogruCevap: "B" }, // [cite: 454, 455, 456, 467]
+                [cite_start]{ metin: "İnsanlarda embriyo, ihtiyaç duyduğu besin ve oksijeni hangi yapı aracılığıyla anneden karşılar?", cevaplar: { A: "Döl yatağı", B: "Göbek bağı (Plasenta)", C: "Yumurta kanalı", D: "Yumurtalık" }, dogruCevap: "B" }, // [cite: 457, 458, 467]
+                { metin: "Aşağıdakilerden hangisi, koku duyu organıyla ilgili doğru bir ifadedir?", cevaplar: { A: "Tat alma sırasında burun ve dil birbirinden bağımsız çalışır.", B: "Koku almaçları burundaki sarı bölgede bulunur.", C: "Koku almaçları asla yorulmaz ve aynı kokuyu sürekli hissederiz.", D: "Gaz halindeki koku taneciklerinin alınması için kuruluk gereklidir (Mukus salgısı içinde çözünür)." [cite_start]}, dogruCevap: "B" }, // [cite: 459, 460, 461, 467]
+                [cite_start]{ metin: "Aşağıdaki boşaltım maddelerinden hangisi, sağlıklı bir insanın idrarında hiç bulunmaz?", cevaplar: { A: "Üre", B: "Su", C: "Glikoz", D: "Madensel tuz" }, dogruCevap: "C" }, // [cite: 462, 467]
+                { metin: "Aşağıda verilen karışım ayırma yöntemlerinden hangisi yoğunluk farkına dayalı olarak bir katı ve bir katı karışımını ayırmaya örnektir?", cevaplar: { A: "Tuzlu sudan tuzu buharlaştırma", B: "Zeytinyağı-su karışımını ayırma (Sıvı-sıvı heterojen).", C: "Kum-talaş karışımına su ekleyerek yüzdürme.", D: "Alkollü sudan alkolü damıtma." [cite_start]}, dogruCevap: "C" } // [cite: 463, 464, 465, 467]
+            ]
+        }
+    ];
+
+    const fenDenemeler = [
+        {
+            id: 11,
+            konu: "TEST A (20 SORU)",
+            sorular: [
+                { metin: "Aşağıdakilerden hangisi Dünya'nın cisimlere uyguladığı yer çekimi kuvveti ile ilgili doğru bir ifadedir?", cevaplar: { A: "Yer çekimi kuvvetinin yönü Dünya'nın yüzeyine paraleldir.", B: "Yer çekimi kuvvetinin yönü Dünya’nın merkezine doğrudur.", C: "Yer çekimi kuvveti sadece demir gibi manyetik maddelere uygulanır.", D: "Cisimler birbirlerine sadece kütle çekim kuvveti uygulamazlar (Kütle çekim kuvveti tüm cisimler arasında uygulanır)." [cite_start]}, dogruCevap: "B" }, // [cite: 469, 470, 471, 472, 523]
+                { metin: "Basıncın tanımı aşağıdakilerden hangisidir?", cevaplar: { A: "Cismin kütlesi ile yer çekimi kuvvetinin çarpımı.", B: "Bir cismin kütlesine etki eden yer çekimi kuvveti.", C: "Birim yüzeye dik olarak etki eden kuvvete denir.", D: "Cismin temas yüzeyi alanı." [cite_start]}, dogruCevap: "C" }, // [cite: 473, 474, 475, 523]
+                [cite_start]{ metin: "Küçük kütleli bir yıldız olan Güneş'in yaşam evreleri, büyük kütleli yıldızların yaşam evrelerinden farklıdır. Küçük kütleli yıldızlar yaşamlarının sonunda hangi yapıya dönüşür?", cevaplar: { A: "Kara delik", B: "Nötron yıldızı", C: "Süpernova patlaması geçirirler", D: "Beyaz Cüce" }, dogruCevap: "D" }, // [cite: 476, 477, 523]
+                { metin: "Bir cismin ağırlığı dinamometre ile Dünya'nın farklı noktalarında (K: Deniz seviyesi, L: Yüksek bir dağ tepesi) ölçülüyor. Buna göre ağırlık ölçümünün en büyük olduğu nokta neresidir?", cevaplar: { A: "K noktasında en büyüktür.", B: "L noktasında en büyüktür.", C: "Her iki noktada da ağırlıklar eşittir (Ağırlık bulunulan yere göre değişir).", D: "Sadece L noktasında ölçülebilir." [cite_start]}, dogruCevap: "A" }, // [cite: 478, 479, 480, 523]
+                { metin: "Aşağıdakilerden hangisi bir karışımın özelliklerinden biri değildir?", cevaplar: { A: "Fiziksel yollarla ayrıştırılabilirler.", B: "Bileşenleri kendi özelliklerini korur.", C: "Çözeltiler homojen karışım olup saf maddelerdir (Çözeltiler saf değillerdir).", D: "Birden fazla maddenin bir araya gelmesiyle oluşurlar." [cite_start]}, dogruCevap: "C" }, // [cite: 481, 482, 523]
+                { metin: "Işığın Soğurulması ile ilgili aşağıdaki ifadelerden hangisi doğrudur?", cevaplar: { A: "Beyaz görünen bir cisim, üzerine düşen tüm ışık ışınlarını soğurur (Yanlış; beyaz cisimler ışığı yansıtır).", B: "Bir yüzeye gelen ışık ışınları yüzey tarafından soğurulduklarında, yüzeyin sıcaklığı artar.", C: "Koyu renkli cisimler ışığı az soğurur, bu yüzden az ısınır.", D: "Siyah cisimler ışığın tamamını yansıtır." [cite_start]}, dogruCevap: "B" }, // [cite: 483, 484, 485, 523]
+                [cite_start]{ metin: "Aşağıdaki organellerden hangisi bitki hücrelerinde bulunmasına rağmen hayvan hücrelerinde bulunmaz?", cevaplar: { A: "Çekirdek", B: "Sitoplazma", C: "Hücre çeperi", D: "Mitokondri" }, dogruCevap: "C" }, // [cite: 486, 523]
+                { metin: "Özdeş çivilere uygulanan F, 2F ve 3F kuvvetleri sonucunda çivilerin tahta zeminde açtığı deliklerin derinliği farklı olmaktadır. Bu deney neyi kanıtlar?", cevaplar: { A: "Basınç, temas yüzeyinin alanına bağlıdır.", B: "Basınç, uygulanan kuvvetin büyüklüğüne bağlıdır.", C: "Basınç, çivinin uzunluğuna bağlıdır.", D: "Katılar kuvveti iletmez." [cite_start]}, dogruCevap: "B" }, // [cite: 487, 488, 489, 523]
+                [cite_start]{ metin: "Dilimizin tat alma organında, tadı algılayan tomurcuklar hangi salgı sayesinde çözünmüş besinleri algılar?", cevaplar: { A: "Tükürük", B: "Mukus", C: "Kan plazması", D: "Ter" }, dogruCevap: "A" }, // [cite: 490, 491, 523]
+                [cite_start]{ metin: "Aşağıda verilen merkezi sinir sistemi yapılarından hangisi, bisiklet sürme veya yazı yazma gibi sonradan kazanılan refleks davranışlarını kontrol etmede rol oynar?", cevaplar: { A: "Beyin", B: "Beyincik", C: "Omurilik", D: "Omurilik soğanı" }, dogruCevap: "C" }, // [cite: 492, 493, 523]
+                { metin: "Gökyüzü gözlemi yapacak bir rasathanenin (gözlemevi) kurulacağı yerde, aşağıdakilerden hangisi dikkat edilen kriterlerden biri olamaz?", cevaplar: { A: "Işık kirliliğinin az olması.", B: "Şehir merkezinden uzak olması.", C: "Deniz seviyesinden 100 m yükseklikte olması (Yüksekte olması tercih edilir, 100 m çok düşüktür).", D: "Fay hattından uzak olması." [cite_start]}, dogruCevap: "C" }, // [cite: 494, 495, 496, 523]
+                { metin: "Bir cismin kütlesine etki eden yer çekimi kuvvetine ne ad verilir ve hangi araçla ölçülür?", cevaplar: { A: "Kütle, Eşit kollu terazi ile ölçülür.", B: "Ağırlık, Dinamometre ile ölçülür.", C: "Basınç, Barometre ile ölçülür.", D: "Hacim, Mezür ile ölçülür." [cite_start]}, dogruCevap: "B" }, // [cite: 497, 498, 499, 523]
+                { metin: "Kulağa ait şemada Yarım daire kanallarının temel görevi nedir?", cevaplar: { A: "Ses dalgalarını orta kulağa iletmek.", B: "Basınç değişimine karşı kulağı korumak (Östaki borusu).", C: "Beyincik ile birlikte vücudun dengesini sağlamak.", D: "Sesin şiddetini artırmayı sağlamak (Oval pencere görevi değildir)." [cite_start]}, dogruCevap: "C" }, // [cite: 500, 501, 502, 523]
+                [cite_start]{ metin: "Aşağıdaki gök cismi sınıflandırmalarından hangisi, 'Işık kaynağı değildirler, gökyüzündeki konumları zamanla değişir ve uyduları olabilir' özelliklerini taşır?", cevaplar: { A: "Yıldız", B: "Gezegen", C: "Bulutsu", D: "Takımyıldızı" }, dogruCevap: "B" }, // [cite: 503, 504, 523]
+                { metin: "Birleşik kaplarda sıvı basıncının temel prensibi nedir?", cevaplar: { A: "Sıvı seviyeleri eşitlenince basınç azalır.", B: "Aynı sıvı içinde aynı yükseklikteki noktalardaki basınçlar eşittir.", C: "Sıvı miktarı arttıkça basınç artar.", D: "Sıvı basıncı yoğunluk ile ters orantılıdır (Yanlış)." [cite_start]}, dogruCevap: "B" }, // [cite: 505, 506, 507, 523]
+                { metin: "Çözeltilerle ilgili olarak aşağıdakilerden hangisi yanlıştır?", cevaplar: { A: "Çözeltiler homojen karışımlardır.", B: "Çözeltilerde çözünen madde özelliklerini korur.", C: "Çözeltiler saf maddelerdir (Çözeltiler saf değillerdir).", D: "Çözeltilerde çözücü ve çözünen bulunur." [cite_start]}, dogruCevap: "C" }, // [cite: 508, 509, 523]
+                { metin: "Aşağıda verilen olaylardan hangisi gazların basınç özelliklerinden yararlanılarak gerçekleştirilmez?", cevaplar: { A: "İçi boş teneke kutusunun içeri çökmesi.", B: "Pipet yardımıyla meyve suyu içilmesi.", C: "Tulumbalarla yeryüzüne su çıkarılması.", D: "Katı cismin temas yüzeyi alanı azaltılarak basıncının artırılması (Bu katı basıncıdır)." [cite_start]}, dogruCevap: "D" }, // [cite: 510, 511, 512, 523]
+                { metin: "Bitki ve hayvan hücreleri karşılaştırıldığında, kofulların büyüklüğü ile ilgili aşağıdaki ifadelerden hangisi doğrudur?", cevaplar: { A: "Kofullar bitki hücrelerinde küçüktür, hayvan hücrelerinde büyüktür (Yanlış önerme).", B: "Kofullar genellikle bitki hücrelerinde büyük ve az sayıda, hayvan hücrelerinde küçük ve çok sayıdadır.", C: "Her iki hücre türünde de kofullar aynı büyüklüktedir.", D: "Bitki hücrelerinde koful bulunmaz." [cite_start]}, dogruCevap: "B" }, // [cite: 513, 514, 515, 516, 523]
+                { metin: "Düz aynalarla ilgili olarak aşağıdakilerden hangisi doğru bir ifadedir?", cevaplar: { A: "Geniş görüş alanı sağlamak için kullanılırlar.", B: "Daima cisimden büyük görüntü verirler.", C: "Oluşan görüntü cismin boyu ile aynıdır.", D: "Işınları dağıtarak yansıtırlar." [cite_start]}, dogruCevap: "C" }, // [cite: 517, 518, 523]
+                { metin: "Dünya'daki ağırlığı 240 N olan bir cismin Ay'daki ağırlığının 40 N olduğu biliniyor. Bu durumla ilgili çıkarılabilecek sonuç nedir?", cevaplar: { A: "Cismin kütlesi Dünya'da Ay'dakinden fazladır.", B: "Ay'ın çekim gücü Dünya'dan fazladır.", C: "Dünya'nın çekim gücü Ay'dan fazladır.", D: "Cismin ağırlığı her iki gök cisminde de eşittir." [cite_start]}, dogruCevap: "C" } // [cite: 519, 520, 521, 523]
+            ]
+        },
+        {
+            id: 12,
+            konu: "TEST B (20 SORU)",
+            sorular: [
+                { metin: "Aşağıdakilerden hangisi kütle ve ağırlık kavramları için ortak bir özelliktir?", cevaplar: { A: "Dinamometre ile ölçülmeleri.", B: "Biriminin Newton (N) olması.", C: "Bulundukları yere göre değişmeleri.", D: "Kütlesi büyük olan cismin ağırlığının da büyük olması." [cite_start]}, dogruCevap: "D" }, // [cite: 526, 527, 528, 577]
+                { metin: "Sıvıların basıncı ile ilgili aşağıdakilerden hangisi doğrudur?", cevaplar: { A: "Sıvı yoğunluğu artarsa sıvı basıncı azalır.", B: "Kaptaki sıvı yüksekliği (derinliği) artarsa, kabın tabanına etkiyen sıvı basıncı da artar.", C: "Sıvı basıncı sıvının bulunduğu kabın şekline bağlıdır.", D: "Sıvı basıncı yer çekimine bağlı değildir (Yanlış)." [cite_start]}, dogruCevap: "B" }, // [cite: 529, 530, 577]
+                [cite_start]{ metin: "Takımyıldızlar ile ilgili verilen, I. Birbirlerine göre konumları her zaman aynı kalır. II. Gökyüzü gözlemlerini kolaylaştırırlar. III. Bir takımyıldızı oluşturan yıldızlar birbirlerine eşit uzaklıkta bulunur. ifadelerinden hangileri doğrudur?", cevaplar: { A: "Yalnız I", B: "I ve II", C: "II ve III", D: "I, II ve III" }, dogruCevap: "B" }, // [cite: 531, 532, 533, 577]
+                { metin: "50 °C sıcaklıktaki suya aynı miktarda tuz eklendiğinde, çözünme hızı 15 °C veya 25 °C'deki sudan daha fazla olur. Bu durumun temel sebebi nedir?", cevaplar: { A: "Karıştırma miktarının fazla olması.", B: "Çözünen tanecik boyutunun küçük olması.", C: "Sıcaklığın artmasının çözünme hızını artırması.", D: "Çözücü miktarının fazla olması." [cite_start]}, dogruCevap: "C" }, // [cite: 534, 535, 536, 577]
+                { metin: "Gözlem yapılması için kurulan bir rasathanede aranan önemli özellikler arasında aşağıdakilerden hangisi yer alır?", cevaplar: { A: "Deniz seviyesine yakın olmak.", B: "Şehir merkezinde, ulaşımın kolay olduğu yerde olmak.", C: "Yüksek rakımlı bölgelerde ve ışık kirliliğinin az olduğu yerlerde bulunmak.", D: "Fay hattının üzerinde olmak." [cite_start]}, dogruCevap: "C" }, // [cite: 537, 538, 539, 577]
+                { metin: "Çözeltilerle ilgili aşağıdakilerden hangisi kesinlikle doğrudur?", cevaplar: { A: "Bütün çözeltiler en fazla iki bileşenden oluşur (Yanlış).", B: "Çözeltiler homojen karışımlardır.", C: "Bütün çözeltilerde çözücü sıvı haldedir.", D: "Çözünen madde çözelti içinde özelliklerini tamamen kaybeder (Korur)." [cite_start]}, dogruCevap: "B" }, // [cite: 540, 541, 577]
+                { metin: "Düz yolda elinde koli taşıyan bir kişi, fiziksel anlamda iş yapmış sayılmaz. İş yapılabilmesi için hangi durum gerçekleşmelidir?", cevaplar: { A: "Cisim daha hızlı taşınmalıdır.", B: "Koli yer çekimine zıt yönde hareket etmelidir (Örn: Merdiven çıkmak).", C: "Taşıyan kişi yorulmalıdır.", D: "Koli ile kişi arasındaki mesafe artmalıdır." [cite_start]}, dogruCevap: "B" }, // [cite: 542, 543, 544, 577]
+                [cite_start]{ metin: "Dilimizin arkasında bulunan bölümlerin yoğun olarak algıladığı tatlar hangileridir (Dilin en arka kısmı)?", cevaplar: { A: "Tatlı ve tuzlu (Ön kısımlar)", B: "Ekşi ve acı", C: "Acı (En arkada)", D: "Tuzlu" }, dogruCevap: "C" }, // [cite: 545, 546, 577]
+                { metin: "İnsan vücudundaki denetleyici ve düzenleyici sistemler düşünüldüğünde, Yarım daire kanalları ve Beyincik hangi fizyolojik işlevi gerçekleştirmek için birlikte çalışır?", cevaplar: { A: "Vücut sıcaklığını ayarlama.", B: "Dengeyi sağlama.", C: "Refleksleri kontrol etme.", D: "Solunum hızını ayarlama." [cite_start]}, dogruCevap: "B" }, // [cite: 547, 548, 577]
+                { metin: "Basıncı artırmak amacıyla tasarlanmış nesnelere, günlük hayattan hangisi örnek verilebilir?", cevaplar: { A: "Kış lastikleri (Sürtünmeyi artırır, basıncı dağıtır).", B: "Bıçakların keskinleştirilmiş ince yüzeyleri (Yüzey alanı azaldıkça basınç artar).", C: "Trenlerin çok sayıda tekerleğe sahip olması.", D: "Kamyonların geniş lastiklere sahip olması." [cite_start]}, dogruCevap: "B" }, // [cite: 549, 550, 551, 577]
+                { metin: "Büyük kütleli bir yıldızın yaşam evresinin sonunda geçirdiği olay nedir?", cevaplar: { A: "Kırmızı dev evresine geçiş.", B: "Gezegenimsi bulutsu oluşumu.", C: "Süpernova patlaması.", D: "Doğrudan beyaz cüceye dönüşüm." [cite_start]}, dogruCevap: "C" }, // [cite: 552, 553, 577]
+                [cite_start]{ metin: "Aşağıdaki organellerden hangisi hem bitki hem de hayvan hücrelerinde bulunarak hücrenin enerji ihtiyacını karşılar?", cevaplar: { A: "Kloroplast (Sadece bitki)", B: "Mitokondri", C: "Hücre çeperi (Sadece bitki)", D: "Sentrozom (Sadece hayvan)" }, dogruCevap: "B" }, // [cite: 554, 555, 577]
+                [cite_start]{ metin: "Ayırma hunisi kullanılarak, zeytinyağı ve su karışımı gibi birbiri içinde çözünmeyen sıvıların ayrılması hangi fiziksel özelliğe dayanır?", cevaplar: { A: "Kaynama noktası farkı", B: "Tanecik boyutu farkı", C: "Yoğunluk farkı", D: "Çözünme hızı farkı" }, dogruCevap: "C" }, // [cite: 556, 557, 577]
+                { metin: "Aşağıdaki yargılardan hangisi yanlıştır?", cevaplar: { A: "Ağırlık, dinamometre ile ölçülür.", B: "Ağırlığın birimi Newton'dur.", C: "Aynı ortamda kütlesi küçük olan cismin ağırlığı da küçük olur.", D: "Kütle, eşit kollu terazi ile ölçülmez (Kütle eşit kollu terazi ile ölçülür)." [cite_start]}, dogruCevap: "D" }, // [cite: 558, 559, 560, 577]
+                [cite_start]{ metin: "Bir kabın tabanına yapılan sıvı basıncı ile ilgili, I. Kabın şekline bağlıdır. II. Sıvının derinliğine bağlıdır. III. Sıvının yoğunluğuna bağlıdır. ifadelerinden hangileri doğrudur?", cevaplar: { A: "Yalnız II", B: "I ve II", C: "II ve III", D: "I, II ve III" }, dogruCevap: "C" }, // [cite: 561, 562, 577]
+                { metin: "Koyu renkli bir gömlek ile beyaz renkli bir gömlek yaz güneşinde bekletildiğinde koyu renkli gömleğin daha fazla ısınmasının nedeni nedir?", cevaplar: { A: "Koyu rengin ışığı daha az yansıtması.", B: "Koyu rengin ışığı daha fazla soğurması (Emerek sıcaklığı artırması).", C: "Beyaz rengin ışığı soğurmaması.", D: "Koyu renkli cisimlerin termal iletkenliğinin daha yüksek olması." [cite_start]}, dogruCevap: "B" }, // [cite: 563, 564, 565, 577]
+                { metin: "Aşağıdakilerden hangisi mayoz bölünmenin temel amaçlarından biridir?", cevaplar: { A: "Çok hücreli canlılarda büyüme ve onarım sağlamak.", B: "Tek hücreli canlılarda üremeyi sağlamak.", C: "Üreme hücrelerini (gametleri) oluşturmak ve kalıtsal çeşitliliğe yol açmak.", D: "Vücut hücrelerinin yenilenmesini sağlamak." [cite_start]}, dogruCevap: "C" }, // [cite: 566, 567, 568, 577]
+                { metin: "Yüksek bir dağ tırmanışı sırasında, dağın tepesine ulaşıldıkça açık hava basıncının nasıl değişmesi beklenir?", cevaplar: { A: "Basınç artar.", B: "Basınç azalır.", C: "Basınç değişmez.", D: "Sadece sıcaklığa bağlı olarak değişir." [cite_start]}, dogruCevap: "B" }, // [cite: 569, 570, 577]
+                [cite_start]{ metin: "Duyu almaçlarının yoğun olarak bulunduğu ve koku taneciklerinin mukus içinde çözündüğü bölge neresidir?", cevaplar: { A: "Kör nokta", B: "Sarı bölge (Burunda)", C: "Sarı leke (Gözde)", D: "Tat tomurcuğu" }, dogruCevap: "B" }, // [cite: 571, 572, 577]
+                { metin: "Şekildeki dinamometre 20 N'luk bir cismi ölçebilmektedir. Eğer bu dinamometre ile 30 N'luk bir cisim tartılırsa sonuç ne olur?", cevaplar: { A: "Ölçüm doğru yapılır.", B: "Ölçümde yanlışlık vardır, çünkü dinamometrenin kapasitesi aşılmıştır.", C: "Dinamometre 30 N gösterir.", D: "Dinamometrenin yayları uzamaz." [cite_start]}, dogruCevap: "B" } // [cite: 573, 574, 575, 577]
+            ]
+        },
+        {
+            id: 13,
+            konu: "TEST C (20 SORU)",
+            sorular: [
+                [cite_start]{ metin: "Aşağıdaki organellerden hangisi hayvan hücrelerinde bulunmasına rağmen bitki hücrelerinde bulunmaz ve hücre bölünmesinde görevlidir?", cevaplar: { A: "Kloroplast", B: "Hücre Duvarı", C: "Sentrozom", D: "Mitokondri" }, dogruCevap: "C" }, // [cite: 580, 581, 624]
+                { metin: "Aşağıdakilerden hangisi Dünya'nın çekim kuvvetinin, Ay'ın çekim kuvvetinden daha fazla olmasının bir sonucudur?", cevaplar: { A: "Kütlenin Dünya ve Ay'da eşit olması.", B: "Dünya'da ölçülen bir ağırlığın Ay'da ölçülen ağırlığından büyük olması.", C: "Cismin Ay'da daha az kütleye sahip olması.", D: "Dünya'da tartılan 10 kg'lık bir cismin Ay’da da 10 kg gelmesi." [cite_start]}, dogruCevap: "B" }, // [cite: 582, 583, 584, 624]
+                [cite_start]{ metin: "Işığın yansıması ve aynalarla ilgili olarak, hangi ayna çeşidi gelen paralel ışınları toplayarak yansıtır?", cevaplar: { A: "Tümsek ayna (Dağıtır)", B: "Düz ayna", C: "Çukur ayna", D: "Periskop" }, dogruCevap: "C" }, // [cite: 585, 586, 624]
+                [cite_start]{ metin: "Bir kapta bulunan K, L ve M noktalarındaki sıvı basınçları, sıvı seviyesine olan derinliklere göre nasıl sıralanır? (M en derin, K en yüzeye yakın olsun).", cevaplar: { A: "K > L > M", B: "K = L = M", C: "M > L > K (Basınç derinlikle doğru orantılıdır).", D: "L > K > M" }, dogruCevap: "C" }, // [cite: 587, 588, 589, 624]
+                [cite_start]{ metin: "Aşağıdakilerden hangisi bir gök cismi hakkında, 'Işık kaynağı değildirler, gökyüzündeki konumları zamanla değişir, uyduları olabilir' posterini hazırlayan Sevgi'nin postere eklemesi gereken görsel olabilir?", cevaplar: { A: "Güneş", B: "Takımyıldızı (Yıldızlar)", C: "Dünya (Gezegen)", D: "Kuyruklu yıldız" }, dogruCevap: "C" }, // [cite: 590, 591, 624]
+                { metin: "Katı basıncı ile ilgili aşağıdaki ifadelerden hangisi yanlıştır?", cevaplar: { A: "Katılar kendilerine uygulanan kuvveti aynı doğrultuda iletir.", B: "Basınç, kuvvet (ağırlık) ile doğru orantılıdır.", C: "Basınç, temas yüzeyinin alanı ile ters orantılıdır.", D: "Katı basıncı, cismin ağırlığına ve hacmine bağlıdır (Hacim değil, yüzey alanı önemlidir)." [cite_start]}, dogruCevap: "D" }, // [cite: 592, 593, 594, 624]
+                [cite_start]{ metin: "Aşağıdaki karışım ayırma yöntemlerinden hangisi Kaynama Noktası Farkına dayanır?", cevaplar: { A: "Ayırma hunisi", B: "Eleme", C: "Damıtma", D: "Süzme" }, dogruCevap: "C" }, // [cite: 595, 596, 624]
+                { metin: "Omurilik soğanı hangi işlevi kontrol eder?", cevaplar: { A: "Dengeyi sağlama.", B: "İstemli kas hareketlerini düzenleme.", C: "Solunum ve sindirim sistemlerinin çalışmasını yönetme.", D: "Hızlı öğrenme ve hafıza." [cite_start]}, dogruCevap: "C" }, // [cite: 597, 624]
+                [cite_start]{ metin: "Çözünme hızını artırmak amacıyla yapılan bir deneyde, çözücü sıcaklığı, çözücü miktarı ve karıştırma hızı sabit tutulmuştur. Bu durumda çözünme hızını etkilemek için değiştirilebilecek faktör nedir?", cevaplar: { A: "Su miktarı", B: "Çözünen maddenin tanecik boyutu", C: "Karıştırma", D: "Çözücü türü" }, dogruCevap: "B" }, // [cite: 598, 599, 624]
+                [cite_start]{ metin: "Bir dinamometreye uygulanan kuvvet arttıkça, sarmal yayanın uzama miktarı da nasıl değişir?", cevaplar: { A: "Azalır", B: "Değişmez", C: "Artar", D: "Önce azalır sonra artar" }, dogruCevap: "C" }, // [cite: 600, 601, 624]
+                [cite_start]{ metin: "Büyükayı, Küçükayı, Yılan, Boğa, Kartal ve Orion (Avcı) gibi isimler verilen gök cismi topluluklarına ne ad verilir?", cevaplar: { A: "Galaksi", B: "Gezegen", C: "Kuyruklu yıldız", D: "Takımyıldızı" }, dogruCevap: "D" }, // [cite: 602, 603, 624]
+                [cite_start]{ metin: "Birim yüzeye dik olarak etki eden kuvvete ne ad verilir?", cevaplar: { A: "Hacim", B: "Basınç", C: "Kesit", D: "Kütle" }, dogruCevap: "B" }, // [cite: 604, 605, 624]
+                [cite_start]{ metin: "Kütle ve ağırlık kavramlarıyla ilgili verilen, I. Dünya’nın kütlesi daha büyük olsaydı, cisimlere uygulanan yer çekimi kuvveti de artardı. II. Ağırlık bulunulan yere göre değişir. III. Dünya’da tartılan 10 kg’lık bir cisim Ay’da da 10 kg gelir. ifadelerinden hangileri doğrudur?", cevaplar: { A: "Yalnız II", B: "I ve II", C: "II ve III", D: "I, II ve III" }, dogruCevap: "B" }, // [cite: 606, 607, 624]
+                [cite_start]{ metin: "Bir hücrenin bölünerek büyüme, gelişme ve onarımı sağlaması için geçirmesi gereken bölünme türü nedir?", cevaplar: { A: "Mayoz bölünme", B: "Eşeyli üreme", C: "Mitoz bölünme", D: "Tomurcuklanma" }, dogruCevap: "C" }, // [cite: 608, 609, 624]
+                [cite_start]{ metin: "Mide, solunum ve kalp atışları gibi istem dışı yaşamsal faaliyetler hangi merkezi sinir sistemi tarafından yönetilir?", cevaplar: { A: "Beyin", B: "Beyincik", C: "Omurilik soğanı", D: "Omurilik" }, dogruCevap: "C" }, // [cite: 610, 611, 624]
+                { metin: "Tümsek aynaların trafik güvenliği açısından tercih edilmesinin sebebi nedir?", cevaplar: { A: "Işığı tek noktada toplama.", B: "Cisimden büyük görüntü vererek detay gösterme.", C: "Işınları dağıtarak geniş bir görüş alanı sağlaması.", D: "Cisimle aynı boyda simetrik görüntü vermesi." [cite_start]}, dogruCevap: "C" }, // [cite: 612, 613, 614, 624]
+                { metin: "Aşağıdakilerden hangisi bitki hücrelerinin temel bir özelliğidir?", cevaplar: { A: "Yuvarlak bir şekle sahip olmaları.", B: "Büyük ve az sayıda kofula sahip olmaları.", C: "Sentrozom içermeleri.", D: "Kloroplast organelinin bulunmaması." [cite_start]}, dogruCevap: "B" }, // [cite: 615, 616, 617, 624]
+                { metin: "Su kirliliğine neden olan faktörler arasında aşağıdakilerden hangisi yer almaz?", cevaplar: { A: "Endüstriyel atıklar.", B: "Doğal gübre kullanımı (Çevre felaketine neden olabilir).", C: "Evsel atıklar.", D: "Geri dönüşümü olan maddelerin birikimi." [cite_start]}, dogruCevap: "D" }, // [cite: 618, 624]
+                [cite_start]{ metin: "Dış kulaktan gelen ses dalgalarını orta kulağa iletmekle görevli yapı nedir?", cevaplar: { A: "Östaki borusu", B: "Yarım daire kanalları", C: "Kulak zarı", D: "Salyangoz" }, dogruCevap: "C" }, // [cite: 619, 620, 624]
+                { metin: "Bir cismin ağırlığı gezegenden gezegene değişir. Bu durumun sebebi nedir?", cevaplar: { A: "Kütlenin farklı olması.", B: "Gezegenlerin kütle çekim kuvvetlerinin farklı olması.", C: "Dinamometrenin farklı ölçümler yapması.", D: "Ağırlığın Newton cinsinden ölçülmemesi." [cite_start]}, dogruCevap: "B" } // [cite: 621, 622, 624]
+            ]
+        },
+        {
+            id: 14,
+            konu: "TEST D (20 SORU)",
+            sorular: [
+                { metin: "Aşağıdakilerden hangisi bir yıldızın temel özelliklerinden biri değildir?", cevaplar: { A: "Doğal ısı ve ışık kaynağı olmaları.", B: "Küre şeklinde olmaları.", C: "Kendi etraflarında dolanmaları.", D: "En sıcak olanların mavi-beyaz renkte görülmesi." [cite_start]}, dogruCevap: "C" }, // [cite: 627, 628, 671]
+                [cite_start]{ metin: "Aşağıdaki duyu organlarının ilgili olduğu merkezi sinir sistemi organı eşleştirmelerinden hangisi yanlıştır?", cevaplar: { A: "Göz - Beyin", B: "Kulak - Beyin (İşitme) ve Beyincik (Denge)", C: "Deri - Omurilik (Bazı refleksler)", D: "Dil ve Burun - Omurilik soğanı (Yanlış, çoğunlukla beyin)" }, dogruCevap: "D" }, // [cite: 629, 630, 671]
+                [cite_start]{ metin: "Bir cismin ağırlığı K, L ve M noktalarında ölçülüyor. K noktasının deniz seviyesine en yakın, M noktasının ise en yüksek dağ tepesi olduğu bilindiğine göre, ağırlık ilişkisi nasıldır?", cevaplar: { A: "K = L = M", B: "K > M > L (K deniz seviyesine yakınsa en büyük, M en yüksekteyse L'den küçüktür).", C: "L > K > M", D: "M > L > K" }, dogruCevap: "B" }, // [cite: 631, 632, 633, 634, 671]
+                { metin: "Aşağıdakilerden hangisi çözünme hızını artırmak için kullanılan bir yöntem değildir?", cevaplar: { A: "Sıcaklığı artırmak.", B: "Karıştırmak veya çalkalamak.", C: "Çözünen madde miktarını artırmak.", D: "Çözünenin temas yüzeyini (tanecik boyutunu küçülterek) artırmak." [cite_start]}, dogruCevap: "C" }, // [cite: 635, 636, 671]
+                [cite_start]{ metin: "Siyah renkli bir kumaş, beyaz renkli bir kumaşa göre daha hızlı ısınır. Bu olay hangi ışık özelliğini kanıtlar?", cevaplar: { A: "Işığın kırılması", B: "Işığın yansıması", C: "Işığın soğurulması", D: "Işığın doğrusal yayılması" }, dogruCevap: "C" }, // [cite: 637, 638, 671]
+                { metin: "Göz bebeği, göze giren ışık miktarını ayarlayan bir yapıdır. Karanlık bir odaya girildiğinde göz bebeği nasıl tepki verir?", cevaplar: { A: "Küçülür", B: "Büyür", C: "Hiçbir tepki vermez", D: "İris tarafından kontrol edilir, göz bebeği sabit kalır." [cite_start]}, dogruCevap: "B" }, // [cite: 639, 640, 671]
+                [cite_start]{ metin: "Çukur aynalarla ilgili olarak, I. Işınları dağıtarak yansıtır (Yanlış, toplar). II. Otomobil farlarında kullanılır. III. Görüntüyü büyüterek gösterebilir. ifadelerinden hangileri doğrudur?", cevaplar: { A: "Yalnız I", B: "I ve II", C: "II ve III", D: "I, II ve III" }, dogruCevap: "C" }, // [cite: 641, 642, 671]
+                { metin: "Bir dinamometreye asılan cismin ağırlığı ile yayın uzama miktarı arasında nasıl bir ilişki vardır?", cevaplar: { A: "Ters orantılıdır.", B: "Doğru orantılıdır.", C: "İlişki yoktur.", D: "Önce doğru sonra ters orantılıdır." [cite_start]}, dogruCevap: "B" }, // [cite: 643, 644, 671]
+                [cite_start]{ metin: "Aşağıdaki duyu organlarından hangisi, alınan besinin tadını alabilmek için besinin kendi salgısında çözünmesini gerektirmez?", cevaplar: { A: "Dil", B: "Burun (Koku taneciklerinin mukus içinde çözünmesi gerekir)", C: "Kulak", D: "Göz" }, dogruCevap: "C" }, // [cite: 645, 646, 671]
+                [cite_start]{ metin: "Aşağıda verilen karışımlardan hangisi damıtma yöntemi ile ayrıştırılabilir?", cevaplar: { A: "Sıvı yağ ve su (Yoğunluk farkı)", B: "Tuzlu su (Buharlaştırma)", C: "Hava", D: "Alkollü su (Sıvı-sıvı çözelti, kaynama noktası farkı)" }, dogruCevap: "D" }, // [cite: 647, 671]
+                [cite_start]{ metin: "Büyük kütleli yıldızların yaşam evresi olan Kırmızı Süperdev'den sonra gerçekleşen kozmik olay nedir?", cevaplar: { A: "Kırmızı Dev", B: "Süpernova Patlaması", C: "Beyaz Cüce", D: "Bulutsu" }, dogruCevap: "B" }, // [cite: 648, 649, 671]
+                [cite_start]{ metin: "Bir bitki hücresinde fotosentez yaparak besin üreten organel nedir?", cevaplar: { A: "Mitokondri", B: "Ribozom", C: "Kloroplast", D: "Çekirdek" }, dogruCevap: "C" }, // [cite: 650, 671]
+                [cite_start]{ metin: "Kütle ve ağırlık arasındaki ilişkiyi incelerken, Dünya'da 10 kg kütleye sahip bir cismin Ay'daki kütlesi ne kadardır?", cevaplar: { A: "10 kg", B: "6 kg", C: "1 kg", D: "0 kg" }, dogruCevap: "A" }, // [cite: 651, 652, 671]
+                { metin: "Aşağıdaki işlemlerden hangisi katı basıncını artırmaya yönelik bir uygulamadır?", cevaplar: { A: "Paletli araç kullanmak (Basıncı azaltır).", B: "Bıçağın yüzey alanını inceltmek (Basıncı artırır).", C: "Kışın kara ayakkabısı giymek (Basıncı azaltır).", D: "Traktör tekerleklerini genişletmek (Basıncı azaltır)." [cite_start]}, dogruCevap: "B" }, // [cite: 653, 654, 671]
+                { metin: "Birleşik kaplardaki sıvı seviyeleri eşitlendiğinde, bu kapların tabanlarına uygulanan basınçlar ile ilgili ne söylenebilir?", cevaplar: { A: "Basınçlar farklıdır.", B: "Basınçlar birbirine eşittir (Yükseklik aynı olduğu için).", C: "Basınç, en dar bölmede en yüksektir.", D: "Basınç, en geniş bölmede en düşüktür." [cite_start]}, dogruCevap: "B" }, // [cite: 655, 656, 657, 671]
+                { metin: "Aşağıdakilerden hangisi uzay kirliliğine neden olan temel etkenlerden biri değildir?", cevaplar: { A: "Ömrü bitmiş yapay uydular.", B: "Uzay araçlarının atıkları.", C: "Dev yıldızların patlaması (Doğal olaydır).", D: "İşlevsiz uzay mekikleri." [cite_start]}, dogruCevap: "C" }, // [cite: 658, 659, 671]
+                { metin: "Hücre çeperi (hücre duvarı) ile ilgili aşağıdakilerden hangisi doğrudur?", cevaplar: { A: "Seçici geçirgendir.", B: "Canlı ve esnektir.", C: "Cansız ve tam geçirgendir.", D: "Hayvan hücrelerinde hücre zarının hemen dışındadır." [cite_start]}, dogruCevap: "C" }, // [cite: 660, 661, 671]
+                { metin: "Eşeysiz üreme (mitoz) ile eşeyli üreme (mayoz) arasındaki temel fark nedir?", cevaplar: { A: "Kromozom sayısındaki değişiklik (Mayozda yarıya iner).", B: "İkisi de tek hücrelilerde görülür.", C: "İkisi de kalıtsal çeşitlilik sağlar.", D: "İkisi de büyüme ve onarım sağlar." [cite_start]}, dogruCevap: "A" }, // [cite: 662, 663, 671]
+                { metin: "Omurilik soğanı tarafından kontrol edilen refleks hareketlerine örnek olarak hangisi verilebilir?", cevaplar: { A: "Göz bebeğinin büyümesi/küçülmesi.", B: "Yutkunma ve kusma.", C: "Bisiklet sürme.", D: "Yüksek seste irkilme." [cite_start]}, dogruCevap: "B" }, // [cite: 664, 665, 671]
+                { metin: "Organ bağışı ile ilgili olarak, hangi öğrencinin açıklaması doğrudur?", cevaplar: { A: "Anıl: Doku ve organ nakillerinde alıcı ve verici bireyler arasında doku uyuşmazlığı olmamalıdır.", B: "Defne: Ülkemizde sadece kalp ve böbrek nakilleri başarıyla yapılmaktadır.", C: "Ege: Organ bağışında bulunabilmek için 15 yaşını doldurmuş olmak gerekir.", D: "Hepsi doğrudur." [cite_start]}, dogruCevap: "A" } // [cite: 666, 667, 668, 669, 670, 671]
+            ]
+        },
+        {
+            id: 15,
+            konu: "TEST E (20 SORU)",
+            sorular: [
+                { metin: "Aşağıdakilerden hangisi kara delik oluşumuna yol açan yıldız türüdür ve hangi olayla bu duruma geçer?", cevaplar: { A: "Küçük kütleli yıldız; Kırmızı Dev aşaması.", B: "Büyük kütleli yıldız; Süpernova Patlaması.", C: "Nötron yıldızı; Bulutsu oluşumu.", D: "Gezegen; Beyaz Cüce aşaması." [cite_start]}, dogruCevap: "B" }, // [cite: 674, 675, 676, 718]
+                [cite_start]{ metin: "Basınç ile ilgili olarak, I. Katılar kuvveti uygulandığı yüzeye dik olarak iletir. II. Sıvı basıncı sıvının yüzeye olan derinliğine bağlıdır. III. Açık hava basıncı, yükseklere çıkıldıkça artar (Azalır). ifadelerinden hangileri doğrudur?", cevaplar: { A: "Yalnız II", B: "I ve II", C: "II ve III", D: "I, II ve III" }, dogruCevap: "B" }, // [cite: 677, 678, 718]
+                { metin: "Yaz mevsiminde açık renkli kıyafetler tercih etmemizin temel nedeni nedir?", cevaplar: { A: "Açık renkli kumaşların ışığı soğurarak bizi ısıtması.", B: "Açık renkli kumaşların ışığın büyük bir kısmını yansıtması.", C: "Koyu renkli kıyafetlerin ışığı yansıtması.", D: "Açık renkli kıyafetlerin daha estetik görünmesi." [cite_start]}, dogruCevap: "B" }, // [cite: 679, 680, 681, 718]
+                [cite_start]{ metin: "Aşağıdaki karışımlardan hangisinin ayrıştırılmasında temel olarak eleme yöntemi kullanılır?", cevaplar: { A: "Tuzlu su", B: "Kum ve çakıl taşı (Tanecik boyutu farkı)", C: "Zeytinyağı ve su", D: "Alkol ve su" }, dogruCevap: "B" }, // [cite: 682, 683, 718]
+                { metin: "Ağırlık ile ilgili aşağıdaki ifadelerden hangisi yanlıştır?", cevaplar: { A: "Birimi Newton (N)'dur.", B: "Dinamometre ile ölçülür.", C: "Bulunulan yere göre değişir.", D: "Eşit kollu terazi ile ölçülür (Eşit kollu terazi kütleyi ölçer)." [cite_start]}, dogruCevap: "D" }, // [cite: 684, 685, 718]
+                [cite_start]{ metin: "Çiçekli bitkilerde eşeyli üremenin aşamaları nasıldır?", cevaplar: { A: "Döllenme → Tohum → Meyve → Zigot", B: "Tozlaşma → Döllenme → Zigot → Tohum / Meyve oluşumu", C: "Çimlenme → Tohum → Döllenme", D: "Tomurcuklanma → Döllenme" }, dogruCevap: "B" }, // [cite: 686, 718]
+                { metin: "Aşağıdakilerden hangisi vücudumuzdaki sistemlerin denetimi ve düzenlenmesi ile ilgili doğru bir bilgidir?", cevaplar: { A: "Yutkunma refleksi beyin tarafından kontrol edilir.", B: "Vücudun dengesi omurilik soğanı tarafından sağlanır.", C: "Beyincik, kulaktaki yarım daire kanalları ile iş birliği yapar.", D: "Doğuştan gelen refleksler sonradan kazanılmaz." [cite_start]}, dogruCevap: "C" }, // [cite: 687, 688, 689, 718]
+                { metin: "Bir cismin yer değiştirmesi, uygulanan kuvvete dik ise fiziksel anlamda iş yapılmış sayılmaz. Buna göre hangi durumda iş yapılmış sayılmaz?", cevaplar: { A: "Kitabı yerden alıp rafa koymak.", B: "Sırtımızda çanta taşırken düz yolda yürümek.", C: "Bir cismi yatay zeminde çekmek.", D: "Merdiven çıkmak." [cite_start]}, dogruCevap: "B" }, // [cite: 690, 691, 692, 718]
+                { metin: "Homojen bir karışım olan çözeltide çözünen maddeler neden özelliklerini korur?", cevaplar: { A: "Çünkü fiziksel yollarla ayrılırlar.", B: "Çünkü kimyasal değişime uğrarlar.", C: "Çünkü sadece iki bileşenden oluşurlar.", D: "Çünkü çözücü her zaman sıvıdır." [cite_start]}, dogruCevap: "A" }, // [cite: 693, 694, 718]
+                { metin: "Rasathanelerin kurulmasında dikkate alınan ışık kirliliği nedir?", cevaplar: { A: "Güneş sisteminden gelen doğal ışıktır.", B: "Yanlış yerde, yanlış miktarda, yanlış yönde ve yanlış zamanda ışık kullanılmasıdır.", C: "Yıldızların titreşerek görünmesidir.", D: "Atmosferdeki toz parçacıklarının ışığı dağıtmasıdır." [cite_start]}, dogruCevap: "B" }, // [cite: 695, 696, 697, 718]
+                [cite_start]{ metin: "Büyük kütleli yıldızlar, yaşam döngüsünde hangi evreyi geçirerek Süpernova'ya ulaşır?", cevaplar: { A: "Kırmızı Dev", B: "Beyaz Cüce", C: "Kırmızı Süperdev", D: "Gezegenimsi Bulutsu" }, dogruCevap: "C" }, // [cite: 698, 699, 718]
+                { metin: "Bir dinamometrenin ölçüm yapabilme kapasitesini aşan (örneğin 20 N'luk dinamometreye 30 N'luk cisim asmak) bir ölçüm yapılırsa ne olur?", cevaplar: { A: "Ölçülen ağırlık doğru olur.", B: "Dinamometre yayının uzama miktarı artar.", C: "Ölçümde yanlışlık olur.", D: "Dinamometre kütleyi ölçmüş olur." [cite_start]}, dogruCevap: "C" }, // [cite: 700, 701, 718]
+                [cite_start]{ metin: "Deri duyu organında, sıcaklık, soğukluk, basınç ve ağrı gibi duyuları algılayan duyu almaçları derinin hangi tabakasında yer alır?", cevaplar: { A: "Üst deri (Ölü hücreler)", B: "Alt deri", C: "Yağ tabakası", D: "Melanin tabakası" }, dogruCevap: "B" }, // [cite: 702, 703, 718]
+                [cite_start]{ metin: "Aşağıdaki gök cisimlerinden hangisi bir takımyıldızı örneği olarak kaynaklarda geçmektedir?", cevaplar: { A: "Neptün", B: "Mars", C: "Orion (Avcı)", D: "Halley kuyruklu yıldızı" }, dogruCevap: "C" }, // [cite: 704, 705, 718]
+                { metin: "Sıvı basıncının, sıvının yoğunluğu ile ilişkisi nasıldır?", cevaplar: { A: "Sıvı basıncı yoğunluk ile ters orantılıdır.", B: "Sıvı basıncı yoğunluk ile doğru orantılıdır.", C: "Sıvı basıncı yoğunluğa bağlı değildir.", D: "Sıvı basıncı sadece derinliğe bağlıdır." [cite_start]}, dogruCevap: "B" }, // [cite: 706, 707, 718]
+                { metin: "Aşağıdakilerden hangisi bitki hücresinin hayvan hücresinden farklı olduğu bir durumdur?", cevaplar: { A: "Çekirdek içerir.", B: "Ribozom içerir.", C: "Kloroplast içerir.", D: "Mitokondri içerir." [cite_start]}, dogruCevap: "C" }, // [cite: 708, 709, 718]
+                [cite_start]{ metin: "Aşağıdakilerden hangisi uzay araştırmaları sonucunda günlük hayata aktarılan teknolojilere örnek olabilir?", cevaplar: { A: "Dinamometre", B: "Eşit kollu terazi", C: "Tükenmez kalem", D: "Çamaşır makinesi" }, dogruCevap: "C" }, // [cite: 710, 711, 718]
+                { metin: "Eşit kollu terazi neyi ölçmek için kullanılır?", cevaplar: { A: "Ağırlık.", B: "Kütle.", C: "Basınç.", D: "Kuvvet." [cite_start]}, dogruCevap: "B" }, // [cite: 712, 718]
+                [cite_start]{ metin: "Düz yolda ilerleyen bir aracın hızını düşüren temel etken, cisim ile hava arasındaki hangi kuvvettir?", cevaplar: { A: "Yer çekimi kuvveti", B: "Kütle çekim kuvveti", C: "Hava direnci (Sürtünme kuvveti)", D: "Merkezcil kuvvet" }, dogruCevap: "C" }, // [cite: 713, 714, 718]
+                [cite_start]{ metin: "Bir öğretmen öğrencisi Gamze'den beynin temel görevlerinden olan Denge ile ilgili bir görsel eklemesini istiyor. Gamze postere hangi görseli eklemelidir?", cevaplar: { A: "İşitme", B: "Solunum", C: "Refleks", D: "İp üzerinde yürüyen kişi (Denge)" }, dogruCevap: "D" } // [cite: 715, 716, 718]
+            ]
+        },
+        {
+            id: 16,
+            konu: "TEST F (20 SORU)",
+            sorular: [
+                { metin: "Aşağıdakilerden hangisi katı basıncının azaltılmasına yönelik bir uygulamadır?", cevaplar: { A: "Bıçakların keskinleştirilmesi.", B: "Kışın geniş yüzeyli kar ayakkabısı giymek (Yüzey alanını artırır).", C: "Çivilerin sivri uçlu yapılması.", D: "Tıraktör tekerleklerinin daraltılması." [cite_start]}, dogruCevap: "B" }, // [cite: 721, 722, 765]
+                [cite_start]{ metin: "Sıvı yağ ve su gibi birbiri içinde çözünmeyen sıvıların ayrılması için kullanılan araç ve yöntem nedir?", cevaplar: { A: "Elek ve Süzme", B: "Ayırma Hunisi ve Yoğunluk farkı", C: "Damıtma ve Kaynama noktası farkı", D: "Buharlaştırma ve Yoğunluk farkı" }, dogruCevap: "B" }, // [cite: 723, 724, 765]
+                [cite_start]{ metin: "Yıldızların renkleri ile sıcaklıkları arasındaki ilişki göz önüne alındığında, en soğuk yıldızlar hangi renkte görülür?", cevaplar: { A: "Mavi", B: "Beyaz", C: "Sarı", D: "Kırmızı" }, dogruCevap: "D" }, // [cite: 725, 726, 765]
+                [cite_start]{ metin: "Aşağıdaki merkezi sinir sistemi yapılarından hangisi solunum, sindirim ve dolaşım gibi yaşamsal ve istem dışı sistemleri yönetir?", cevaplar: { A: "Beyin", B: "Beyincik", C: "Omurilik", D: "Omurilik soğanı" }, dogruCevap: "D" }, // [cite: 727, 728, 765]
+                [cite_start]{ metin: "Mayoz bölünme ile ilgili olarak, I. Kromozom sayısı sabit kalır (Mitozda kalır, mayozda yarıya iner). II. Üreme ana hücrelerinde görülür. III. Kalıtsal çeşitliliğe yol açar. ifadelerinden hangileri doğrudur?", cevaplar: { A: "Yalnız II", B: "I ve II", C: "II ve III", D: "I, II ve III" }, dogruCevap: "C" }, // [cite: 729, 730, 731, 765]
+                { metin: "Çözünme hızını etkileyen faktörler arasında, sıcaklığın artması çözünme hızını nasıl etkiler?", cevaplar: { A: "Sıcaklık arttıkça çözünme hızı azalır.", B: "Sıcaklık arttıkça çözünme hızı artar.", C: "Çözünme hızına etkisi yoktur.", D: "Sadece karıştırma ile birlikte etkili olur." [cite_start]}, dogruCevap: "B" }, // [cite: 732, 733, 765]
+                { metin: "Aşağıdakilerden hangisi Tümsek Ayna’nın temel özelliklerinden ve kullanım alanlarından biridir?", cevaplar: { A: "Işınları toplayarak yansıtır.", B: "Oluşan görüntü cisimden her zaman küçüktür ve düzdür.", C: "Dişçi aynası olarak kullanılır.", D: "Evlerde makyaj aynası olarak kullanılır." [cite_start]}, dogruCevap: "B" }, // [cite: 734, 735, 765]
+                [cite_start]{ metin: "Dünya’da 24 N ağırlığında olan bir cismin Ay’daki ağırlığı 4 N’dur. Eğer başka bir cismin Ay’daki ağırlığı 5 N ise, Dünya’daki ağırlığı kaç N olur?", cevaplar: { A: "20 N", B: "30 N", C: "40 N", D: "6 N" }, dogruCevap: "B" }, // [cite: 736, 737, 738, 765]
+                [cite_start]{ metin: "Basınç artırma veya azaltma amacıyla tasarlanan cisimlerle ilgili, I. Kar ayakkabısı basıncı azaltır. II. Bıçağın keskin ucu basıncı artırır. III. Paletli tanklar basıncı artırır. ifadelerinden hangileri doğrudur?", cevaplar: { A: "Yalnız I", B: "I ve II", C: "II ve III", D: "I, II ve III" }, dogruCevap: "B" }, // [cite: 739, 740, 765]
+                [cite_start]{ metin: "Bir bitki hücresinde hücre zarının hemen dışında bulunan, cansız, kalın ve tam geçirgen yapı nedir?", cevaplar: { A: "Hücre zarı", B: "Hücre çeperi (Duvarı)", C: "Sitoplazma", D: "Çekirdek" }, dogruCevap: "B" }, // [cite: 741, 742, 765]
+                { metin: "Aşağıdakilerden hangisi takımyıldızlarının temel özelliklerinden biri değildir?", cevaplar: { A: "Konumları her zaman aynı kalır.", B: "Gökyüzü gözlemlerini kolaylaştırır.", C: "Aralarındaki uzaklık çok büyüktür.", D: "Işık kaynakları değildirler (Takımyıldızları yıldızlardan oluşur ve yıldızlar ışık kaynağıdır)." [cite_start]}, dogruCevap: "D" }, // [cite: 743, 744, 765]
+                [cite_start]{ metin: "Bir dinamometreye uygulanan kuvvet ile uzama miktarı arasında doğru orantı vardır. Eğer dinamometreye asılan bir cisim 10 N ağırlığındayken 1 cm uzuyorsa, 30 N ağırlığındaki bir cisim kaç cm uzar?", cevaplar: { A: "1 cm", B: "2 cm", C: "3 cm", D: "4 cm" }, dogruCevap: "C" }, // [cite: 745, 746, 747, 765]
+                [cite_start]{ metin: "Aşağıdakilerden hangisi refleks hareketlerini kontrol eden, merkezi sinir sistemi organıdır?", cevaplar: { A: "Beyin", B: "Beyincik", C: "Omurilik", D: "Omurilik soğanı" }, dogruCevap: "C" }, // [cite: 748, 749, 765]
+                [cite_start]{ metin: "Dilin ön yüzeyinde yoğun olarak algılanan temel tat nedir?", cevaplar: { A: "Tatlı", B: "Acı", C: "Ekşi", D: "Tuzlu" }, dogruCevap: "A" }, // [cite: 750, 765]
+                { metin: "Sıvı basıncı ile ilgili aşağıdaki ifadelerden hangisi yanlıştır?", cevaplar: { A: "Yoğunluk ile doğru orantılıdır.", B: "Derinlik ile doğru orantılıdır.", C: "Sıvı yüksekliği artarsa, basınç artar.", D: "Sıvı basıncı yoğunluk ile ters orantılıdır (Bu ifade yanlıştır)." [cite_start]}, dogruCevap: "D" }, // [cite: 751, 752, 765]
+                { metin: "Bir cismin ağırlığı Dünya’nın farklı noktalarında (K: Kutup, L: Ekvator) ölçülürse, ağırlık nerede en büyük olur?", cevaplar: { A: "K'de (Kutuplar merkeze daha yakındır, çekim fazladır).", B: "L'de (Ekvator daha uzaktır).", C: "İkisinde de eşittir.", D: "Sadece kütlesi ölçülebilir." [cite_start]}, dogruCevap: "A" }, // [cite: 753, 754, 765]
+                { metin: "Aşağıdakilerden hangisi uzay kirliliğini oluşturan atıklardan değildir?", cevaplar: { A: "Ömrü biten yapay uydular.", B: "Meteorlar (Doğal gök cismidir).", C: "Uzay mekiklerinden kopan parçalar.", D: "Roketlerin yakıt tankları." [cite_start]}, dogruCevap: "B" }, // [cite: 755, 756, 765]
+                { metin: "Çözünme hızını artırmak için hangi işlem yapılmalıdır?", cevaplar: { A: "Tanecik boyutunu büyütmek.", B: "Karıştırma miktarını azaltmak.", C: "Çözücü sıcaklığını düşürmek.", D: "Temas yüzeyini artırmak." [cite_start]}, dogruCevap: "D" }, // [cite: 757, 758, 765]
+                [cite_start]{ metin: "Kulakta işitme ile doğrudan görevi olmayan yapı nedir?", cevaplar: { A: "Kulak zarı", B: "Yarım daire kanalları (Dengeyi sağlar)", C: "Östaki borusu", D: "Salyangoz" }, dogruCevap: "B" }, // [cite: 759, 765]
+                { metin: "Organ bağışı ve nakilleri ile ilgili doğru bilgi hangisidir?", cevaplar: { A: "Sadece Defne'nin bilgisi doğrudur (Kaynakta sadece Anıl'ın bilgisi onaylanmıştır: Doku uyuşmazlığı olmamalıdır).", B: "Doku ve organ nakillerinde alıcı ve verici bireyler arasında doku uyuşmazlığı olmamalıdır.", C: "Organ nakli sadece kalp ve böbrek ile sınırlıdır.", D: "Organ bağışı için yaş sınırı yoktur." [cite_start]}, dogruCevap: "B" } // [cite: 760, 761, 762, 763, 765]
+            ]
+        },
+        {
+            id: 17,
+            konu: "TEST G (20 SORU)",
+            sorular: [
+                [cite_start]{ metin: "Aşağıdaki merkezi sinir sistemi yapılarından hangisi, kulaktaki yarım daire kanallarıyla birlikte çalışarak vücut dengesini sağlar?", cevaplar: { A: "Beyin", B: "Omurilik", C: "Beyincik", D: "Omurilik soğanı" }, dogruCevap: "C" }, // [cite: 768, 769, 810]
+                { metin: "Aşağıdakilerden hangisi katı basıncını temas yüzeyini değiştirerek artırmaya yönelik bir uygulamadır?", cevaplar: { A: "Yükün ağırlığını azaltmak.", B: "Zemine temas eden yüzey alanını küçültmek.", C: "Cisme etki eden kuvveti azaltmak.", D: "Cismin yüksekliğini artırmak." [cite_start]}, dogruCevap: "B" }, // [cite: 770, 771, 810]
+                [cite_start]{ metin: "Maddelerin karışımlarını ayırmak için kullanılan yöntemler ve dayandığı temel ilke eşleştirmelerinden hangisi doğrudur?", cevaplar: { A: "Süzme – Yoğunluk farkı", B: "Damıtma – Kaynama noktası farkı", C: "Ayırma hunisi – Tanecik boyutu farkı", D: "Eleme – Erime noktası farkı" }, dogruCevap: "B" }, // [cite: 772, 773, 810]
+                { metin: "Aşağıdakilerden hangisi çözeltilerin özelliklerinden biri değildir?", cevaplar: { A: "Çözücü ve çözünenden oluşması.", B: "Homojen karışım olması.", C: "Saf madde olması (Değildir).", D: "Bileşenlerinin özelliklerini koruması." [cite_start]}, dogruCevap: "C" }, // [cite: 774, 775, 810]
+                [cite_start]{ metin: "Dinamometre ile ağırlık ölçümü yapılırken, dinamometreye uygulanan kuvvet arttıkça yayın uzama miktarı nasıl değişir?", cevaplar: { A: "Azalır", B: "Artar", C: "Sabit kalır", D: "Önce artar sonra azalır" }, dogruCevap: "B" }, // [cite: 776, 777, 810]
+                { metin: "Gözlem yapmak için rasathane kurulurken dikkat edilen kriterlerden 'Işık Kirliliği' nin az olması neden önemlidir?", cevaplar: { A: "Hava akımını engellediği için.", B: "Gözlemi yapılacak yıldızların ışığının net görünmesini engellediği için.", C: "Deprem riskini azalttığı için.", D: "Deniz seviyesinden yüksekliği etkilediği için." [cite_start]}, dogruCevap: "B" }, // [cite: 778, 779, 780, 810]
+                [cite_start]{ metin: "Aşağıdakilerden hangisi büyük kütleli bir yıldızın yaşam evresi değildir?", cevaplar: { A: "Bulutsu (Nebula)", B: "Kırmızı Süperdev", C: "Gezegenimsi Bulutsu (Küçük kütleli yıldızın evresidir).", D: "Kara Delik" }, dogruCevap: "C" }, // [cite: 781, 782, 810]
+                [cite_start]{ metin: "Bir cismin Ay’daki ağırlığı 5 N ise ve Dünya’nın çekim gücünün Ay’dan 6 kat fazla olduğu kabul edilirse, bu cismin Dünya’daki ağırlığı kaç N olur?", cevaplar: { A: "5 N", B: "10 N", C: "30 N", D: "60 N" }, dogruCevap: "C" }, // [cite: 783, 784, 810]
+                { metin: "Mitoz bölünmenin tek hücreli canlılar için sağladığı temel fayda nedir?", cevaplar: { A: "Büyüme ve gelişme.", B: "Üreme (Çoğalma).", C: "Kalıtsal çeşitlilik.", D: "Yaraların onarılması." [cite_start]}, dogruCevap: "B" }, // [cite: 785, 786, 810]
+                [cite_start]{ metin: "Aşağıdakilerden hangisi, Tümsek Ayna’nın kullanım alanlarından biri olabilir?", cevaplar: { A: "Otomobil farları (Çukur ayna)", B: "Makyaj aynaları (Çukur ayna)", C: "Kavşaklarda görüş açısını genişleten ayna", D: "Periskop aynası (Düz ayna)" }, dogruCevap: "C" }, // [cite: 787, 788, 810]
+                [cite_start]{ metin: "Eşit kollu terazi hangi fiziksel niceliği ölçmek için kullanılır?", cevaplar: { A: "Ağırlık", B: "Kuvvet", C: "Kütle", D: "Basınç" }, dogruCevap: "C" }, // [cite: 789, 810]
+                { metin: "Beyaz görünen bir cismin, üzerine düşen ışık ışınlarıyla ilgili aşağıdakilerden hangisi doğrudur?", cevaplar: { A: "Gelen tüm ışık ışınlarını soğurur.", B: "Gelen ışık ışınlarının çoğunu yansıtır.", C: "Sadece beyaz ışığı yansıtır.", D: "Işınların yüzeyden kırılmasına neden olur." [cite_start]}, dogruCevap: "B" }, // [cite: 790, 791, 810]
+                [cite_start]{ metin: "Sıvıların basınç özelliği kullanılarak, yeryüzünden su çıkarmaya yarayan araç nedir?", cevaplar: { A: "Barometre", B: "Tulumbalar", C: "Manometre", D: "Dinamometre" }, dogruCevap: "B" }, // [cite: 792, 810]
+                [cite_start]{ metin: "İş kavramıyla ilgili olarak, I. İş yapılması için enerji harcanmalıdır. II. Kuvvet ile hareket yönü dik ise iş yapılmaz. III. Bir sandığı yatay zeminde çekmek iş yapmaktır. ifadelerinden hangileri doğrudur?", cevaplar: { A: "Yalnız I", B: "I ve II", C: "II ve III", D: "I, II ve III" }, dogruCevap: "D" }, // [cite: 793, 794, 810]
+                [cite_start]{ metin: "Hücrede protein sentezinden sorumlu olan, en küçük organel nedir?", cevaplar: { A: "Mitokondri", B: "Kloroplast", C: "Ribozom", D: "Golgi Aygıtı" }, dogruCevap: "C" }, // [cite: 795, 810]
+                { metin: "Mayoz bölünme, anne ve babadan aktarılan kalıtsal özelliklerin çocuklarda çeşitlilik göstermesine neden olur. Bu çeşitliliğin temel sebebi nedir?", cevaplar: { A: "Mitoz bölünme evreleri.", B: "Bölünme sırasında gerçekleşen parça değişimi (krossing over).", C: "Hücrelerin kromozom sayısının iki katına çıkması.", D: "Tek bir ana hücreden iki yavru hücre oluşması." [cite_start]}, dogruCevap: "B" }, // [cite: 796, 797, 798, 810]
+                { metin: "Aşağıdakilerden hangisi organ bağışı ile ilgili doğru bir bilgidir?", cevaplar: { A: "Türkiye'de sadece kan nakilleri başarıyla yapılmaktadır.", B: "Organ bağışında bulunabilmek için yasal yaş sınırını doldurmak gerekir.", C: "Defne'nin söylediği gibi organ nakli sadece kalp ve böbrek ile sınırlıdır.", D: "Organ bağışında doku uyuşmazlığı önemli değildir." [cite_start]}, dogruCevap: "C" }, // [cite: 799, 800, 801, 802, 810]
+                { metin: "Işık kirliliğini azaltmaya yönelik en etkili yöntem nedir?", cevaplar: { A: "Işığın göğe değil, aydınlatılmak istenen alana yönlendirilmesi.", B: "Daha güçlü (parlak) lambalar kullanılması.", C: "Tüm gece boyunca reklam panolarının açık tutulması.", D: "Beyaz ışık yerine sarı ışık kullanılması." [cite_start]}, dogruCevap: "A" }, // [cite: 803, 804, 810]
+                { metin: "Düz aynanın görüntü özellikleri ile ilgili aşağıdakilerden hangisi yanlıştır?", cevaplar: { A: "Görüntü sanaldır.", B: "Görüntü cisme göre simetriktir.", C: "Görüntü boyu cismin boyundan küçüktür (Eşittir).", D: "Cisim aynadan ne kadar uzaktaysa, görüntü de o kadar uzaktadır." [cite_start]}, dogruCevap: "C" }, // [cite: 805, 806, 810]
+                { metin: "Gazların basınç özelliklerinden yararlanılarak gerçekleştirilen olay hangisidir?", cevaplar: { A: "Tulumbalarla su çıkarılması.", B: "Buzun suda yüzmesi (Yoğunluk farkı).", C: "Dağların yüksekliğe bağlı olarak basınca etki etmesi.", D: "Makasla kağıt kesilmesi (Katı basıncı)." [cite_start]}, dogruCevap: "A" } // [cite: 807, 808, 810]
+            ]
+        }
+    ];
+
+    const tumFenQuizler = [...fenKonuQuizler, ...fenDenemeler];
+
+
+    // 2. QUIZ İŞLEVLERİ VE DEĞİŞKENLER (Türkçe Quiz yapısından adapte edilmiştir)
+    const quizListContainer = document.getElementById('quiz-list');
+    const quizSelectionArea = document.getElementById('quiz-selection-area');
+    const quizArea = document.getElementById('quiz-area');
+    const resultArea = document.getElementById('result-area');
+    const quizTitle = document.getElementById('quiz-title');
+    const quizCounter = document.getElementById('quiz-counter');
+    const questionText = document.getElementById('question-text');
+    const answersContainer = document.getElementById('answers-container');
+    const nextBtn = document.getElementById('next-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const correctCountDisplay = document.getElementById('correct-count');
+    const wrongCountDisplay = document.getElementById('wrong-count');
+    const restartBtn = document.getElementById('restart-btn');
+    const answerReviewContainer = document.getElementById('answer-review');
+    const sectionTitle = document.getElementById('section-title');
+    
+    // URL'den grup parametresini al
+    const urlParams = new URLSearchParams(window.location.search);
+    const grup = urlParams.get('grup');
+
+    let currentQuizList = [];
+    let currentQuiz = null;
+    let currentQuestionIndex = 0;
+    let userAnswers = {}; // { questionIndex: "A", 1: "B" }
+
+    // Quiz listesini yükle
+    function loadQuizList() {
+        quizListContainer.innerHTML = '';
+        
+        if (grup === 'konu') {
+            currentQuizList = fenKonuQuizler;
+            sectionTitle.textContent = 'Konu Bazlı Quizler (10 Soruluk)';
+        } else if (grup === 'deneme') {
+            currentQuizList = fenDenemeler;
+            sectionTitle.textContent = 'Genel Deneme Sınavları (20 Soruluk)';
+        } else {
+            sectionTitle.textContent = 'Hata: Geçersiz Test Grubu';
+            return;
+        }
+
+        currentQuizList.forEach(quiz => {
+            const quizButton = document.createElement('button');
+            const questionCount = quiz.sorular.length;
+            
+            quizButton.className = 'w-full text-left p-4 bg-gray-100 hover:bg-emerald-100 border-2 border-emerald-300 rounded-lg shadow font-medium text-gray-700 transition duration-150';
+            quizButton.textContent = `${quiz.konu} (${questionCount} Soru)`;
+            quizButton.onclick = () => startQuiz(quiz.id);
+            quizListContainer.appendChild(quizButton);
+        });
+    }
+
+    // Quiz başlat
+    function startQuiz(quizId) {
+        currentQuiz = tumFenQuizler.find(q => q.id === quizId);
+        currentQuestionIndex = 0;
+        userAnswers = {};
+
+        quizSelectionArea.classList.add('hidden');
+        quizArea.classList.remove('hidden');
+        resultArea.classList.add('hidden');
+        
+        quizTitle.textContent = currentQuiz.konu;
+        displayQuestion();
+    }
+
+    // Soruyu ve şıkları göster
+    function displayQuestion() {
+        const questionData = currentQuiz.sorular[currentQuestionIndex];
+        
+        quizCounter.textContent = `Soru ${currentQuestionIndex + 1} / ${currentQuiz.sorular.length}`;
+        questionText.textContent = questionData.metin;
+        answersContainer.innerHTML = '';
+        
+        // Şıkları oluştur
+        Object.entries(questionData.cevaplar).forEach(([key, value]) => {
+            const answerDiv = document.createElement('div');
+            // Renkler Fen Bilimleri'ne göre ayarlandı
+            answerDiv.className = `answer-option p-3 border-2 border-gray-200 rounded-lg flex items-start ${userAnswers[currentQuestionIndex] === key ? 'selected' : ''}`;
+            answerDiv.innerHTML = `<span class="font-bold mr-3 text-emerald-500">${key})</span> <span class="flex-1">${value}</span>`;
+            answerDiv.dataset.answerKey = key;
+            answerDiv.onclick = () => selectAnswer(key);
+            answersContainer.appendChild(answerDiv);
+        });
+        
+        updateNavigationButtons();
+    }
+
+    // Cevap seçimi
+    function selectAnswer(key) {
+        userAnswers[currentQuestionIndex] = key;
+        
+        // Şıkların seçilme durumunu güncelle
+        answersContainer.querySelectorAll('.answer-option').forEach(div => {
+            div.classList.remove('selected');
+            if (div.dataset.answerKey === key) {
+                div.classList.add('selected');
+            }
+        });
+    }
+
+    // Navigasyon butonlarını güncelle
+    function updateNavigationButtons() {
+        prevBtn.disabled = currentQuestionIndex === 0;
+        
+        if (currentQuestionIndex === currentQuiz.sorular.length - 1) {
+            nextBtn.textContent = 'Quizi Bitir';
+            nextBtn.onclick = finishQuiz;
+        } else {
+            nextBtn.textContent = 'Sonraki →';
+            nextBtn.onclick = goToNextQuestion;
+        }
+    }
+
+    // Sonraki soruya git
+    function goToNextQuestion() {
+        if (currentQuestionIndex < currentQuiz.sorular.length - 1) {
+            currentQuestionIndex++;
+            displayQuestion();
+        }
+    }
+
+    // Önceki soruya git
+    function goToPrevQuestion() {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            displayQuestion();
+        }
+    }
+    
+    // Quiz bitir
+    function finishQuiz() {
+        quizArea.classList.add('hidden');
+        resultArea.classList.remove('hidden');
+        
+        let correctCount = 0;
+        
+        // Cevapları kontrol et ve sonuçları hazırla
+        answerReviewContainer.innerHTML = '<h3 class="text-xl font-semibold border-b pb-2 text-gray-700">Cevap İncelemesi:</h3>';
+        
+        currentQuiz.sorular.forEach((question, index) => {
+            const userAnswer = userAnswers[index];
+            const isCorrect = userAnswer === question.dogruCevap;
+            
+            if (isCorrect) {
+                correctCount++;
+            }
+            
+            // İnceleme kartını oluştur
+            const reviewItem = document.createElement('div');
+            reviewItem.className = `p-3 rounded-lg border-2 ${isCorrect ? 'border-emerald-500 bg-emerald-50' : 'border-red-500 bg-red-50'}`;
+            reviewItem.innerHTML = `
+                <p class="font-bold text-gray-800 mb-1">Soru ${index + 1}:</p>
+                <p class="whitespace-pre-line text-sm mb-2">${question.metin.substring(0, 100)}...</p>
+                <p class="text-sm">Senin Cevabın: <span class="font-bold ${isCorrect ? 'text-emerald-700' : 'text-red-700'}">${userAnswer || 'Boş'}</span></p>
+                <p class="text-sm">Doğru Cevap: <span class="font-bold text-emerald-700">${question.dogruCevap}</span></p>
+            `;
+            answerReviewContainer.appendChild(reviewItem);
+        });
+
+        const wrongCount = currentQuiz.sorular.length - correctCount;
+        correctCountDisplay.textContent = correctCount;
+        wrongCountDisplay.textContent = wrongCount;
+        
+        // Firestore'a kaydetme işlemi (isteğe bağlı, firebase-init.js ve sure-takip-fen.js yüklü olduğu için eklenebilir)
+        saveQuizResult(currentQuiz.id, correctCount, wrongCount, currentQuiz.sorular.length);
+    }
+
+    // Quiz sonucunu Firestore'a kaydetme işlevi (Fen için)
+    function saveQuizResult(quizId, correct, wrong, total) {
+        if (!firebase.auth().currentUser || typeof db === 'undefined') return;
+
+        const userId = firebase.auth().currentUser.uid;
+        const net = correct - (wrong / 3); 
+        
+        db.collection('fenSonuclari').add({ // Fen Bilimleri için ayrı bir koleksiyon kullanıldı
+            userId: userId,
+            quizId: quizId,
+            correct: correct,
+            wrong: wrong,
+            total: total,
+            net: Math.max(0, net),
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            console.log("Fen Bilimleri Quiz sonucu başarıyla kaydedildi.");
+        }).catch((error) => {
+            console.error("Fen Bilimleri Quiz sonucu kaydedilirken hata:", error);
+        });
+    }
+
+    // Baştan Başlat
+    restartBtn.addEventListener('click', () => {
+        resultArea.classList.add('hidden');
+        quizSelectionArea.classList.remove('hidden');
+        loadQuizList();
+    });
+
+    // Navigasyon butonlarının olay dinleyicilerini ekle
+    prevBtn.addEventListener('click', goToPrevQuestion);
+    
+    // Uygulama başlangıcı
+    document.addEventListener('DOMContentLoaded', loadQuizList);
+</script>
+
+</body>
+</html>
