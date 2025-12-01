@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fen Bilimleri - Flashcard & Taktikler</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; min-height: 100vh; }
+        .kart-container { perspective: 1000px; height: 250px; }
+        .kart {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer; 
+        }
+        .kart.cevir { transform: rotateY(180deg); }
+        .kart-yuz, .kart-arka {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .kart-yuz { background-color: #f1f5f9; /* slate-100 */ }
+        .kart-arka { 
+            background-color: #fecaca; /* red-200 */
+            transform: rotateY(180deg); 
+        }
+        .taktik-item { transition: background-color 0.1s; }
+        .taktik-item:hover { background-color: #fef2f2; }
+        /* Yeni eklenen veri yapısının detaylı görünümü için stil */
+        .kart-arka ul {
+            text-align: left;
+            margin-top: 0.5rem;
+            padding-left: 1.5rem;
+            list-style-type: disc;
+        }
+        .kart-arka li {
+            margin-bottom: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="w-full max-w-4xl mx-auto p-6 md:p-10 mt-8">
+    <header class="pb-4 border-b border-gray-200 mb-6">
+        <a href="../fen.html" class="text-purple-600 hover:text-purple-800 text-xl mb-4 inline-block">← Fen Bilimleri Ana Menü</a>
+        <h1 id="page-title" class="text-3xl font-extrabold text-gray-800 tracking-tight"></h1>
+        <p id="page-subtitle" class="text-sm text-gray-500 mt-2"></p>
+    </header>
+
+    <div id="content-container">
+
+        <div id="flashcard-area" class="hidden">
+            <h2 id="flashcard-topic-title" class="text-2xl font-semibold mb-6 text-purple-700 border-b pb-2"></h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div id="konu-listesi-container" class="space-y-3 h-96 overflow-y-auto pr-2">
+                    </div>
+
+                <div id="kart-gosterim-alani" class="kart-container">
+                    <div id="kart-gosterim" class="kart">
+                        <div class="kart-yuz">
+                            <h3 class="text-lg font-medium text-gray-700">Kartı görmek için soldan bir konu seçin.</h3>
+                        </div>
+                        <div class="kart-arka text-gray-800">
+                             </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="navigasyon-btn-container" class="flex justify-center space-x-4 mt-8">
+                <button id="kart-onceki" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-150" disabled>
+                    ← Önceki Kart
+                </button>
+                <button id="kart-cevir" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg transition duration-150">
+                    Kartı Çevir
+                </button>
+                <button id="kart-sonraki" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg transition duration-150" disabled>
+                    Sonraki Kart →
+                </button>
+            </div>
+        </div>
+        
+        <div id="taktik-area" class="space-y-8 hidden">
+             </div>
+
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<script src="../js/firebase-init.js"></script>
+<script src="../js/sure-takip-fen.js"></script> 
+
+<script>
+    // ====================================================================
+    // EMBEDDED DATA: Fen Bilimleri Flashcard ve Taktik İçerikleri
+    // ====================================================================
+    
+    // C) FLASHCARDLAR (Konu Bazlı Tanımlar ve Kurallar)
+    const fenFlashcards = [
+        {
+            konu: "1. Hücre ve Bölünmeler (Organeller)",
+            kartlar: [
+                { on: "Kloroplast nedir ve nerede bulunur?", arka: "Yalnızca <span class='font-bold'>bitki hücrelerinde</span> bulunur. Yapısında <span class='font-bold'>klorofil</span> ile bitkiye yeşil renk verir. <span class='font-bold'>Fotosentez</span> yaparak <span class='font-bold'>besin ve oksijen</span> üretir." },
+                { on: "Mitokondri nedir?", arka: "Hücrenin <span class='font-bold'>enerji üretim merkezidir</span>. (Oksijenli solunum burada gerçekleşir)." },
+                { on: "Ribozom nedir?", arka: "Hücrede <span class='font-bold'>protein sentezlemede görevlidir</span> ve <span class='font-bold'>en küçük organeldir</span>." },
+                { on: "Golgi Aygıtı ne işe yarar?", arka: "<span class='font-bold'>Salgı maddelerinin üretiminden</span> ve <span class='font-bold'>paketlenmesinden</span> sorumludur (Örn: ter, süt, gözyaşı). " },
+                { on: "Bitki ve hayvan hücresinde kesinlikle ortak olmayan yapılar?", arka: "<ul><li><span class='font-bold'>Bitkide olup hayvanda olmayan</span>: Kloroplast ve Hücre Duvarı (Çeperi).</li><li><span class='font-bold'>Hayvanda olup bitkide olmayan</span>: Sentrozom.</li><li><span class='font-bold'>Ortak yapılar</span>: Hücre zarı, çekirdek, sitoplazma, mitokondri, ribozom, endoplazmik retikulum.</li></ul>" },
+                { on: "Mitoz Bölünmenin temel görevleri nelerdir?", arka: "Tek hücreli canlılarda <span class='font-bold'>çoğalmayı (üremeyi)</span> sağlar. Çok hücreli canlılarda ise <span class='font-bold'>büyüme, gelişme ve yaraların iyileşmesini</span> (onarılmasını) gerçekleştirir. Kalıtsal yapı korunur." },
+                { on: "Mayoz Bölünmenin temel aşamaları ve sonuçları nelerdir?", arka: "Mayoz I (Parça değişimi ve kromozom sayısı yarıya iner) ve Mayoz II olarak gerçekleşir. Sonuç: <span class='font-bold'>Genetik çeşitlilik</span> ve <span class='font-bold'>kromozom sayısının yarıya inmesi</span>." },
+                { on: "Çimlenme için gerekli şartlar nelerdir?", arka: "Yeterli miktarda <span class='font-bold'>su (nem)</span>, <span class='font-bold'>oksijen (hava)</span> ve <span class='font-bold'>uygun sıcaklıktır</span>. (KODLAMA: SOS)." },
+                { on: "Çiçekli bitkilerde üremenin temel yapıları nelerdir?", arka: "Üreme, <span class='font-bold'>polen</span> (erkek organ) ve <span class='font-bold'>yumurtanın</span> (dişi organ) döllenme yoluyla birleşmesi sonucu gerçekleşir. Dişi organda <span class='font-bold'>tepecik, dişicik borusu ve yumurtalık</span> bulunur." }
+            ]
+        },
+        {
+            konu: "2. Vücudumuzdaki Sistemler (Denetleyici ve Duyu Organları)",
+            kartlar: [
+                { on: "Refleks nedir ve hangi organ yönetir?", arka: "Dışarıdan gelen uyarılara karşı gösterilen ani ve hızlı tepkilerdir. Refleks hareketleri <span class='font-bold'>omurilik</span> tarafından gerçekleştirilir ve kontrol edilir." },
+                { on: "Beyincik ve Omurilik Soğanı hangi işlevleri kontrol eder?", arka: "<ul><li><span class='font-bold'>Beyincik</span>: Vücudun <span class='font-bold'>dengesini</span> ve iskelet kaslarının uyumlu çalışmasını sağlar.</li><li><span class='font-bold'>Omurilik Soğanı</span>: Yutkunma, kusma, soluk alıp verme gibi <span class='font-bold'>istem dışı hareketleri</span> yönetir.</li></ul>" },
+                { on: "Gözde görüntü nerede ve nasıl oluşur?", arka: "Işık; <span class='font-bold'>kornea</span>, <span class='font-bold'>göz bebeği</span> ve <span class='font-bold'>göz merceğinden</span> geçerek <span class='font-bold'>ağ tabakada (retina) ters bir görüntü</span> oluşturur. Beyin bunu <span class='font-bold'>düz</span> algılar." },
+                { on: "Dengeyi sağlayan duyu organı hangisidir?", arka: "Kulak. İç kulakta yer alan <span class='font-bold'>Yarım daire kanalları</span>, beyincikle birlikte çalışarak dengeyi sağlar." },
+                { on: "Burun ile koku alma olayı nasıl gerçekleşir?", arka: "Koku almaçları <span class='font-bold'>sarı bölgede</span> yer alır. Koku tanecikleri <span class='font-bold'>mukus salgısı</span> içinde çözünerek almaçları uyarır. Koku almaçları <span class='font-bold'>çabuk yorulur</span>." },
+                { on: "Deri temel işlevleri nelerdir ve duyu almaçları nerede bulunur?", arka: "Deri, vücudu korur, terleme ile boşaltıma yardımcı olur. Duyu almaçları (sıcak, soğuk, basınç, ağrı) derinin <span class='font-bold'>alt derisinde</span> bulunur." },
+                { on: "Böbreklerin temel görevi nedir ve hangi atık maddeyi süzer?", arka: "Hücrede oluşan zararlı atık maddelerden olan <span class='font-bold'>üreyi süzerek idrarı</span> oluşturur. Sağlıklı bir insanda <span class='font-bold'>glikoz tamamen emilir</span>." }
+            ]
+        },
+        {
+            konu: "3. Kuvvet ve Basınç",
+            kartlar: [
+                { on: "Fiziksel anlamda iş yapılmış sayılması için şart nedir?", arka: "Kuvvet uygulanmalı ve <span class='font-bold'>cisim kuvvet yönünde yol almalıdır</span>. Hareket doğrultusuna <span class='font-bold'>dik uygulanan kuvvetler iş yapmaz</span>." },
+                { on: "Katı Basıncı yüzey alanına ve kuvvete nasıl bağlıdır?", arka: "Basınç ve yüzey alanı <span class='font-bold'>ters orantılıdır</span>. Yüzey alanı küçüldükçe basınç artar (bıçak). Katılar kuvveti <span class='font-bold'>aynı doğrultuda iletir</span>." },
+                { on: "Sıvı Basıncı hangi faktörlere bağlıdır?", arka: "Sıvının <span class='font-bold'>yoğunluğuna</span>, <span class='font-bold'>yüksekliğine (derinliğine)</span> ve yer çekimi kuvvetine bağlıdır. <span class='font-bold'>Miktarına veya kabın şekline bağlı değildir</span>." },
+                { on: "Kütle ve Ağırlık arasındaki temel fark nedir?", arka: "<ul><li><span class='font-bold'>Kütle</span>: Terazi ile ölçülür ve bulunduğu yere göre <span class='font-bold'>değişmez</span> (madde miktarı).</li><li><span class='font-bold'>Ağırlık</span>: Dinamometre ile ölçülür ve bulunduğu yere göre <span class='font-bold'>değişir</span> (yer çekimine bağlı).</li></ul>" },
+                { on: "Sürtünme kuvvetine örnek olarak hava ve su dirençlerinin etkileri nelerdir?", arka: "<span class='font-bold'>Paraşüt</span> hava direnci sayesinde yere güvenle iner. <span class='font-bold'>Su direnci</span> hava direncinden daha fazladır." }
+            ]
+        },
+        {
+            konu: "4. Işık ve Aynalar",
+            kartlar: [
+                { on: "Ayna nedir ve kaç çeşittir?", arka: "Işık ışınlarının büyük bir kısmını yansıtan, arkası <span class='font-bold'>sırlanmış</span> camdır. Çeşitleri: <span class='font-bold'>Düz Ayna, Çukur Ayna, Tümsek Ayna</span>." },
+                { on: "Çukur Ayna (İç Bükey) özellikleri ve kullanım alanları?", arka: "Işığı <span class='font-bold'>toplayarak</span> yansıtır. Görüntü cisimden <span class='font-bold'>büyük</span> olabilir. Kullanım: <span class='font-bold'>Otomobil farları, dişçi aynaları, makyaj aynaları</span>." },
+                { on: "Tümsek Ayna (Dış Bükey) özellikleri ve kullanım alanları?", arka: "Işığı <span class='font-bold'>dağıtarak</span> yansıtır. Görüntü daima <span class='font-bold'>düz ve cisimden küçüktür</span>. Daha geniş görüş alanı sağlar. Kullanım: <span class='font-bold'>Taşıtlarda dikiz aynaları, güvenlik aynaları</span>." },
+                { on: "Düz Ayna görüntü özellikleri nelerdir?", arka: "Görüntü <span class='font-bold'>düz</span>, <span class='font-bold'>cisimle aynı boyda</span> ve birbirine <span class='font-bold'>simetriktir</span>." },
+                { on: "Işığın Soğurulması nedir ve ısı ile ilişkisi nasıldır?", arka: "Maddeye düşen ışık ışınlarının madde tarafından <span class='font-bold'>tutulması (emilmesi)</span> olayıdır. <span class='font-bold'>Koyu renkli cisimler</span> ışığı daha fazla soğurur ve <span class='font-bold'>daha fazla ısınır</span>." },
+                { on: "Işığın soğurulmasının faydalı sonuçlarına 4 örnek veriniz.", arka: "1. Bitkilerin <span class='font-bold'>fotosentez</span> yapması. 2. <span class='font-bold'>Güneş kolektörleri</span> ile konut ısıtılması. 3. <span class='font-bold'>Güneş pilleri</span> ile elektrik üretimi. 4. <span class='font-bold'>Güneş ocaklarında</span> yemek pişirilmesi." }
+            ]
+        },
+        {
+            konu: "5. Karışımlar ve Çözünme",
+            kartlar: [
+                { on: "Karışımların temel özellikleri nelerdir?", arka: "Özelliklerini kaybetmeden bir araya gelirler. <span class='font-bold'>Saf madde değildirler</span>, formülle gösterilmezler ve <span class='font-bold'>fiziksel yollarla ayrılırlar</span>." },
+                { on: "Homojen Karışım (Çözelti) nedir ve örnekleri nelerdir?", arka: "Maddelerin karışımın her tarafına <span class='font-bold'>eşit miktarda dağılmasıyla</span> oluşur. Örnekler: <span class='font-bold'>Şekerli su, deniz suyu, kolonya, sirke</span>." },
+                { on: "Çözünme hızını artırmak için hangi faktörler kullanılmalıdır?", arka: "<ul><li><span class='font-bold'>Tanecik boyutunu küçültmek</span> (temas yüzeyini artırmak).</li><li><span class='font-bold'>Sıcaklığı artırmak</span>.</li><li><span class='font-bold'>Karıştırmak</span> veya çalkalamak.</li></ul>" },
+                { on: "Hangi ayırma yönteminde kaynama noktası farklılığından yararlanılır?", arka: "<span class='font-bold'>Damıtma</span> (sıvı-sıvı çözelti) ve <span class='font-bold'>Buharlaştırma</span> (katı-sıvı çözelti, örn: tuzlu sudan tuz elde etme)." },
+                { on: "Geri dönüşümü olan evsel atık maddelere 5 örnek veriniz.", arka: "<span class='font-bold'>Cam, plastik, gazete, karton kutu, pil, metal levha</span>." }
+            ]
+        },
+        {
+            konu: "6. Gök Cisimleri ve Uzay Teknolojileri",
+            kartlar: [
+                { on: "Yıldızların temel özellikleri nelerdir?", arka: "<span class='font-bold'>Isı ve ışık kaynağıdırlar</span>. <span class='font-bold'>Küre şeklindedirler</span>. Sıcaklıklarına göre farklı renkte olabilirler. Gündüz görülebilen tek yıldız Güneş'tir." },
+                { on: "Yıldızların gökyüzündeki konumları nasıldır?", arka: "Takımyıldızları oluşturan yıldızların birbirlerine göre konumları <span class='font-bold'>değişmez</span>. Ancak yıldızlar ışığı <span class='font-bold'>titreşir</span>." },
+                { on: "Kutup Yıldızı'nın (Demirkazık) önemi nedir?", arka: "Yeri <span class='font-bold'>hiç değişmez</span> ve <span class='font-bold'>hep kuzeyi gösterir</span>. Yön bulma amacı ile kullanılmıştır." },
+                { on: "Uzay çalışmaları sayesinde günlük hayata kazandırılan teknolojik ürünler nelerdir?", arka: "<span class='font-bold'>Teflon</span>, <span class='font-bold'>Tükenmez kalem</span>, <span class='font-bold'>Navigasyon cihazı</span>, Diş teli, Yapay Kol ve Bacaklar, MRI cihazı." },
+                { on: "Uzay Kirliliğine neden olan temel etkenler nelerdir?", arka: "Ömrü bitmiş <span class='font-bold'>uzay mekikleri</span>, ömrü bitmiş <span class='font-bold'>yapay uydular</span> ve uzay aracı <span class='font-bold'>atıkları</span>." }
+            ]
+        },
+        {
+            konu: "7. Elektrik Devreleri ve Enerji",
+            kartlar: [
+                { on: "Ampermetre ve Voltmetre neyi ölçer ve nasıl bağlanır?", arka: "<ul><li><span class='font-bold'>Ampermetre</span>: <span class='font-bold'>Akımı</span> ölçer, devreye <span class='font-bold'>seri</span> bağlanır.</li><li><span class='font-bold'>Voltmetre</span>: <span class='font-bold'>Gerilimi</span> ölçer, devreye <span class='font-bold'>paralel</span> bağlanır.</li></ul>" },
+                { on: "Pil sayısının ampul parlaklığına etkisi nedir?", arka: "Pil sayısı arttıkça ampullerin parlaklığı artar. Pil sayısı ile ampul parlaklığının değiştiği gözlemlenirken <span class='font-bold'>ampul sayısı sabit</span> tutulmalıdır." },
+                { on: "Paralel bağlı ampullerle ilgili önemli özellik nedir?", arka: "Paralel bağlı ampuller özdeş ise <span class='font-bold'>aynı parlaklıkta</span> yanar. Paralel kolda ampul çıkarıldığında devrenin eş değer direnci <span class='font-bold'>artar</span>." },
+                { on: "Bisiklet dinamosu hangi enerji dönüşümünü gerçekleştirir?", arka: "<span class='font-bold'>Hareket enerjisini elektrik enerjisine</span> çevirir. Tekerlek daha hızlı dönerse üretilen enerji de artar." }
+            ]
+        },
+        {
+            konu: "8. Ekoloji ve Biyoçeşitlilik",
+            kartlar: [
+                { on: "Ekosistem nedir?", arka: "Canlı ve cansız varlıkların bir arada bulunduğu, sınırları belli, <span class='font-bold'>kendi kendine yeten yaşam alanına</span> denir." },
+                { on: "Tür nedir ve Katır neden tür sayılmaz?", arka: "Tür, çiftleştiklerinde <span class='font-bold'>üreyebilen yeni bireyler</span> oluşturabilen canlılardır. <span class='font-bold'>Katır kısır olduğu için bir tür değildir</span>." },
+                { on: "Biyoçeşitliliği tehdit eden temel faktör nedir?", arka: "En önemli faktörlerden biri <span class='font-bold'>çevre kirliliğidir</span> (Su, Toprak, Hava kirliliği)." }
+            ]
+        }
+    ];
+
+    // D) ÇÖZÜM TAKTİKLERİ (Şimdilik Boş Bırakıldı - İleride eklenecektir)
+    const fenTaktikler = [
+        {
+            konu: "1. Kalıtım Problemleri",
+            taktikler: [
+                { baslik: "Çaprazlama Taktikleri (Heterozigot)", aciklama: "İki heterozigot birey (Aa x Aa) çaprazlandığında, Fenotip oranı her zaman 3 Baskın : 1 Çekinik çıkar. Genotip oranı ise 1 AA : 2 Aa : 1 aa çıkar." },
+                { baslik: "Çekinik Karakteri Bulma", aciklama: "Bir aile soyağacında çekinik bir karakter (aa) fenotipte görülüyorsa, o bireyin her iki aleli de çekinik olmalıdır. Anne ve babası bu aleli taşıyan melez bireyler (Aa) olabilir." }
+            ]
+        },
+        {
+            konu: "2. Basınç Soruları",
+            taktikler: [
+                { baslik: "Katı Basıncı (Yüzey Alanı)", aciklama: "Ağırlığı sabit olan cisimlerin yere yaptığı basınç hesaplanırken, yüzey alanı en küçük olan durumun basıncı <span class='font-bold'>en büyük</span>, yüzey alanı en büyük olan durumun basıncı <span class='font-bold'>en küçük</span> olur." },
+                { baslik: "Sıvı Basıncı (Kap Şekli)", aciklama: "Sıvı basıncı, sıvının derinliğine ve yoğunluğuna bağlıdır. Bir kaba sıvı akışı grafiğinde, kap düzgün ise Basınç (P) - Zaman (t) grafiği <span class='font-bold'>doğrusaldır</span>." }
+            ]
+        }
+    ];
+</script>
+
+<script>
+    // URL Parametre Okuyucu
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    };
+
+    // DOM Elementleri
+    const pageTitle = document.getElementById('page-title');
+    const pageSubtitle = document.getElementById('page-subtitle');
+    const flashcardArea = document.getElementById('flashcard-area');
+    const taktikArea = document.getElementById('taktik-area');
+    const konuListesiContainer = document.getElementById('konu-listesi-container');
+    const flashcardTopicTitle = document.getElementById('flashcard-topic-title');
+    const kartGosterim = document.getElementById('kart-gosterim');
+    const kartYuz = kartGosterim.querySelector('.kart-yuz');
+    const kartArka = kartGosterim.querySelector('.kart-arka');
+    const kartCevirBtn = document.getElementById('kart-cevir');
+    const kartOncekiBtn = document.getElementById('kart-onceki');
+    const kartSonrakiBtn = document.getElementById('kart-sonraki');
+
+    // Global Durum
+    let currentData = []; 
+    let currentTopicIndex = -1;
+    let currentCardIndex = 0;
+    let isFlipped = false;
+
+    // --- FLASHCARD/TAKTİK GÖRÜNTÜLEME İŞLEVLERİ ---
+
+    function displayFlashcard(topicIndex, cardIndex) {
+        if (topicIndex === -1) return;
+        
+        currentTopicIndex = topicIndex;
+        currentCardIndex = cardIndex;
+        isFlipped = false;
+        kartGosterim.classList.remove('cevir');
+        
+        const topic = currentData[currentTopicIndex]; 
+        const cardArrayName = (getUrlParameter('tur') === 'flashcard' ? 'kartlar' : 'taktikler');
+        const card = topic[cardArrayName][currentCardIndex];
+        
+        flashcardTopicTitle.textContent = `${topic.konu} (${currentCardIndex + 1} / ${topic[cardArrayName].length})`;
+        
+        // Kartın Ön Yüzü
+        const onYuzMetni = card.on || card.baslik; 
+        kartYuz.innerHTML = `
+            <p class="text-xl font-bold text-gray-800 whitespace-pre-line">${onYuzMetni}</p> 
+            <p class="text-sm mt-3 text-purple-500">${getUrlParameter('tur') === 'flashcard' ? 'Kavram/Soru' : 'Taktik Kuralı'}</p>
+        `; 
+
+        // Kartın Arka Yüzü
+        const arkaYuzMetni = card.arka || card.aciklama; 
+        // HTML içeriği olarak ekle
+        kartArka.innerHTML = `
+            <div class="overflow-y-auto max-h-48 text-sm p-2">
+                <p class="text-md font-medium text-gray-800">${arkaYuzMetni}</p>
+            </div>
+            <p class="text-sm mt-3 text-purple-700">Açıklama/Uygulama</p>
+        `; 
+        
+        updateNavigationButtons();
+    }
+    
+    function updateNavigationButtons() {
+        const cardArrayName = (getUrlParameter('tur') === 'flashcard' ? 'kartlar' : 'taktikler');
+        if (currentTopicIndex === -1 || !currentData[currentTopicIndex] || !currentData[currentTopicIndex][cardArrayName]) {
+             kartOncekiBtn.disabled = true;
+             kartSonrakiBtn.disabled = true;
+             return;
+        }
+
+        const totalCards = currentData[currentTopicIndex][cardArrayName].length;
+        
+        kartOncekiBtn.disabled = currentCardIndex === 0;
+        kartSonrakiBtn.disabled = currentCardIndex === totalCards - 1;
+    }
+
+    // --- SAYFA BAŞLATMA ---
+    function initialize() {
+        const tur = getUrlParameter('tur');
+        konuListesiContainer.innerHTML = '';
+        
+        if (tur === 'flashcard') {
+            currentData = fenFlashcards; 
+            pageTitle.textContent = 'Fen Bilimleri Kavram Kartları 🧪';
+            pageSubtitle.textContent = 'Temel kavramları ve tanımları hızlıca öğrenin.';
+            flashcardArea.classList.remove('hidden');
+            renderKonuListesi(currentData, 'kartlar');
+        } else if (tur === 'taktik') {
+            currentData = fenTaktikler; 
+            pageTitle.textContent = 'Fen Bilimleri Çözüm Taktikleri 💡';
+            pageSubtitle.textContent = 'Deney yorumlama ve problem çözme yöntemleri.';
+            flashcardArea.classList.remove('hidden');
+            renderKonuListesi(currentData, 'taktikler'); 
+        } else {
+            pageTitle.textContent = 'Hata: Geçersiz Modül';
+            pageSubtitle.textContent = 'Lütfen ana menüden geçerli bir link seçin.';
+        }
+    }
+
+    function renderKonuListesi(data, cardArrayName) {
+        konuListesiContainer.innerHTML = '';
+        
+        data.forEach((topic, topicIndex) => {
+            const button = document.createElement('button');
+            button.className = 'w-full text-left p-3 bg-white border border-purple-300 rounded-lg text-gray-700 hover:bg-purple-100 transition duration-150 font-medium';
+            
+            const cardCount = topic[cardArrayName] ? topic[cardArrayName].length : 0;
+            button.textContent = `${topic.konu} (${cardCount} kart)`;
+
+            button.onclick = () => {
+                displayFlashcard(topicIndex, 0);
+                
+                konuListesiContainer.querySelectorAll('button').forEach(btn => {
+                    btn.classList.remove('bg-purple-600', 'text-white');
+                    btn.classList.add('bg-white', 'text-gray-700');
+                });
+                button.classList.remove('bg-white', 'text-gray-700');
+                button.classList.add('bg-purple-600', 'text-white');
+            };
+            konuListesiContainer.appendChild(button);
+        });
+
+        if (data.length > 0) {
+            konuListesiContainer.querySelector('button').click();
+        }
+    }
+
+    // --- NAVİGASYON VE ETKİLEŞİM ---
+    
+    // Kartın kendisine tıklayınca dönmesini sağla
+    kartGosterim.addEventListener('click', () => {
+        if (currentTopicIndex !== -1) {
+            kartGosterim.classList.toggle('cevir');
+            isFlipped = !isFlipped;
+        }
+    });
+
+    // Kart Çevir butonunu da aynı işlevi yapacak şekilde ayarla
+    kartCevirBtn.addEventListener('click', () => {
+        if (currentTopicIndex !== -1) {
+            kartGosterim.classList.toggle('cevir');
+            isFlipped = !isFlipped;
+        }
+    });
+
+    kartSonrakiBtn.addEventListener('click', () => {
+        if (currentTopicIndex !== -1) {
+            const cardArrayName = (getUrlParameter('tur') === 'flashcard' ? 'kartlar' : 'taktikler');
+            if (currentCardIndex < currentData[currentTopicIndex][cardArrayName].length - 1) {
+                displayFlashcard(currentTopicIndex, currentCardIndex + 1);
+            }
+        }
+    });
+
+    kartOncekiBtn.addEventListener('click', () => {
+        if (currentCardIndex > 0) {
+            displayFlashcard(currentTopicIndex, currentCardIndex - 1);
+        }
+    });
+
+    // Başlat
+    document.addEventListener('DOMContentLoaded', initialize);
+</script>
+
+</body>
+</html>
