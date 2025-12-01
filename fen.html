@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔬 Fen Bilimleri Dersi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; min-height: 100vh; }
+        .modul-karti { transition: transform 0.2s; }
+        .modul-karti:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        /* Akordeon Stil Tanımlamaları */
+        .accordion-header {
+            cursor: pointer;
+            transition: background-color 0.15s;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .accordion-content.open {
+            max-height: 1000px; /* İçeriğin sığabileceği büyük bir değer */
+        }
+    </style>
+</head>
+<body>
+
+<div class="w-full max-w-6xl mx-auto p-4 md:p-8">
+
+<header class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 pb-4 border-b-2 border-emerald-300">
+    
+    <div class="flex items-center mb-4 lg:mb-0">
+        <a href="dersler.html" class="text-emerald-600 hover:text-emerald-800 text-xl mr-4">← Ders Seçimi</a>
+        <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight">🔬 Fen Bilimleri</h1>
+    </div>
+    
+    <div class="text-right flex flex-col items-end w-full lg:w-auto">
+    
+        <p id="user-email-display" class="text-xs text-gray-400 mb-2"></p>
+    
+        <div class="flex flex-wrap justify-end gap-x-6 gap-y-2 p-3 bg-white rounded-xl shadow-md border border-emerald-100">
+            
+            <div class="flex items-center space-x-2">
+                <span class="text-xs font-medium text-gray-600">Toplam Süre:</span>
+                <div id="sure-sayac" class="text-xl font-bold text-emerald-600">00:00:00</div>
+            </div>
+            
+            <div class="flex items-center space-x-2 border-l pl-3 border-gray-200">
+                <span class="text-xs font-medium text-gray-600">Seri:</span>
+                <p class="text-xl font-bold text-indigo-600">🔥 <span id="streak-container">0 Gün</span></p>
+            </div>
+            
+            <div id="daily-progress" class="flex items-center space-x-2 border-l pl-3 border-gray-200">
+                <span class="text-xs font-medium text-gray-600">Bugünkü Hedef:</span>
+                <div class="text-lg font-semibold text-green-600">00:00 / 15:00</div>
+            </div>
+            
+        </div>
+    </div>
+</header>
+    
+    <main class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+
+        <section id="egitim-bolumu">
+            <h2 class="text-3xl font-bold text-gray-700 mb-6 border-l-4 border-emerald-600 pl-3">🧪 Eğitim Modülleri</h2>
+            
+            <div class="space-y-6">
+                
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-emerald-100 hover:bg-emerald-50">
+                    <div id="konu-anlatimi-header" class="accordion-header flex justify-between items-center text-emerald-600 p-1 -m-1 rounded-lg">
+                        <h3 class="text-xl font-semibold">Konu Anlatımı (Akordeon Yapı)</h3>
+                        <span class="text-2xl transform transition duration-300" id="accordion-icon">▼</span>
+                    </div>
+                    <div id="konu-anlatimi-content" class="accordion-content pt-4">
+                        <p class="text-gray-600 mb-4 text-sm">Üniteler bazında ayrıntılı ders notlarına buradan ulaşabilirsiniz. (Lütfen bir ünite seçin)</p>
+                        <ul class="space-y-2 text-sm text-gray-700">
+                            <li class="p-2 bg-gray-50 rounded-md border-l-4 border-emerald-300 hover:bg-gray-100 cursor-pointer">Ünite 1: Mevsimler ve İklim</li>
+                            <li class="p-2 bg-gray-50 rounded-md border-l-4 border-emerald-300 hover:bg-gray-100 cursor-pointer">Ünite 2: DNA ve Genetik Kod</li>
+                            <li class="p-2 bg-gray-50 rounded-md border-l-4 border-emerald-300 hover:bg-gray-100 cursor-pointer">Ünite 3: Basınç</li>
+                            </ul>
+                    </div>
+                </div>
+
+                <a href="fen_ic/flashcard.html?tur=flashcard" class="modul-karti block bg-white p-6 rounded-xl shadow-lg border border-emerald-100 hover:bg-emerald-50">
+                    <h3 class="text-xl font-semibold text-emerald-600 mb-1">Flashcardlar (Kavramlar ve Kurallar)</h3>
+                    <p class="text-sm text-gray-600">Hızlı tekrar ve önemli kavramların ezberi.</p>
+                </a>
+
+                <a href="fen_ic/flashcard.html?tur=taktik" class="modul-karti block bg-white p-6 rounded-xl shadow-lg border border-emerald-100 hover:bg-emerald-50">
+                    <h3 class="text-xl font-semibold text-emerald-600 mb-1">Çözüm Taktikleri</h3>
+                    <p class="text-sm text-gray-600">Deney yorumlama ve problem çözme ipuçları.</p>
+                </a>
+            </div>
+        </section>
+
+        <section id="test-analiz-bolumu">
+            <h2 class="text-3xl font-bold text-gray-700 mb-6 border-l-4 border-emerald-600 pl-3">📊 Testler ve Analiz</h2>
+            
+            <div class="space-y-6">
+
+                <a href="fen_ic/quiz.html?grup=konu" class="modul-karti block bg-white p-6 rounded-xl shadow-lg border border-red-100 hover:bg-red-50">
+                    <h3 class="text-xl font-semibold text-red-600 mb-1">Konu Bazlı Quizler</h3>
+                    <p class="text-sm text-gray-600">5 ve 10 soruluk kısa testlerle konuları pekiştirin.</p>
+                </a>
+                
+                <a href="fen_ic/quiz.html?grup=deneme" class="modul-karti block bg-white p-6 rounded-xl shadow-lg border-2 border-red-500 hover:bg-red-50">
+                    <h3 class="text-2xl font-bold text-red-700 mb-1">🎯 Genel Deneme Sınavları</h3>
+                    <p class="text-sm text-gray-700">LGS formatında 20 soruluk denemeler.</p>
+                </a>
+
+                <div class="modul-karti bg-white p-6 rounded-xl shadow-lg border border-fuchsia-100">
+                    <h3 class="text-xl font-semibold text-fuchsia-600 mb-3">📈 Başarı Analizi (AGİS)</h3>
+                    <p class="text-gray-600 mb-4">Tüm sonuçlarınızın net/doğru/yanlış grafiği.</p>
+                    <canvas id="fenGrafik" class="mt-4"></canvas>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-init.js"></script>
+<script src="js/sure-takip-fen.js"></script>
+
+<script>
+    // Akordeon İşlevi
+    const header = document.getElementById('konu-anlatimi-header');
+    const content = document.getElementById('konu-anlatimi-content');
+    const icon = document.getElementById('accordion-icon');
+
+    // Başlığa tıklandığında akordeonu açıp kapama
+    header.addEventListener('click', () => {
+        content.classList.toggle('open');
+        icon.classList.toggle('rotate-180');
+    });
+    
+    // Akordeonu başlangıçta kapalı tut
+    document.addEventListener('DOMContentLoaded', () => {
+        content.classList.remove('open');
+        icon.classList.remove('rotate-180');
+    });
+    
+
+    // --- Başarı Grafiği Fonksiyonu ---
+
+    // Kullanıcı girişini ve kimlik doğrulama durumunu bekleyelim
+    firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+            // Kullanıcı oturum açtıysa grafiği yükle
+            renderFenChart(user.uid);
+        } else {
+            // Kullanıcı oturum açmadıysa, grafik alanına bilgilendirme mesajı yaz
+            const ctx = document.getElementById('fenGrafik').getContext('2d');
+            // Canvas üzerinde mesaj göstermek için basit bir çözüm
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.fillStyle = '#6b7280'; // gray-500
+            ctx.font = "14px Inter";
+            ctx.fillText("Grafiği görmek için lütfen giriş yapın.", 10, 50);
+        }
+    });
+
+    /**
+     * Firestore'dan Fen Bilimleri sonuçlarını çeker ve grafiği çizer.
+     * @param {string} userId - Firestore'da sorgulama için kullanılan kullanıcı ID'si.
+     */
+    async function renderFenChart(userId) {
+        const db = firebase.firestore();
+        const results = [];
+        const totalMaxQuestions = 20; // Fen Bilimleri için 20 soru varsayımı
+
+        try {
+            const snapshot = await db.collection('fenSonuclari') // Fen Bilimleri Koleksiyonu
+                .where('userId', '==', userId)
+                .orderBy('timestamp', 'asc') // Tarihe göre sırala
+                .get();
+
+            snapshot.forEach(doc => {
+                results.push(doc.data());
+            });
+
+            const ctx = document.getElementById('fenGrafik').getContext('2d');
+            
+            if (results.length === 0) {
+                // Sonuç yoksa bilgilendir
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.fillStyle = '#6b7280';
+                ctx.font = "14px Inter";
+                ctx.fillText("Henüz tamamlanmış test sonucu bulunmamaktadır.", 10, 50);
+                return;
+            }
+
+            // --- Grafik Verilerini Hazırlama ---
+            const labels = results.map(r => {
+                // ID >= 11 veya soru sayısı 20 olanlar Deneme olarak etiketlenebilir.
+                const prefix = r.total === 20 ? 'DENEME ' : 'KONU '; 
+                return prefix + r.quizId; 
+            });
+            const correct = results.map(r => r.correct);
+            const wrong = results.map(r => r.wrong);     
+            const nets = results.map(r => r.net); 
+
+            // --- Chart.js Grafiği Oluşturma ---
+            new Chart(ctx, {
+                type: 'bar', 
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Doğru Sayısı',
+                        data: correct,
+                        backgroundColor: 'rgba(52, 211, 153, 0.7)', // Zümrüt Yeşili
+                        borderColor: 'rgba(52, 211, 153, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Yanlış Sayısı',
+                        data: wrong,
+                        backgroundColor: 'rgba(239, 68, 68, 0.7)', // Kırmızı
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        borderWidth: 1
+                    }, {
+                        type: 'line', 
+                        label: 'Net Sayısı',
+                        data: nets,
+                        borderColor: 'rgb(147, 51, 234)', // Mor (Fen için farklı renk)
+                        backgroundColor: 'rgb(147, 51, 234)',
+                        fill: false,
+                        yAxisID: 'y1' 
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        title: {
+                            display: true,
+                            text: 'Fen Bilimleri Tüm Testler Başarı Grafiği'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                maxRotation: 90,
+                                minRotation: 90
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: totalMaxQuestions,
+                            title: { display: true, text: 'Soru Sayısı (Doğru/Yanlış)' }
+                        },
+                        y1: { 
+                            type: 'linear',
+                            display: true,
+                            position: 'right', 
+                            grid: { drawOnChartArea: false },
+                            title: { display: true, text: 'Net Sayısı' },
+                            min: 0,
+                            max: totalMaxQuestions
+                        }
+                    }
+                }
+            });
+
+        } catch (error) {
+            console.error("Grafik verisi çekilirken hata oluştu:", error);
+            const ctx = document.getElementById('fenGrafik').getContext('2d');
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.fillStyle = '#ef4444'; // red-500
+            ctx.font = "14px Inter";
+            ctx.fillText("Veri yüklenirken bir hata oluştu.", 10, 50);
+        }
+    }
+</script>
+
+</body>
+</html>
