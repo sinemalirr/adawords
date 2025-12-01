@@ -244,18 +244,22 @@
         // Toplam soru kontrolü (Hata durumunda Boş'tan düşme)
         if (total > maxQuestions) {
             const excess = total - maxQuestions;
-            alert(`Hata: ${subjectDetails[subject].label} dersinde toplam giriş (${total}) ${maxQuestions}'ü aşıyor. Boş hanesi otomatik düzeltildi.`);
+            // alert(`Hata: ${subjectDetails[subject].label} dersinde toplam giriş (${total}) ${maxQuestions}'ü aşıyor. Boş hanesi otomatik düzeltildi.`);
             
+            // Fazlalığı Boş hanesinden çıkar
             if (b >= excess) {
                  b -= excess;
                  bInput.value = b;
             } else if (y >= excess) {
+                 // Eğer boş yetmezse, yanlış hanesinden çıkar (Bu, deneme anında değil, veri girişinde olduğu için kabul edilebilir)
                  y -= excess;
                  yInput.value = y;
             } else {
                  d -= excess;
                  dInput.value = d;
             }
+            // Yeni total hesaplanır
+            total = d + y + b;
         }
         
         // Anlık net hesaplama ve görüntüleme
@@ -382,23 +386,27 @@
             
             const date = r.timestamp ? r.timestamp.toDate().toLocaleDateString('tr-TR', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Tarih Yok';
             
-            row.innerHTML = `
-                <td class="px-3 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">${date} - ${r.testName}</td>
-                <td class="px-3 py-4 whitespace-nowrap text-sm text-green-600">${r.scores.turkce.net.toFixed(2)}</td>
-                <td class="px-3 py-4 whitespace-nowrap text-sm text-green-600">${r.scores.sosyal.net.toFixed(2)}</td>
-                <td class="px-3 py-4 whitespace-nowrap text-sm text-green-600">${r.scores.din.net.toFixed(2)}</td>
-                <td class="px-3 py-4 whitespace-nowrap text-sm text-green-600">${r.scores.ingilizce.net.toFixed(2)}</td>
-                <td class="px-3 py-4 whitespace-nowrap text-sm font-extrabold text-indigo-600">${(r.scores.turkce.net + r.scores.sosyal.net + r.scores.din.net + r.scores.ingilizce.net).toFixed(2)}</td>
-                <td class="px-3 py-4 whitespace-nowrap text-sm font-extrabold text-purple-600">${r.manuelAgisPuanı.toFixed(2)}</td>
-            `;
-
-            // Sayısal tablonun içeriği farklı
-            if (category === 'sayisal') {
+            // Sözel Tablo İçeriği
+            if (category === 'sozel') {
+                const totalSozelNet = (r.scores.turkce.net + r.scores.sosyal.net + r.scores.din.net + r.scores.ingilizce.net).toFixed(2);
+                row.innerHTML = `
+                    <td class="px-3 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">${date} - ${r.testName}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-sm text-green-600">${r.scores.turkce.net.toFixed(2)}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-sm text-green-600">${r.scores.sosyal.net.toFixed(2)}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-sm text-green-600">${r.scores.din.net.toFixed(2)}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-sm text-green-600">${r.scores.ingilizce.net.toFixed(2)}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-sm font-extrabold text-indigo-600">${totalSozelNet}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-sm font-extrabold text-purple-600">${r.manuelAgisPuanı.toFixed(2)}</td>
+                `;
+            } 
+            // Sayısal Tablo İçeriği (YENİ EKLENEN KISIM)
+            else if (category === 'sayisal') {
+                const totalSayisalNet = (r.scores.matematik.net + r.scores.fen.net).toFixed(2);
                 row.innerHTML = `
                     <td class="px-3 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">${date} - ${r.testName}</td>
                     <td class="px-3 py-4 whitespace-nowrap text-sm text-green-600">${r.scores.matematik.net.toFixed(2)}</td>
                     <td class="px-3 py-4 whitespace-nowrap text-sm text-green-600">${r.scores.fen.net.toFixed(2)}</td>
-                    <td class="px-3 py-4 whitespace-nowrap text-sm font-extrabold text-indigo-600">${(r.scores.matematik.net + r.scores.fen.net).toFixed(2)}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-sm font-extrabold text-indigo-600">${totalSayisalNet}</td>
                     <td class="px-3 py-4 whitespace-nowrap text-sm font-extrabold text-purple-600">${r.manuelAgisPuanı.toFixed(2)}</td>
                 `;
             }
@@ -497,6 +505,7 @@
     function resetInputForm() {
          document.getElementById('test-adi-input').value = '';
          document.getElementById('manuel-agis-puani-input').value = 0.00;
+         // Input değerlerini sıfırla ve netleri yeniden hesapla
          [...sozelSubjects, ...sayisalSubjects].forEach(subject => {
              document.getElementById(`${subject}-d-input`).value = 0;
              document.getElementById(`${subject}-y-input`).value = 0;
@@ -529,9 +538,13 @@
         document.getElementById('tab-sozel').addEventListener('click', () => switchTab('sozel'));
         document.getElementById('tab-sayisal').addEventListener('click', () => switchTab('sayisal'));
 
-        // Anlık net hesaplama ve AGIS puanını anlık yansıtma (input change ile)
+        // Anlık AGIS puanını anlık yansıtma (input change ile)
         document.getElementById('manuel-agis-puani-input').addEventListener('change', () => {
-             document.getElementById('gosterilen-agis-puani').textContent = (parseFloat(document.getElementById('manuel-agis-puani-input').value) || 0.00).toFixed(2);
+             // Sadece Sayısal sekmesi altındaki başlığı güncelliyoruz
+             const agisDisplay = document.querySelector('#content-sayisal #gosterilen-agis-puani');
+             if (agisDisplay) {
+                 agisDisplay.textContent = (parseFloat(document.getElementById('manuel-agis-puani-input').value) || 0.00).toFixed(2);
+             }
         });
     }
 
