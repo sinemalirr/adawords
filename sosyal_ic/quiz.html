@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sosyal Bilgiler Quiz ve Denemeler</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; min-height: 100vh; }
+        .quiz-card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+        }
+        .answer-option {
+            transition: all 0.1s ease;
+            cursor: pointer;
+        }
+        .answer-option:hover {
+            background-color: #eef2ff; /* indigo-50 */
+        }
+        .selected {
+            background-color: #c7d2fe; /* indigo-300 */
+            border-color: #6366f1; /* indigo-500 */
+        }
+        .correct {
+            background-color: #a7f3d0; /* emerald-200 */
+            border-color: #34d399; /* emerald-500 */
+        }
+        .wrong {
+            background-color: #fecaca; /* red-200 */
+            border-color: #f87171; /* red-400 */
+        }
+    </style>
+</head>
+<body>
+
+<div class="w-full max-w-4xl mx-auto p-6 md:p-10 mt-8">
+    <header class="pb-4 border-b border-gray-200 mb-6">
+        <a href="../sosyal.html" class="text-indigo-600 hover:text-indigo-800 text-xl mb-4 inline-block">← Sosyal Bilgiler Ana Menü</a>
+        <h1 class="text-3xl font-extrabold text-gray-800">Sosyal Bilgiler Quiz ve Testler 🌍</h1>
+        <p class="text-sm text-gray-500 mt-2">Aşağıdan bir test seçin ve kendinizi deneyin.</p>
+    </header>
+
+    <div id="quiz-selection-area" class="quiz-card mb-8">
+        <h2 id="section-title" class="text-2xl font-semibold mb-4 text-gray-700"></h2>
+        <div id="quiz-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            </div>
+    </div>
+
+    <div id="quiz-area" class="hidden">
+        <div class="flex justify-between items-center mb-4">
+            <span id="quiz-title" class="text-xl font-bold text-indigo-600"></span>
+            <span id="quiz-counter" class="text-lg font-medium text-gray-500">Soru 1 / 10</span>
+        </div>
+        
+        <div class="quiz-card">
+            <p id="question-text" class="text-xl mb-6 font-medium text-gray-800 whitespace-pre-line"></p>
+            
+            <div id="answers-container" class="space-y-3">
+                </div>
+            
+            <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
+                <button id="prev-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-150" disabled>
+                    ← Önceki
+                </button>
+                <button id="next-btn" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg transition duration-150">
+                    Sonraki →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="result-area" class="hidden quiz-card text-center">
+        <h2 class="text-3xl font-bold mb-4 text-indigo-600">Test Sonuçları 🎉</h2>
+        <p class="text-xl text-gray-700 mb-2">Doğru Sayısı: <span id="correct-count" class="font-extrabold text-indigo-600"></span></p>
+        <p class="text-xl text-gray-700 mb-6">Yanlış Sayısı: <span id="wrong-count" class="font-extrabold text-red-600"></span></p>
+        <button id="restart-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition duration-150">
+            Yeni Test Seç
+        </button>
+        <div id="answer-review" class="mt-8 text-left space-y-4">
+            <h3 class="text-xl font-semibold border-b pb-2 text-gray-700">Cevap İncelemesi:</h3>
+        </div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<script src="../js/firebase-init.js"></script>
+<script src="../js/sure-takip-sosyal.js"></script> 
+
+<script>
+    // 1. QUIZ VERİLERİ (Quiz.docx dosyasından çıkarılmıştır)
+    const sosyalKonuQuizler = [
+        {
+            id: 1,
+            konu: "TEST 1: İletişim ve Etkileşim (Ünite 1)",
+            sorular: [
+                { metin: "Aşağıdaki atasözlerinden hangisi iletişimde olumlu ifadeler kullanmanın ve tatlı dilin önemine vurgu yapmaktadır?", cevaplar: { A: "Söz ola kese savaşı, söz ola kestire başı", B: "İnsanın eti yenmez, derisi giyilmez; tatlı dilinden başka nesi var.", C: "Hamama giren terler.", D: "Lafla peynir gemisi yürümez." }, dogruCevap: "B" },
+                { metin: "İletişimi olumsuz etkileyen tutum ve davranışların özellikleri arasında aşağıdakilerden hangisi yer almaz?", cevaplar: { A: "Olumsuz ve suçlayıcı ifadeler kullanmak.", B: "Davranıştan çok, kişinin kendisine odaklanmak.", C: "Karşımızdaki kişinin savunma yapmasına neden olmak.", D: "Olumlu ve yapıcı bir dil kullanmak." }, dogruCevap: "D" },
+                { metin: "Bir iletişim sürecinde göndericinin alıcıya aktardığı duygu ve düşünceye ne ad verilir?", cevaplar: { A: "Kanal", B: "Dönüt", C: "Mesaj (İleti)", D: "Kaynak" }, dogruCevap: "C" },
+                { metin: "Kitle iletişim araçlarının faydaları arasında aşağıdakilerden hangisi gösterilebilir?", cevaplar: { A: "İnsanları kendi iç dünyalarıyla baş başa bırakması.", B: "Toplumun kültürel mirasının korunmasına yardımcı olması.", C: "İnsanlar arasındaki sosyal bağları zayıflatması.", D: "Dünyadaki gelişmelere ayak uydurulmasını zorlaştırması." }, dogruCevap: "B" },
+                { metin: "Bir kişi ya da kurum hakkında yanlış veya onur zedeleyici bir haber yapıldığında, bu yayını yalanlama ve düzeltme hakkına ne ad verilir?", cevaplar: { A: "Sansür", B: "Asparagas", C: "Tekzip (Düzeltme)", D: "Özel hayatın gizliliği" }, dogruCevap: "C" },
+                { metin: "Aşağıdakilerden hangisi bireyin kendini karşısındaki kişinin yerine koyması, olaylara onun bakış açısıyla bakması anlamına gelen kavramdır?", cevaplar: { A: "Sempati", B: "Empati", C: "Mimik", D: "Jest" }, dogruCevap: "B" },
+                { metin: "İletişimi olumlu etkileyen 'Ben Dili' ile ilgili aşağıdakilerden hangisi doğru bir ifadedir?", cevaplar: { A: "Karşımızdaki kişiyi eleştiren ve yargılayan ifadeler içerir.", B: "Bireyin karşılaştığı davranış karşısında kendi duygu ve düşüncesine odaklanır.", C: "Doğrudan kişinin kişiliğini hedef alır.", D: "İletişimin olumsuz sonuçlanmasına neden olur." }, dogruCevap: "B" },
+                { metin: "Kitle iletişim özgürlüğüne Anayasa ile sınırlama getirilebilecek durumlar arasında hangisi yoktur?", cevaplar: { A: "Toplumun ahlaki değerlerinin korunması.", B: "Şiddeti özendirici yayınların engellenmesi.", C: "Sorumluluk ve etik kurallara uyulmaması.", D: "Haberlerin kesinlikle sansürlenmesi zorunluluğu." }, dogruCevap: "D" },
+                { metin: "Aşağıdakilerden hangisi iyi ve etkin dinleyen bir kişinin davranışıdır?", cevaplar: { A: "Sürekli konuşmacının sözünü kesmek.", B: "Konuşmacıyla göz teması kurmaktan kaçınmak.", C: "Sadece söylenenlere değil, vücut hareketlerine de dikkat etmek.", D: "Dinleme sırasında sürekli olarak kendi söyleyeceklerini planlamak." }, dogruCevap: "C" },
+                { metin: "Radyo ve Televizyon Üst Kurulu (RTÜK), yayınlarla ilgili olarak hangi sistem ile anne babaları ve toplumu bilgilendirir?", cevaplar: { A: "Sansür Uygulamaları", B: "Akıllı İşaretler Sistemi", C: "Dezenformasyon Kontrol Sistemi", D: "Medya Okuryazarlığı Programı" }, dogruCevap: "B" }
+            ]
+        },
+        {
+            id: 2,
+            konu: "TEST 2: Yerleşme, Göç ve Haklar (Ünite 3)",
+            sorular: [
+                { metin: "Aşağıdakilerden hangisi, insanların yerleşik hayata geçmesini sağlayan en önemli gelişmedir?", cevaplar: { A: "Mağaralarda yaşamaya başlamaları.", B: "Ateşin bulunması.", C: "Tarım faaliyetlerinin başlaması.", D: "Hayvanları evcilleştirmeleri." }, dogruCevap: "C" },
+                { metin: "İç göçlerin yoğun olduğu şehirlerde ortaya çıkan olumsuz sonuçlar arasında aşağıdakilerden hangisi yer almaz?", cevaplar: { A: "Nüfusun dağılışında dengesizlik.", B: "Trafik ve konut sorunlarının artması.", C: "Belediye hizmetlerinde aksamalar.", D: "Ülkenin toplam nüfusunun artması." }, dogruCevap: "D" },
+                { metin: "Nüfusun büyüklüğünü, yapısını, gelişimini ve dağılımını inceleyen bilim dalına ne ad verilir?", cevaplar: { A: "Antropoloji", B: "Sosyoloji", C: "Demografi", D: "Arkeoloji" }, dogruCevap: "C" },
+                { metin: "Aşağıdakilerden hangisi Mevsimlik Göç'e örnektir?", cevaplar: { A: "Deprem sonrası başka şehre taşınmak.", B: "Kırdan kente sürekli yerleşmek.", C: "Yazın turizm faaliyetlerinde çalışmak için şehir değiştirmek.", D: "Mübadele yoluyla başka ülkeye gitmek." }, dogruCevap: "C" },
+                { metin: "Yerleşme ve seyahat hürriyetinin kanunla sınırlandırılabileceği nedenler arasında hangisi yoktur?", cevaplar: { A: "Suç soruşturmasını sağlamak.", B: "Sosyal ve ekonomik gelişmeyi sağlamak.", C: "Kişinin ailesini ziyaret etme isteği (Hürriyetin kendisidir).", D: "Sağlıklı ve düzenli kentleşmeyi gerçekleştirmek." }, dogruCevap: "C" },
+                { metin: "II. Mahmut döneminde yapılan ilk nüfus sayımının amacı nedir?", cevaplar: { A: "Sadece kadın ve çocuk sayısını tespit etmek.", B: "Asker ve vergi yükümlüsü sayısını belirlemek.", C: "Ülkenin eğitim seviyesini ölçmek.", D: "Kırdan kente göçü durdurmak." }, dogruCevap: "B" },
+                { metin: "Kan davası, miras yoluyla toprakların bölünmesi veya sağlık hizmetlerinden yararlanma isteği, göçün hangi nedenleri arasında yer alır?", cevaplar: { A: "Doğal nedenler", B: "Ekonomik nedenler", C: "Sosyal nedenler", D: "Siyasi nedenler" }, dogruCevap: "C" },
+                { metin: "İç göçler, ülkenin nüfus özelliklerinden hangisini değiştirmez?", cevaplar: { A: "Nüfusun yaş dağılımını.", B: "Nüfusun cinsiyet dağılımını.", C: "Kır ve kent nüfus oranlarını.", D: "Ülkenin toplam nüfus miktarını." }, dogruCevap: "D" },
+                { metin: "Türkiye'de yerleşme yeri tercihlerinde ulaşım, sanayi ve ticaret gibi unsurlar hangi faktörler arasında yer alır?", cevaplar: { A: "Doğal faktörler", B: "Beşerî (insani) faktörler", C: "Mevsimlik faktörler", D: "Kültürel faktörler" }, dogruCevap: "B" },
+                { metin: "Aşağıdakilerden hangisi zorunlu göçe neden olan siyasi faktörlere örnektir?", cevaplar: { A: "Doğal afetler (deprem, sel).", B: "Eğitim imkanlarının kısıtlı olması.", C: "Savaş, terör veya siyasi baskılar.", D: "Tarımda makineleşmenin yaygınlaşması." }, dogruCevap: "C" }
+            ]
+        },
+        {
+            id: 3,
+            konu: "TEST 3: Ekonomi ve Kurumlar (Ünite 5)",
+            sorular: [
+                { metin: "Aşağıdakilerden hangisi Ahilik ve Lonca teşkilatlarının temel görevlerinden biri değildir?", cevaplar: { A: "Çırak-kalfa-usta ilişkisiyle meslek elemanı yetiştirmek.", B: "Malların kalitesini ve fiyatını (narh) belirlemek.", C: "Zanaatkârların askerlik işlerini düzenlemek.", D: "Haksız rekabeti ve hileli mal üretimini engellemek." }, dogruCevap: "C" },
+                { metin: "Lonca teşkilatında lonca ile devlet arasındaki ilişkilerden sorumlu olan yönetici kimdir?", cevaplar: { A: "Yiğitbaşı", B: "Kethüda", C: "Ahi", D: "Usta" }, dogruCevap: "B" },
+                { metin: "Bir hizmetin sürüp gidebilmesi için kişilerin kendi istekleriyle bağışladıkları para ve mülklere ne ad verilir?", cevaplar: { A: "Lonca", B: "Gaza", C: "Vakıf", D: "Tımar" }, dogruCevap: "C" },
+                { metin: "Osmanlı Devleti'nde yoksullara ve öğrencilere ücretsiz yemek dağıtan hayır kurumlarına ne ad verilirdi?", cevaplar: { A: "Darüşşifa", B: "Kervansaray", C: "Medrese", D: "Aşevi (İmarethane)" }, dogruCevap: "D" },
+                { metin: "Vakıfların, Türk medeniyetinde üstlendiği sosyal ve ekonomik roller arasında aşağıdakilerden hangisi gösterilemez?", cevaplar: { A: "Halk arasında sosyal dayanışmayı güçlendirmesi.", B: "Ticaret kervanlarının konakladığı kervansaraylar kurması.", C: "Borçlulara para temin etmesi ve ekonominin canlanmasını sağlaması.", D: "Yöneticilerin hukuk kuralları önünde ayrıcalıklı olmasını sağlaması." }, dogruCevap: "D" },
+                { metin: "Meslek seçimi yaparken bireyin sorgulaması gereken en önemli kişisel faktörler nelerdir?", cevaplar: { A: "Mesleğin maaş miktarı ve çalışma saatleri.", B: "Kişinin yetenekleri, ilgi alanları ve kişilik özellikleri.", C: "Mesleğin toplumdaki prestiji ve popülerliği.", D: "Ailenin istekleri ve mesleğin eğitim süresi." }, dogruCevap: "B" },
+                { metin: "Osmanlı'da devlet adamı ve üst düzey yönetici yetiştirmek amacıyla açılan okul hangisidir?", cevaplar: { A: "Medrese", B: "Lonca", C: "Enderun Mektebi", D: "Darüşşifa" }, dogruCevap: "C" },
+                { metin: "Aşağıdakilerden hangisi meslek etiği kurallarına uyulmasını sağlayan ve haksız rekabeti önleyen bir kurumdur?", cevaplar: { A: "Vakıflar", B: "Darüşşifalar", C: "Lonca Teşkilatı", D: "Medreseler" }, dogruCevap: "C" },
+                { metin: "Meslek seçiminde 'Kişinin başarılı olma şansı, kişisel özellikler ve mesleğin gerekleri arasındaki uyum arttıkça artar.' ilkesi hangi faktörün önemini vurgular?", cevaplar: { A: "İş imkanlarının.", B: "Mesleğe uygun eğitimin.", C: "İlgi ve kabiliyetin.", D: "Sadece maaş miktarının." }, dogruCevap: "C" },
+                { metin: "Aşağıdakilerden hangisi vakıfların sağlık alanında üstlendiği görevlere örnektir?", cevaplar: { A: "İmarethane kurmak.", B: "Kervansaray inşa etmek.", C: "Darüşşifa (Sağlık kurumu) kurmak.", D: "Borçlulara sermaye vermek." }, dogruCevap: "C" }
+            ]
+        },
+        {
+            id: 4,
+            konu: "TEST 4: Bilim, İletişim Özgürlüğü ve Yönetim (Ünite 4 / Ek)",
+            sorular: [
+                { metin: "Yazı bulunmadan önce bilgilerin aktarılması için insanlar hangi yolu kullanmışlardır?", cevaplar: { A: "Mağara duvarlarına resim ve simgeler yapmak.", B: "Kitap basmak.", C: "Tekerleği kullanmak.", D: "Telefonla konuşmak." }, dogruCevap: "A" },
+                { metin: "Yazının icadının insanlık tarihindeki en temel faydası nedir?", cevaplar: { A: "Ticaret yollarının açılması.", B: "Bilgilerin kaydedilebilir, korunabilir ve sonraki kuşaklara aktarılabilir hale gelmesi.", C: "İlk kütüphanelerin kurulması.", D: "Toplumda eşitliğin sağlanması." }, dogruCevap: "B" },
+                { metin: "Matbaanın geliştirilmesiyle bilgiye ulaşım kolaylaşmış ve düşünce/sanat ürünlerinin yayılması hızlanmıştır. Matbaanın icadının temel sonucu nedir?", cevaplar: { A: "Sadece bilim insanlarının bilgiye ulaşabilmesi.", B: "Kitapların ucuzlaması ve bilgi birikiminin hızlanması.", C: "Bilginin sadece kilise kontrolünde kalması.", D: "Yazının öneminin azalması." }, dogruCevap: "B" },
+                { metin: "Anayasamızda yer alan 'Herkes, bilim ve sanatı serbestçe öğrenme, öğretme, açıklama, yayma ve bu alanlarda her türlü araştırma hakkına sahiptir' maddesi neyi güvence altına alır?", cevaplar: { A: "Sadece bilim insanlarını korumayı.", B: "Bilimsel ve sanatsal çalışmaların hukuki koruma altına alındığını.", C: "Devletin bilimsel çalışmalara karışmayacağını.", D: "Eğitimde fırsat eşitliğini." }, dogruCevap: "B" },
+                { metin: "Bilimsel gelişmelerin kısıtlandığı, farklı düşüncelerin kabul görmediği toplumların gelişmesi zordur. Bu durum, bilimsel ilerleme için hangi kavramın zorunlu olduğunu gösterir?", cevaplar: { A: "Sömürgecilik", B: "Özgür Düşünce", C: "Dogmatizm (Bağnazlık)", D: "Kapitalizm" }, dogruCevap: "B" },
+                { metin: "Divan-ı Hümayun, Osmanlı Devleti’nde hangi kuruma benzer bir işleve sahiptir?", cevaplar: { A: "TBMM", B: "Cumhurbaşkanlığı", C: "Bakanlar Kurulu (Hükümet)", D: "Anayasa Mahkemesi" }, dogruCevap: "C" },
+                { metin: "Padişahın yazışmalarından sorumlu olan, ferman ve beratlara padişahın tuğrasını çeken Osmanlı görevlisi kimdir?", cevaplar: { A: "Sadrazam", B: "Nişancı", C: "Defterdar", D: "Kethüda" }, dogruCevap: "B" },
+                { metin: "Aşağıdakilerden hangisi sosyal devlet anlayışının bir gereği olarak vatandaşlara sağlanan hizmetlerden biri değildir?", cevaplar: { A: "Emekli maaşlarının ödenmesi.", B: "Sağlık giderlerinin karşılanması (Yeşil Kart).", C: "Maddi imkânlardan yoksun başarılı öğrencilere burs sağlamak.", D: "Vatandaşların iş kurmak için sermaye bulmasını zorunlu tutmak." }, dogruCevap: "D" },
+                { metin: "Okullarda sınıf başkanı seçimi ve öğrenci kulübü toplantılarında her üyenin görüşünü özgürce ifade etmesi, toplum hayatındaki hangi değerin uygulamasına örnektir?", cevaplar: { A: "Sosyal devlet", B: "Monarşi", C: "Demokrasi", D: "Laiklik" }, dogruCevap: "C" },
+                { metin: "Anayasa'nın güvence altına aldığı, yurttaşların yurt içinde istedikleri yere kısıtlama olmadan seyahat edebilme hürriyeti nedir?", cevaplar: { A: "Yerleşme Hürriyeti", B: "İletişim Hürriyeti", C: "Düşünceyi İfade Hürriyeti", D: "Seyahat Özgürlüğü" }, dogruCevap: "D" }
+            ]
+        }
+    ];
+
+    const sosyalDenemeler = [
+        {
+            id: 11,
+            konu: "GENEL DENEME A (20 SORU)",
+            sorular: [
+                { metin: "Aşağıdaki atasözlerinden hangisi iletişimde olumlu ifadeler kullanmanın ve tatlı dilin önemine vurgu yapmaktadır?", cevaplar: { A: "Söz ola kese savaşı, söz ola kestire başı", B: "İnsanın eti yenmez, derisi giyilmez; tatlı dilinden başka nesi var.", C: "Hamama giren terler.", D: "Lafla peynir gemisi yürümez." }, dogruCevap: "B" },
+                { metin: "Bir iletişim sürecinde göndericinin alıcıya aktardığı duygu ve düşünceye ne ad verilir?", cevaplar: { A: "Kanal", B: "Dönüt", C: "Mesaj (İleti)", D: "Kaynak" }, dogruCevap: "C" },
+                { metin: "Kitle iletişim araçlarının faydaları arasında aşağıdakilerden hangisi gösterilebilir?", cevaplar: { A: "İnsanları kendi iç dünyalarıyla baş başa bırakması.", B: "Toplumun kültürel mirasının korunmasına yardımcı olması.", C: "İnsanlar arasındaki sosyal bağları zayıflatması.", D: "Dünyadaki gelişmelere ayak uydurulmasını zorlaştırması." }, dogruCevap: "B" },
+                { metin: "Bir kişi ya da kurum hakkında yanlış veya onur zedeleyici bir haber yapıldığında, bu yayını yalanlama ve düzeltme hakkına ne ad verilir?", cevaplar: { A: "Sansür", B: "Asparagas", C: "Tekzip (Düzeltme)", D: "Özel hayatın gizliliği" }, dogruCevap: "C" },
+                { metin: "Aşağıdakilerden hangisi bireyin kendini karşısındaki kişinin yerine koyması, olaylara onun bakış açısıyla bakması anlamına gelen kavramdır?", cevaplar: { A: "Sempati", B: "Empati", C: "Mimik", D: "Jest" }, dogruCevap: "B" },
+                { metin: "İletişimi olumlu etkileyen 'Ben Dili' ile ilgili aşağıdakilerden hangisi doğru bir ifadedir?", cevaplar: { A: "Karşımızdaki kişiyi eleştiren ve yargılayan ifadeler içerir.", B: "Bireyin karşılaştığı davranış karşısında kendi duygu ve düşüncesine odaklanır.", C: "Doğrudan kişinin kişiliğini hedef alır.", D: "İletişimin olumsuz sonuçlanmasına neden olur." }, dogruCevap: "B" },
+                { metin: "İletişimi olumsuz etkileyen tutum ve davranışların özellikleri arasında aşağıdakilerden hangisi yer almaz?", cevaplar: { A: "Olumsuz ve suçlayıcı ifadeler kullanmak.", B: "Davranıştan çok, kişinin kendisine odaklanmak.", C: "Karşımızdaki kişinin savunma yapmasına neden olmak.", D: "Olumlu ve yapıcı bir dil kullanmak." }, dogruCevap: "D" },
+                { metin: "Aşağıdakilerden hangisi zorunlu göçe neden olan siyasi faktörlere örnektir?", cevaplar: { A: "Doğal afetler (deprem, sel).", B: "Eğitim imkanlarının kısıtlı olması.", C: "Savaş, terör veya siyasi baskılar.", D: "Tarımda makineleşmenin yaygınlaşması." }, dogruCevap: "C" },
+                { metin: "II. Mahmut döneminde yapılan ilk nüfus sayımının amacı nedir?", cevaplar: { A: "Sadece kadın ve çocuk sayısını tespit etmek.", B: "Asker ve vergi yükümlüsü sayısını belirlemek.", C: "Ülkenin eğitim seviyesini ölçmek.", D: "Kırdan kente göçü durdurmak." }, dogruCevap: "B" },
+                { metin: "İç göçlerin yoğun olduğu şehirlerde ortaya çıkan olumsuz sonuçlar arasında aşağıdakilerden hangisi yer almaz?", cevaplar: { A: "Nüfusun dağılışında dengesizlik.", B: "Trafik ve konut sorunlarının artması.", C: "Belediye hizmetlerinde aksamalar.", D: "Ülkenin toplam nüfusunun artması." }, dogruCevap: "D" },
+                { metin: "Lonca teşkilatında lonca ile devlet arasındaki ilişkilerden sorumlu olan yönetici kimdir?", cevaplar: { A: "Yiğitbaşı", B: "Kethüda", C: "Ahi", D: "Usta" }, dogruCevap: "B" },
+                { metin: "Bir hizmetin sürüp gidebilmesi için kişilerin kendi istekleriyle bağışladıkları para ve mülklere ne ad verilir?", cevaplar: { A: "Lonca", B: "Gaza", C: "Vakıf", D: "Tımar" }, dogruCevap: "C" },
+                { metin: "Osmanlı Devleti'nde yoksullara ve öğrencilere ücretsiz yemek dağıtan hayır kurumlarına ne ad verilirdi?", cevaplar: { A: "Darüşşifa", B: "Kervansaray", C: "Medrese", D: "Aşevi (İmarethane)" }, dogruCevap: "D" },
+                { metin: "Meslek seçimi yaparken bireyin sorgulaması gereken en önemli kişisel faktörler nelerdir?", cevaplar: { A: "Mesleğin maaş miktarı ve çalışma saatleri.", B: "Kişinin yetenekleri, ilgi alanları ve kişilik özellikleri.", C: "Mesleğin toplumdaki prestiji ve popülerliği.", D: "Ailenin istekleri ve mesleğin eğitim süresi." }, dogruCevap: "B" },
+                { metin: "Yazının icadının insanlık tarihindeki en temel faydası nedir?", cevaplar: { A: "Ticaret yollarının açılması.", B: "Bilgilerin kaydedilebilir, korunabilir ve sonraki kuşaklara aktarılabilir hale gelmesi.", C: "İlk kütüphanelerin kurulması.", D: "Toplumda eşitliğin sağlanması." }, dogruCevap: "B" },
+                { metin: "Matbaanın geliştirilmesiyle bilgiye ulaşım kolaylaşmış ve düşünce/sanat ürünlerinin yayılması hızlanmıştır. Matbaanın icadının temel sonucu nedir?", cevaplar: { A: "Sadece bilim insanlarının bilgiye ulaşabilmesi.", B: "Kitapların ucuzlaması ve bilgi birikiminin hızlanması.", C: "Bilginin sadece kilise kontrolünde kalması.", D: "Yazının öneminin azalması." }, dogruCevap: "B" },
+                { metin: "Anayasamızda yer alan 'Herkes, bilim ve sanatı serbestçe öğrenme, öğretme, açıklama, yayma ve bu alanlarda her türlü araştırma hakkına sahiptir' maddesi neyi güvence altına alır?", cevaplar: { A: "Sadece bilim insanlarını korumayı.", B: "Bilimsel ve sanatsal çalışmaların hukuki koruma altına alındığını.", C: "Devletin bilimsel çalışmalara karışmayacağını.", D: "Eğitimde fırsat eşitliğini." }, dogruCevap: "B" },
+                { metin: "Padişahın yazışmalarından sorumlu olan, ferman ve beratlara padişahın tuğrasını çeken Osmanlı görevlisi kimdir?", cevaplar: { A: "Sadrazam", B: "Nişancı", C: "Defterdar", D: "Kethüda" }, dogruCevap: "B" },
+                { metin: "Aşağıdakilerden hangisi sosyal devlet anlayışının bir gereği olarak vatandaşlara sağlanan hizmetlerden biri değildir?", cevaplar: { A: "Emekli maaşlarının ödenmesi.", B: "Sağlık giderlerinin karşılanması (Yeşil Kart).", C: "Maddi imkânlardan yoksun başarılı öğrencilere burs sağlamak.", D: "Vatandaşların iş kurmak için sermaye bulmasını zorunlu tutmak." }, dogruCevap: "D" },
+                { metin: "Anayasa'nın güvence altına aldığı, yurttaşların yurt içinde istedikleri yere kısıtlama olmadan seyahat edebilme hürriyeti nedir?", cevaplar: { A: "Yerleşme Hürriyeti", B: "İletişim Hürriyeti", C: "Düşünceyi İfade Hürriyeti", D: "Seyahat Özgürlüğü" }, dogruCevap: "D" }
+            ]
+        },
+        {
+            id: 12,
+            konu: "GENEL DENEME B (20 SORU)",
+            sorular: [
+                { metin: "İletişimi olumsuz etkileyen, suçlayıcı, yargılayıcı ve eleştirici dil hangisidir?", cevaplar: { A: "Ben Dili", B: "Empati", C: "Sen Dili", D: "Mimik" }, dogruCevap: "C" },
+                { metin: "Aşağıdakilerden hangisi iyi ve etkin dinleyen bir kişinin davranışıdır?", cevaplar: { A: "Sürekli konuşmacının sözünü kesmek.", B: "Konuşmacıyla göz teması kurmaktan kaçınmak.", C: "Sadece söylenenlere değil, vücut hareketlerine de dikkat etmek.", D: "Dinleme sırasında sürekli olarak kendi söyleyeceklerini planlamak." }, dogruCevap: "C" },
+                { metin: "Bir kişi ya da kurum hakkında yanlış veya onur zedeleyici bir haber yapıldığında, bu yayını yalanlama ve düzeltme hakkına ne ad verilir?", cevaplar: { A: "Sansür", B: "Asparagas", C: "Tekzip (Düzeltme)", D: "Özel hayatın gizliliği" }, dogruCevap: "C" },
+                { metin: "Kitle iletişim özgürlüğüne Anayasa ile sınırlama getirilebilecek durumlar arasında hangisi yoktur?", cevaplar: { A: "Toplumun ahlaki değerlerinin korunması.", B: "Şiddeti özendirici yayınların engellenmesi.", C: "Sorumluluk ve etik kurallara uyulmaması.", D: "Haberlerin kesinlikle sansürlenmesi zorunluluğu." }, dogruCevap: "D" },
+                { metin: "Aşağıdakilerden hangisi, insanların yerleşik hayata geçmesini sağlayan en önemli gelişmedir?", cevaplar: { A: "Mağaralarda yaşamaya başlamaları.", B: "Ateşin bulunması.", C: "Tarım faaliyetlerinin başlaması.", D: "Hayvanları evcilleştirmeleri." }, dogruCevap: "C" },
+                { metin: "Nüfusun büyüklüğünü, yapısını, gelişimini ve dağılımını inceleyen bilim dalına ne ad verilir?", cevaplar: { A: "Antropoloji", B: "Sosyoloji", C: "Demografi", D: "Arkeoloji" }, dogruCevap: "C" },
+                { metin: "Aşağıdakilerden hangisi Mevsimlik Göç'e örnektir?", cevaplar: { A: "Deprem sonrası başka şehre taşınmak.", B: "Kırdan kente sürekli yerleşmek.", C: "Yazın turizm faaliyetlerinde çalışmak için şehir değiştirmek.", D: "Mübadele yoluyla başka ülkeye gitmek." }, dogruCevap: "C" },
+                { metin: "Yerleşme ve seyahat hürriyetinin kanunla sınırlandırılabileceği nedenler arasında hangisi yoktur?", cevaplar: { A: "Suç soruşturmasını sağlamak.", B: "Sosyal ve ekonomik gelişmeyi sağlamak.", C: "Kişinin ailesini ziyaret etme isteği (Hürriyetin kendisidir).", D: "Sağlıklı ve düzenli kentleşmeyi gerçekleştirmek." }, dogruCevap: "C" },
+                { metin: "Ahilik ve Lonca teşkilatlarının mesleki ve ekonomik hayattaki temel işlevleri nelerdir?", cevaplar: { A: "Sadece esnafların dini eğitimini sağlamak.", B: "Malların kalitesini denetlemek ve fiyatları belirlemek (Narh).", C: "Yöneticilerin keyfi kararlar almasını sağlamak.", D: "Askeri teşkilatlanmayı güçlendirmek." }, dogruCevap: "B" },
+                { metin: "Lonca Teşkilatı içinde Lonca ile devlet arasındaki ilişkilerden sorumlu olan kişi kimdir?", cevaplar: { A: "Yiğitbaşı", B: "Kethüda", C: "Ahi", D: "Usta" }, dogruCevap: "B" },
+                { metin: "Osmanlı Devleti'nde yoksullara ve öğrencilere ücretsiz yemek dağıtan hayır kurumlarına ne ad verilirdi?", cevaplar: { A: "Darüşşifa", B: "Kervansaray", C: "Medrese", D: "Aşevi (İmarethane)" }, dogruCevap: "D" },
+                { metin: "Meslek seçimi yaparken bireyin sorgulaması gereken en önemli kişisel faktörler nelerdir?", cevaplar: { A: "Mesleğin maaş miktarı ve çalışma saatleri.", B: "Kişinin yetenekleri, ilgi alanları ve kişilik özellikleri.", C: "Mesleğin toplumdaki prestiji ve popülerliği.", D: "Ailenin istekleri ve mesleğin eğitim süresi." }, dogruCevap: "B" },
+                { metin: "Yazının icadının insanlık tarihindeki en temel faydası nedir?", cevaplar: { A: "Ticaret yollarının açılması.", B: "Bilgilerin kaydedilebilir, korunabilir ve sonraki kuşaklara aktarılabilir hale gelmesi.", C: "İlk kütüphanelerin kurulması.", D: "Toplumda eşitliğin sağlanması." }, dogruCevap: "B" },
+                { metin: "Bilimsel gelişmelerin kısıtlandığı, farklı düşüncelerin kabul görmediği toplumların gelişmesi zordur. Bu durum, bilimsel ilerleme için hangi kavramın zorunlu olduğunu gösterir?", cevaplar: { A: "Sömürgecilik", B: "Özgür Düşünce", C: "Dogmatizm (Bağnazlık)", D: "Kapitalizm" }, dogruCevap: "B" },
+                { metin: "Divan-ı Hümayun, Osmanlı Devleti’nde hangi kuruma benzer bir işleve sahiptir?", cevaplar: { A: "TBMM", B: "Cumhurbaşkanlığı", C: "Bakanlar Kurulu (Hükümet)", D: "Anayasa Mahkemesi" }, dogruCevap: "C" },
+                { metin: "Padişahın yazışmalarından sorumlu olan, ferman ve beratlara padişahın tuğrasını çeken Osmanlı görevlisi kimdir?", cevaplar: { A: "Sadrazam", B: "Nişancı", C: "Defterdar", D: "Kethüda" }, dogruCevap: "B" },
+                { metin: "Aşağıdakilerden hangisi sosyal devlet anlayışının bir gereği olarak vatandaşlara sağlanan hizmetlerden biri değildir?", cevaplar: { A: "Emekli maaşlarının ödenmesi.", B: "Sağlık giderlerinin karşılanması (Yeşil Kart).", C: "Maddi imkânlardan yoksun başarılı öğrencilere burs sağlamak.", D: "Vatandaşların iş kurmak için sermaye bulmasını zorunlu tutmak." }, dogruCevap: "D" },
+                { metin: "Okullarda sınıf başkanı seçimi ve öğrenci kulübü toplantılarında her üyenin görüşünü özgürce ifade etmesi, toplum hayatındaki hangi değerin uygulamasına örnektir?", cevaplar: { A: "Sosyal devlet", B: "Monarşi", C: "Demokrasi", D: "Laiklik" }, dogruCevap: "C" },
+                { metin: "Aşağıdakilerden hangisi iç göçün sonuçlarından biri değildir?", cevaplar: { A: "Nüfusun dengesiz dağılması.", B: "Trafik sorunlarının artması.", C: "Okul ve hastane ihtiyacının artması.", D: "Toplam nüfusun azalması." }, dogruCevap: "D" },
+                { metin: "Sosyal devlet anlayışına göre, hiçbir sosyal güvencesi olmayanların sağlık giderlerini karşılamak için yapılan uygulama nedir?", cevaplar: { A: "SGK", B: "Yeşil Kart", C: "Kervansaray", D: "Darüşşifa" }, dogruCevap: "B" }
+            ]
+        }
+    ];
+
+    const tumSosyalQuizler = [...sosyalKonuQuizler, ...sosyalDenemeler];
+
+
+    // 2. QUIZ İŞLEVLERİ VE DEĞİŞKENLER (Fen Quiz yapısından adapte edilmiştir)
+    const quizListContainer = document.getElementById('quiz-list');
+    const quizSelectionArea = document.getElementById('quiz-selection-area');
+    const quizArea = document.getElementById('quiz-area');
+    const resultArea = document.getElementById('result-area');
+    const quizTitle = document.getElementById('quiz-title');
+    const quizCounter = document.getElementById('quiz-counter');
+    const questionText = document.getElementById('question-text');
+    const answersContainer = document.getElementById('answers-container');
+    const nextBtn = document.getElementById('next-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const correctCountDisplay = document.getElementById('correct-count');
+    const wrongCountDisplay = document.getElementById('wrong-count');
+    const restartBtn = document.getElementById('restart-btn');
+    const answerReviewContainer = document.getElementById('answer-review');
+    const sectionTitle = document.getElementById('section-title');
+    
+    // URL'den grup parametresini al
+    const urlParams = new URLSearchParams(window.location.search);
+    const grup = urlParams.get('grup');
+
+    let currentQuizList = [];
+    let currentQuiz = null;
+    let currentQuestionIndex = 0;
+    let userAnswers = {}; // { questionIndex: "A", 1: "B" }
+
+    // Quiz listesini yükle
+    function loadQuizList() {
+        quizListContainer.innerHTML = '';
+        
+        if (grup === 'konu') {
+            currentQuizList = sosyalKonuQuizler;
+            sectionTitle.textContent = 'Konu Bazlı Quizler (10 Soruluk)';
+        } else if (grup === 'deneme') {
+            currentQuizList = sosyalDenemeler;
+            sectionTitle.textContent = 'Genel Deneme Sınavları (20 Soruluk)';
+        } else {
+            sectionTitle.textContent = 'Hata: Geçersiz Test Grubu';
+            return;
+        }
+
+        currentQuizList.forEach(quiz => {
+            const quizButton = document.createElement('button');
+            const questionCount = quiz.sorular.length;
+            
+            // Renkler Sosyal Bilgiler'e göre ayarlandı
+            quizButton.className = 'w-full text-left p-4 bg-gray-100 hover:bg-indigo-100 border-2 border-indigo-300 rounded-lg shadow font-medium text-gray-700 transition duration-150';
+            quizButton.textContent = `${quiz.konu} (${questionCount} Soru)`;
+            quizButton.onclick = () => startQuiz(quiz.id);
+            quizListContainer.appendChild(quizButton);
+        });
+    }
+
+    // Quiz başlat
+    function startQuiz(quizId) {
+        currentQuiz = tumSosyalQuizler.find(q => q.id === quizId);
+        currentQuestionIndex = 0;
+        userAnswers = {};
+
+        quizSelectionArea.classList.add('hidden');
+        quizArea.classList.remove('hidden');
+        resultArea.classList.add('hidden');
+        
+        quizTitle.textContent = currentQuiz.konu;
+        displayQuestion();
+    }
+
+    // Soruyu ve şıkları göster
+    function displayQuestion() {
+        const questionData = currentQuiz.sorular[currentQuestionIndex];
+        
+        quizCounter.textContent = `Soru ${currentQuestionIndex + 1} / ${currentQuiz.sorular.length}`;
+        questionText.textContent = questionData.metin;
+        answersContainer.innerHTML = '';
+        
+        // Şıkları oluştur
+        Object.entries(questionData.cevaplar).forEach(([key, value]) => {
+            const answerDiv = document.createElement('div');
+            // Renkler Sosyal Bilgiler'e göre ayarlandı
+            answerDiv.className = `answer-option p-3 border-2 border-gray-200 rounded-lg flex items-start ${userAnswers[currentQuestionIndex] === key ? 'selected' : ''}`;
+            answerDiv.innerHTML = `<span class="font-bold mr-3 text-indigo-500">${key})</span> <span class="flex-1">${value}</span>`;
+            answerDiv.dataset.answerKey = key;
+            answerDiv.onclick = () => selectAnswer(key);
+            answersContainer.appendChild(answerDiv);
+        });
+        
+        updateNavigationButtons();
+    }
+
+    // Cevap seçimi
+    function selectAnswer(key) {
+        userAnswers[currentQuestionIndex] = key;
+        
+        // Şıkların seçilme durumunu güncelle
+        answersContainer.querySelectorAll('.answer-option').forEach(div => {
+            div.classList.remove('selected');
+            if (div.dataset.answerKey === key) {
+                div.classList.add('selected');
+            }
+        });
+    }
+
+    // Navigasyon butonlarını güncelle
+    function updateNavigationButtons() {
+        prevBtn.disabled = currentQuestionIndex === 0;
+        
+        if (currentQuestionIndex === currentQuiz.sorular.length - 1) {
+            nextBtn.textContent = 'Quizi Bitir';
+            nextBtn.onclick = finishQuiz;
+        } else {
+            nextBtn.textContent = 'Sonraki →';
+            nextBtn.onclick = goToNextQuestion;
+        }
+    }
+
+    // Sonraki soruya git
+    function goToNextQuestion() {
+        if (currentQuestionIndex < currentQuiz.sorular.length - 1) {
+            currentQuestionIndex++;
+            displayQuestion();
+        }
+    }
+
+    // Önceki soruya git
+    function goToPrevQuestion() {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            displayQuestion();
+        }
+    }
+    
+    // Quiz bitir
+    function finishQuiz() {
+        quizArea.classList.add('hidden');
+        resultArea.classList.remove('hidden');
+        
+        let correctCount = 0;
+        
+        // Cevapları kontrol et ve sonuçları hazırla
+        answerReviewContainer.innerHTML = '<h3 class="text-xl font-semibold border-b pb-2 text-gray-700">Cevap İncelemesi:</h3>';
+        
+        currentQuiz.sorular.forEach((question, index) => {
+            const userAnswer = userAnswers[index];
+            const isCorrect = userAnswer === question.dogruCevap;
+            
+            if (isCorrect) {
+                correctCount++;
+            }
+            
+            // İnceleme kartını oluştur
+            const reviewItem = document.createElement('div');
+            // Renkler Sosyal Bilgiler'e göre ayarlandı
+            reviewItem.className = `p-3 rounded-lg border-2 ${isCorrect ? 'border-emerald-500 bg-emerald-50' : 'border-red-500 bg-red-50'}`;
+            reviewItem.innerHTML = `
+                <p class="font-bold text-gray-800 mb-1">Soru ${index + 1}:</p>
+                <p class="whitespace-pre-line text-sm mb-2">${question.metin.substring(0, 100)}...</p>
+                <p class="text-sm">Senin Cevabın: <span class="font-bold ${isCorrect ? 'text-emerald-700' : 'text-red-700'}">${userAnswer || 'Boş'}</span></p>
+                <p class="text-sm">Doğru Cevap: <span class="font-bold text-indigo-700">${question.dogruCevap}</span></p>
+            `;
+            answerReviewContainer.appendChild(reviewItem);
+        });
+
+        const wrongCount = currentQuiz.sorular.length - correctCount;
+        correctCountDisplay.textContent = correctCount;
+        wrongCountDisplay.textContent = wrongCount;
+        
+        // Firestore'a kaydetme işlemi (Sosyal Bilgiler için)
+        saveQuizResult(currentQuiz.id, correctCount, wrongCount, currentQuiz.sorular.length);
+    }
+
+    // Quiz sonucunu Firestore'a kaydetme işlevi (Sosyal Bilgiler için)
+    function saveQuizResult(quizId, correct, wrong, total) {
+        if (!firebase.auth().currentUser || typeof db === 'undefined') return;
+
+        const userId = firebase.auth().currentUser.uid;
+        const net = correct - (wrong / 3); 
+        
+        db.collection('sosyalSonuclari').add({ // Sosyal Bilgiler için ayrı bir koleksiyon kullanıldı
+            userId: userId,
+            quizId: quizId,
+            correct: correct,
+            wrong: wrong,
+            total: total,
+            net: Math.max(0, net),
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            console.log("Sosyal Bilgiler Quiz sonucu başarıyla kaydedildi.");
+        }).catch((error) => {
+            console.error("Sosyal Bilgiler Quiz sonucu kaydedilirken hata:", error);
+        });
+    }
+
+    // Baştan Başlat
+    restartBtn.addEventListener('click', () => {
+        resultArea.classList.add('hidden');
+        quizSelectionArea.classList.remove('hidden');
+        loadQuizList();
+    });
+
+    // Navigasyon butonlarının olay dinleyicilerini ekle
+    nextBtn.addEventListener('click', goToNextQuestion);
+    prevBtn.addEventListener('click', goToPrevQuestion);
+    
+    // Uygulama başlangıcı
+    document.addEventListener('DOMContentLoaded', loadQuizList);
+</script>
+
+</body>
+</html>
