@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGİS - Analiz ve Gelişim Sistemi (Manuel)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; min-height: 100vh; }
+        .tab-button { transition: all 0.1s; }
+        .active-tab { 
+            border-bottom: 3px solid #4f46e5; 
+            color: #4f46e5; 
+            font-weight: 600;
+        }
+        .analiz-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+        .input-alan { width: 60px; text-align: center; }
+        .tablo-satir th {
+            font-weight: 600;
+            color: #1f2937; /* gray-800 */
+        }
+    </style>
+</head>
+<body>
+
+<div class="w-full max-w-6xl mx-auto p-6 md:p-10 mt-8">
+
+    <header class="pb-4 border-b border-gray-200 mb-6">
+        <a href="dersler.html" class="text-indigo-600 hover:text-indigo-800 text-xl mb-4 inline-block">← Ders Seçimi</a>
+        <h1 class="text-3xl font-extrabold text-gray-800 tracking-tight">📈 AGİS: Analiz ve Gelişim Sistemi (Manuel Giriş)</h1>
+        <p class="text-sm text-gray-500 mt-2">Girdiğiniz doğru, yanlış ve boş sayılarına göre anlık net hesaplama ve grafik analizi.</p>
+    </header>
+
+    <div class="border-b border-gray-200 mb-6">
+        <nav class="flex space-x-4">
+            <button id="tab-sozel" class="tab-button py-2 px-4 text-gray-500 hover:text-indigo-600 active-tab">
+                Sözel Dersler (Türkçe, Sosyal, Din, İngilizce) ✍️
+            </button>
+            <button id="tab-sayisal" class="tab-button py-2 px-4 text-gray-500 hover:text-indigo-600">
+                Sayısal Dersler (Matematik, Fen Bilimleri) 🔢
+            </button>
+        </nav>
+    </div>
+
+    <main id="content-sozel" class="space-y-8">
+        <div class="analiz-card">
+            <h2 class="text-2xl font-bold text-gray-700 mb-4">Sözel Net Hesaplama</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-3 py-3 text-left text-sm font-medium text-gray-700">Ders</th>
+                            <th class="px-3 py-3 text-center text-sm font-medium text-green-600">Doğru (D)</th>
+                            <th class="px-3 py-3 text-center text-sm font-medium text-red-600">Yanlış (Y)</th>
+                            <th class="px-3 py-3 text-center text-sm font-medium text-gray-500">Boş (B)</th>
+                            <th class="px-3 py-3 text-center text-sm font-medium text-gray-500">Toplam Soru</th>
+                            <th class="px-3 py-3 text-center text-sm font-medium text-indigo-600">Net</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sozel-sonuc-tablosu" class="bg-white divide-y divide-gray-200">
+                        <tr id="row-turkce" class="tablo-satir">
+                            <th class="px-3 py-2 text-left text-sm whitespace-nowrap">Türkçe</th>
+                            <td class="px-3 py-2 text-center"><input type="number" id="turkce-d" value="0" min="0" max="20" class="input-alan border rounded" onchange="validateInput('turkce', 20)"></td>
+                            <td class="px-3 py-2 text-center"><input type="number" id="turkce-y" value="0" min="0" max="20" class="input-alan border rounded" onchange="validateInput('turkce', 20)"></td>
+                            <td class="px-3 py-2 text-center"><input type="number" id="turkce-b" value="0" min="0" max="20" class="input-alan border rounded" onchange="validateInput('turkce', 20)"></td>
+                            <td class="px-3 py-2 text-center text-sm font-semibold">20</td>
+                            <td id="turkce-net" class="px-3 py-2 text-center text-sm font-bold text-indigo-600">0.00</td>
+                        </tr>
+                        <tr id="row-sosyal" class="tablo-satir">
+                            <th class="px-3 py-2 text-left text-sm whitespace-nowrap">Sosyal</th>
+                            <td class="px-3 py-2 text-center"><input type="number" id="sosyal-d" value="0" min="0" max="10" class="input-alan border rounded" onchange="validateInput('sosyal', 10)"></td>
+                            <td class="px-3 py-2 text-center"><input type="number" id="sosyal-y" value="0" min="0" max="10" class="input-alan border rounded" onchange="validateInput('sosyal', 10)"></td>
+                            <td class="px-3 py-2 text-center"><input type="number" id="sosyal-b" value="0" min="0" max="10" class="input-alan border rounded" onchange="validateInput('sosyal', 10)"></td>
+                            <td class="px-3 py-2 text-center text-sm font-semibold">10</td>
+                            <td id="sosyal-net" class="px-3 py-2 text-center text-sm font-bold text-indigo-600">0.00</td>
+                        </tr>
+                        <tr id="row-din" class="tablo-satir">
+                            <th class="px-3 py-2 text-left text-sm whitespace-nowrap">Din Kültürü</th>
+                            <td class="px-3 py-2 text-center"><input type="number" id="din-d" value="0" min="0" max="10" class="input-alan border rounded" onchange="validateInput('din', 10)"></td>
+                            <td class="px-3 py-2 text-center"><input type="number" id="din-y" value="0" min="0" max="10" class="input-alan border rounded" onchange="validateInput('din', 10)"></td>
+                            <td class="px-3 py-2 text-center"><input type="number" id="din-b" value="0" min="0" max="10" class="input-alan border rounded" onchange="validateInput('din', 10)"></td>
+                            <td class="px-3 py-2 text-center text-sm font-semibold">10</td>
+                            <td id="din-net" class="px-3 py-2 text-center text-sm font-bold text-indigo-600">0.00</td>
+                        </tr>
+                        <tr id="row-ingilizce" class="tablo-satir">
+                            <th class="px-3 py-2 text-left text-sm whitespace-nowrap">İngilizce</th>
+                            <td class="px-3 py-2 text-center"><input type="number" id="ingilizce-d" value="0" min="0" max="10" class="input-alan border rounded" onchange="validateInput('ingilizce', 10)"></td>
+                            <td class="px-3 py-2 text-center"><input type="number" id="ingilizce-y" value="0" min="0" max="10" class="input-alan border rounded" onchange="validateInput('ingilizce', 10)"></td>
+                            <td class="px-3 py-2 text-center"><input type="number" id="ingilizce-b" value="0" min="0" max="10" class="input-alan border rounded" onchange="validateInput('ingilizce', 10)"></td>
+                            <td class="px-3 py-2 text-center text-sm font-semibold">10</td>
+                            <td id="ingilizce-net" class="px-3 py-2 text-center text-sm font-bold text-indigo-600">0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
+                <p class="text-lg font-bold text-gray-700">Toplam Sözel Net: <span id="toplam-sozel-net" class="text-indigo-600">0.00</span></p>
+                <button onclick="calculateAndRender('sozel')" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg transition duration-150">
+                    Hesapla ve Grafiği Güncelle
+                </button>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-bold text-gray-700 pt-6 border-t border-gray-200">Sözel Net Dağılım Grafiği</h2>
+        <div class="analiz-card">
+            <canvas id="sozelGrafikDetay"></canvas>
+        </div>
+
+        <div class="analiz-card mt-6 p-4">
+            <p class="text-sm text-gray-600">
+                * **Hesaplama Notu:** Netler $\text{Doğru} - (\text{Yanlış} / 3)$ formülü ile, toplam soru sayısını aşmayacak şekilde hesaplanmıştır. Toplam Sözel Net, bu dört dersin netlerinin toplamıdır.
+            </p>
+        </div>
+    </main>
+    
+    <main id="content-sayisal" class="hidden space-y-8">
+        <div class="analiz-card">
+            <h2 class="text-2xl font-bold text-gray-700 mb-4">Sayısal Net Hesaplama</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-3 py-3 text-left text-sm font-medium text-gray-700">Ders</th>
+                            <th class="px-3 py-3 text-center text-sm font-medium text-green-600">Doğru (D)</th>
+                            <th class="px-3 py-3 text-center text-sm font-medium text-red-600">Yanlış (Y)</th>
+                            <th class="px-3 py-3 text-center text-sm font-medium text-gray-500">Boş (B)</th>
+                            <th class="px-3 py-3 text-center text-sm font-medium text-gray-500">Toplam Soru</th>
+                            <th class="px-3 py-3 text-center text-sm font-medium text-indigo-600">Net</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sayisal-sonuc-tablosu" class="bg-white divide-y divide-gray-200">
+                         <tr id="row-matematik" class="tablo-satir">
+                            <th class="px-3 py-2 text-left text-sm whitespace-nowrap">Matematik</th>
+                            <td class="px-3 py-2 text-center"><input type="number" id="matematik-d" value="0" min="0" max="20" class="input-alan border rounded" onchange="validateInput('matematik', 20)"></td>
+                            <td class="px-3 py-2 text-center"><input type="number" id="matematik-y" value="0" min="0" max="20" class="input-alan border rounded" onchange="validateInput('matematik', 20)"></td>
+                            <td class="px-3 py-2 text-center"><input type="number" id="matematik-b" value="0" min="0" max="20" class="input-alan border rounded" onchange="validateInput('matematik', 20)"></td>
+                            <td class="px-3 py-2 text-center text-sm font-semibold">20</td>
+                            <td id="matematik-net" class="px-3 py-2 text-center text-sm font-bold text-indigo-600">0.00</td>
+                        </tr>
+                        <tr id="row-fen" class="tablo-satir">
+                            <th class="px-3 py-2 text-left text-sm whitespace-nowrap">Fen Bilimleri</th>
+                            <td class="px-3 py-2 text-center"><input type="number" id="fen-d" value="0" min="0" max="20" class="input-alan border rounded" onchange="validateInput('fen', 20)"></td>
+                            <td class="px-3 py-2 text-center"><input type="number" id="fen-y" value="0" min="0" max="20" class="input-alan border rounded" onchange="validateInput('fen', 20)"></td>
+                            <td class="px-3 py-2 text-center"><input type="number" id="fen-b" value="0" min="0" max="20" class="input-alan border rounded" onchange="validateInput('fen', 20)"></td>
+                            <td class="px-3 py-2 text-center text-sm font-semibold">20</td>
+                            <td id="fen-net" class="px-3 py-2 text-center text-sm font-bold text-indigo-600">0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
+                <p class="text-lg font-bold text-gray-700">Toplam Sayısal Net: <span id="toplam-sayisal-net" class="text-indigo-600">0.00</span></p>
+                <button onclick="calculateAndRender('sayisal')" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg transition duration-150">
+                    Hesapla ve Grafiği Güncelle
+                </button>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-bold text-gray-700 pt-6 border-t border-gray-200">Sayısal Net Dağılım Grafiği</h2>
+        <div class="analiz-card">
+            <canvas id="sayisalGrafikDetay"></canvas>
+        </div>
+
+        <div class="analiz-card mt-6 p-4">
+            <p class="text-sm font-bold text-gray-700 mb-2">Genel AGİS Puanı:</p>
+            <p class="text-3xl font-extrabold text-indigo-700"><span id="genel-agis-puani">0.00</span></p>
+            <p class="text-sm text-gray-600 mt-2">
+                * **Hesaplama Notu:** Genel AGİS Puanı, bu sayfadaki tüm derslerin (Sözel ve Sayısal) netlerinin toplamı olarak kabul edilmiştir.
+            </p>
+        </div>
+    </main>
+</div>
+
+<script>
+    let sozelChartInstance = null;
+    let sayisalChartInstance = null;
+
+    // LGS Soru Dağılımı
+    const subjectDetails = {
+        'turkce': { max: 20, net: 0, label: 'Türkçe' },
+        'sosyal': { max: 10, net: 0, label: 'Sosyal' },
+        'din': { max: 10, net: 0, label: 'Din K.' },
+        'ingilizce': { max: 10, net: 0, label: 'İngilizce' },
+        'matematik': { max: 20, net: 0, label: 'Matematik' },
+        'fen': { max: 20, net: 0, label: 'Fen Bil.' }
+    };
+
+    const sozelSubjects = ['turkce', 'sosyal', 'din', 'ingilizce'];
+    const sayisalSubjects = ['matematik', 'fen'];
+
+    // --------------------------------------------------------------------------------
+    // 1. GİRİŞ KONTROLÜ
+    // --------------------------------------------------------------------------------
+
+    // Girdi alanlarının toplamının max soruyu geçmemesi için kontrol
+    function validateInput(subject, maxQuestions) {
+        const d = parseInt(document.getElementById(`${subject
