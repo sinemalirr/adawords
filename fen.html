@@ -8,21 +8,20 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; min-height: 100vh; }
-        .modul-karti { transition: transform 0.2s; }
-        .modul-karti:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        /* Akordeon Stil Tanımlamaları */
-        .accordion-header {
-            cursor: pointer;
-            transition: background-color 0.15s;
+        .modul-karti { 
+            transition: transform 0.2s; 
+            background-color: white; /* Kart zemin rengi */
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+            display: block; /* a tag'ının tam alanı kaplaması için */
+            border: 1px solid #f0fdf4; /* emerald-50 gibi */
         }
-        .accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
+        .modul-karti:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); 
         }
-        .accordion-content.open {
-            max-height: 1000px; /* İçeriğin sığabileceği büyük bir değer */
-        }
+        /* Akordeon stilleri artık gerekli değil, sadece boşaltıldı */
     </style>
 </head>
 <body>
@@ -61,53 +60,47 @@
     </div>
 </header>
     
-    <main class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+    <main class="grid grid-cols-1">
 
-        <section id="egitim-bolumu">
-            <h2 class="text-3xl font-bold text-gray-700 mb-6 border-l-4 border-emerald-600 pl-3">🧪 Eğitim Modülleri</h2>
+        <section id="fen-modulleri">
+            <h2 class="text-3xl font-bold text-gray-700 mb-6 border-l-4 border-emerald-600 pl-3">🧪 Eğitim ve Test Modülleri</h2>
             
-            <div class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                 
-                <div class="bg-white p-6 rounded-xl shadow-lg border border-emerald-100 hover:bg-emerald-50">
-                    <div id="konu-anlatimi-header" class="accordion-header flex justify-between items-center text-emerald-600 p-1 -m-1 rounded-lg">
-                        <h3 class="text-xl font-semibold">Konu Anlatımı</h3>
-                        <span class="text-2xl transform transition duration-300" id="accordion-icon">▼</span>
-                    </div>
-                    <div id="konu-anlatimi-content" class="accordion-content pt-4">
-                        <p class="text-gray-600 mb-4 text-sm">Üniteler bazında ayrıntılı ders notlarına buradan ulaşabilirsiniz. (Lütfen bir ünite seçin)</p>
-                        <ul class="space-y-2 text-sm text-gray-700">
-                            <li class="p-2 bg-gray-50 rounded-md border-l-4 border-emerald-300 hover:bg-gray-100 cursor-pointer">Ünite 1: Mevsimler ve İklim</li>
-                            <li class="p-2 bg-gray-50 rounded-md border-l-4 border-emerald-300 hover:bg-gray-100 cursor-pointer">Ünite 2: DNA ve Genetik Kod</li>
-                            <li class="p-2 bg-gray-50 rounded-md border-l-4 border-emerald-300 hover:bg-gray-100 cursor-pointer">Ünite 3: Basınç</li>
-                            </ul>
-                    </div>
-                </div>
+                <a href="fen_ic/konu-anlatimi.html" class="modul-karti hover:bg-emerald-50 border-l-4 border-emerald-600">
+                    <h3 class="text-xl font-semibold text-emerald-600 mb-1">Konu Anlatımı</h3>
+                    <p class="text-sm text-gray-600">Detaylı ders notları ve görsel içerikler.</p>
+                </a>
 
-                <a href="fen_ic/flashcard.html?tur=flashcard" class="modul-karti block bg-white p-6 rounded-xl shadow-lg border border-emerald-100 hover:bg-emerald-50">
-                    <h3 class="text-xl font-semibold text-emerald-600 mb-1">Flashcardlar (Kavramlar ve Kurallar)</h3>
+                <a href="fen_ic/flashcard.html?tur=flashcard" class="modul-karti hover:bg-emerald-50 border-l-4 border-emerald-600">
+                    <h3 class="text-xl font-semibold text-emerald-600 mb-1">Flashcardlar (Kavramlar)</h3>
                     <p class="text-sm text-gray-600">Hızlı tekrar ve önemli kavramların ezberi.</p>
                 </a>
-                
+
+                <a href="fen_ic/flashcard.html?tur=taktik" class="modul-karti hover:bg-emerald-50 border-l-4 border-emerald-600">
+                    <h3 class="text-xl font-semibold text-emerald-600 mb-1">Çözüm Taktikleri</h3>
+                    <p class="text-sm text-gray-600">Deney yorumlama ve problem çözme ipuçları.</p>
+                </a>
             </div>
-        </section>
 
-        <section id="test-analiz-bolumu">
-            <h2 class="text-3xl font-bold text-gray-700 mb-6 border-l-4 border-emerald-600 pl-3">📊 Testler ve Analiz</h2>
+            <h2 class="text-3xl font-bold text-gray-700 mb-6 border-l-4 border-red-600 pl-3">🎯 Testler ve Başarı Analizi</h2>
             
-            <div class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                <a href="fen_ic/quiz.html?grup=konu" class="modul-karti block bg-white p-6 rounded-xl shadow-lg border border-red-100 hover:bg-red-50">
-                    <h3 class="text-xl font-semibold text-red-600 mb-1">Konu Bazlı Quizler</h3>
-                    <p class="text-sm text-gray-600">5 ve 10 soruluk kısa testlerle konuları pekiştirin.</p>
-                </a>
-                
-                <a href="fen_ic/quiz.html?grup=deneme" class="modul-karti block bg-white p-6 rounded-xl shadow-lg border-2 border-red-500 hover:bg-red-50">
-                    <h3 class="text-2xl font-bold text-red-700 mb-1">🎯 Genel Deneme Sınavları</h3>
-                    <p class="text-sm text-gray-700">LGS formatında 20 soruluk denemeler.</p>
-                </a>
+                <div class="space-y-6">
+                    <a href="fen_ic/quiz.html?grup=konu" class="modul-karti block bg-white p-6 rounded-xl shadow-lg border border-red-100 hover:bg-red-50">
+                        <h3 class="text-xl font-semibold text-red-600 mb-1">Konu Bazlı Quizler</h3>
+                        <p class="text-sm text-gray-600">5 ve 10 soruluk kısa testlerle konuları pekiştirin.</p>
+                    </a>
+                    
+                    <a href="fen_ic/quiz.html?grup=deneme" class="modul-karti block bg-white p-6 rounded-xl shadow-lg border-2 border-red-500 hover:bg-red-50">
+                        <h3 class="text-2xl font-bold text-red-700 mb-1">🎯 Genel Deneme Sınavları</h3>
+                        <p class="text-sm text-gray-700">LGS formatında 20 soruluk denemeler.</p>
+                    </a>
+                </div>
 
                 <div class="modul-karti bg-white p-6 rounded-xl shadow-lg border border-fuchsia-100">
-                    <h3 class="text-xl font-semibold text-fuchsia-600 mb-3">📈 Başarı Analizi</h3>
+                    <h3 class="text-xl font-semibold text-fuchsia-600 mb-3">📈 Başarı Analizi (AGİS)</h3>
                     <p class="text-gray-600 mb-4">Tüm sonuçlarınızın net/doğru/yanlış grafiği.</p>
                     <canvas id="fenGrafik" class="mt-4"></canvas>
                 </div>
@@ -123,24 +116,8 @@
 <script src="js/sure-takip-fen.js"></script>
 
 <script>
-    // Akordeon İşlevi
-    const header = document.getElementById('konu-anlatimi-header');
-    const content = document.getElementById('konu-anlatimi-content');
-    const icon = document.getElementById('accordion-icon');
-
-    // Başlığa tıklandığında akordeonu açıp kapama
-    header.addEventListener('click', () => {
-        content.classList.toggle('open');
-        icon.classList.toggle('rotate-180');
-    });
+    // Akordeon JS kaldırıldı.
     
-    // Akordeonu başlangıçta kapalı tut
-    document.addEventListener('DOMContentLoaded', () => {
-        content.classList.remove('open');
-        icon.classList.remove('rotate-180');
-    });
-    
-
     // --- Başarı Grafiği Fonksiyonu ---
 
     // Kullanıcı girişini ve kimlik doğrulama durumunu bekleyelim
@@ -151,7 +128,6 @@
         } else {
             // Kullanıcı oturum açmadıysa, grafik alanına bilgilendirme mesajı yaz
             const ctx = document.getElementById('fenGrafik').getContext('2d');
-            // Canvas üzerinde mesaj göstermek için basit bir çözüm
             ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
             ctx.fillStyle = '#6b7280'; // gray-500
             ctx.font = "14px Inter";
@@ -191,7 +167,6 @@
 
             // --- Grafik Verilerini Hazırlama ---
             const labels = results.map(r => {
-                // ID >= 11 veya soru sayısı 20 olanlar Deneme olarak etiketlenebilir.
                 const prefix = r.total === 20 ? 'DENEME ' : 'KONU '; 
                 return prefix + r.quizId; 
             });
@@ -220,7 +195,7 @@
                         type: 'line', 
                         label: 'Net Sayısı',
                         data: nets,
-                        borderColor: 'rgb(147, 51, 234)', // Mor (Fen için farklı renk)
+                        borderColor: 'rgb(147, 51, 234)', // Mor
                         backgroundColor: 'rgb(147, 51, 234)',
                         fill: false,
                         yAxisID: 'y1' 
