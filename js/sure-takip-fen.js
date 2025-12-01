@@ -1,13 +1,13 @@
 // ====================================================================
 // js/sure-takip-fen.js
-// Matematik Script'inin Gelişmiş Mantığına Uyarlanmıştır.
+// Merkezi Koleksiyon: "lgs_ders_takip" hedeflenmiştir.
 // ====================================================================
 
 const DERS_ADI = "fen";
 // KRİTİK EŞİK: Günlük 15 dakika = 900 saniye
 const MIN_SURE_SERI_SAYACI = 15 * 60; 
-// 🔥 DÜZELTME: Tanımlama hatasını çözmek için benzersiz isim kullanıldı.
-const FEN_SURE_COLLECTION = 'fenSureleri'; 
+// 🔥 UYARLAMA: Merkezi koleksiyon adı
+const ANA_TAKIP_COLLECTION = 'lgs_ders_takip'; 
 
 // DOM Elementleri
 const sureSayacElementi = document.getElementById('sure-sayac');
@@ -26,7 +26,8 @@ let isStreakCompletedToday = false;
 
 // 1. Tarih ve Zaman İşlevleri
 function getTodayDateString() {
-    return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    // YYYY-MM-DD formatında tarih döner.
+    return new Date().toISOString().slice(0, 10); 
 }
 
 function formatTime(saniye) {
@@ -50,10 +51,11 @@ function updateDailyProgressUI() {
         timeDisplayColor = 'text-yellow-600';
     }
 
+    // Yalnızca Dakika:Saniye gösterimi
     dailyProgressContainer.innerHTML = `
         <span class="text-xs font-medium text-gray-600">Bugünkü Hedef:</span>
         <div class="text-lg font-semibold ${timeDisplayColor}">
-            ${formatTime(bugunCalisilanSure)} / ${formatTime(MIN_SURE_SERI_SAYACI).substring(3)}
+            ${formatTime(bugunCalisilanSure).substring(3)} / ${formatTime(MIN_SURE_SERI_SAYACI).substring(3)}
         </div>
         <div class="h-1.5 bg-gray-200 rounded-full w-24 overflow-hidden ml-4" title="Hedefe Kalan: ${100 - progressPercent}%">
             <div class="h-full bg-green-500 transition-all duration-500" style="width: ${progressPercent}%;"></div>
@@ -62,7 +64,9 @@ function updateDailyProgressUI() {
     
     if (isStreakCompletedToday && bugunCalisilanSure >= MIN_SURE_SERI_SAYACI) {
          const div = dailyProgressContainer.querySelector(`.${timeDisplayColor}`);
-         if (div) div.textContent += ' ✅';
+         if (div && !div.textContent.includes('✅')) {
+             div.textContent += ' ✅';
+         }
     }
 }
 
@@ -74,17 +78,14 @@ function checkStreak(data) {
     // Firebase'den verileri çek
     mevcutSeri = data[`${DERS_ADI}_streak`] || 0;
     lastStudyDate = data[`${DERS_ADI}_last_study_date`] || '';
-    
-    // Bugüne ait süreyi Firebase'den çek, eğer bugün çalışılmadıysa 0'dan başlar
     bugunCalisilanSure = data[`${DERS_ADI}_daily_time`] || 0;
     
-    // Bugünkü tarih dünden farklıysa (seri kırılmış/devam ediyor olabilir)
+    // Bugünkü tarih, son çalışma tarihinden farklıysa
     if (lastStudyDate !== today) {
         
         const yesterday = new Date(Date.now() - YESTERDAY_MS).toISOString().slice(0, 10);
         
-        // Dün çalışılmış ve bugün hiç çalışılmamışsa, dünün tarihi dünün tarihine eşit değilse seri kırılır.
-        // KRİTİK KONTROL: Eğer dün çalışıldıysa (lastStudyDate'in dün olup olmadığı)
+        // Eğer son çalışma tarihi dün değilse, seriyi sıfırla.
         if (lastStudyDate !== yesterday) {
              mevcutSeri = 0; // Seri kırıldı
         }
@@ -103,35 +104,31 @@ function checkStreak(data) {
 
 // 3. Firebase'e Kayıt Fonksiyonu
 function sureyiFirebaseKaydet() {
-    if (!firebase.auth().currentUser) return; 
+    // auth nesnesinin firebase-init.js'de global tanımlandığını varsayıyoruz
+    if (!firebase.auth().currentUser || typeof db === 'undefined') return; 
 
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    const userID = auth.currentUser.uid;
-    // 🔥 UYARLAMA: Fen Bilimleri koleksiyon adı kullanıldı.
-    const dersRef = db.collection(FEN_SURE_COLLECTION).doc(userID);
+    const userID = firebase.auth().currentUser.uid;
+    // 🔥 KRİTİK DÜZELTME: Merkezi koleksiyona kaydediyoruz.
+    const dersRef = db.collection(ANA_TAKIP_COLLECTION).doc(userID);
     const today = getTodayDateString();
     
     let updateData = {
         [`${DERS_ADI}_sure`]: toplamSureSaniye, 
-        [`${DERS_ADI}_daily_time`]: bugunCalisilanSure 
+        [`${DERS_ADI}_daily_time`]: bugunCalisilanSure
     };
     
     // KRİTİK KONTROL: Eğer bugün 15 dakikalık eşik geçildiyse VE daha önce sayılmadıysa
     if (bugunCalisilanSure >= MIN_SURE_SERI_SAYACI && !isStreakCompletedToday) {
         
-        // Seriyi artırmadan önce dünün tarihi olup olmadığını tekrar kontrol et
         const YESTERDAY_MS = 24 * 60 * 60 * 1000;
         const yesterday = new Date(Date.now() - YESTERDAY_MS).toISOString().slice(0, 10);
 
-        // Seri kırılmamışsa (dün çalışılmış VEYA mevcut seri 0 ise)
-        if (mevcutSeri > 0 && lastStudyDate === yesterday || mevcutSeri === 0) {
+        // Seri artışı kontrolü:
+        if (lastStudyDate === yesterday) {
              mevcutSeri += 1;
-        } else if (lastStudyDate !== today) {
-             // Dün çalışılmadıysa ve bugünden önce tamamlandıysa seri kırılmıştır, 1'den başlar.
-             mevcutSeri = 1;
-        }
+        } else if (mevcutSeri === 0 || lastStudyDate === '') {
+             mevcutSeri = 1; // İlk defa seri tamamlanıyor
+        } 
         
         updateData[`${DERS_ADI}_streak`] = mevcutSeri;
         updateData[`${DERS_ADI}_last_study_date`] = today;
@@ -158,6 +155,7 @@ function sayaciBaslat() {
     timerInterval = setInterval(() => {
         toplamSureSaniye += 1;
         
+        // Sadece günlük hedef tamamlanmadıysa bugunCalisilanSure'yi biriktir.
         if (!isStreakCompletedToday) {
             bugunCalisilanSure += 1;
         }
@@ -176,8 +174,8 @@ function sayaciBaslat() {
 
 // 5. Ana Başlatma ve Veri Çekme İşlevi
 firebase.auth().onAuthStateChanged(user => {
-    if (!user) {
-        // Oturum açma sayfasına yönlendirme (isteğe bağlı)
+    // db nesnesinin firebase-init.js'de global tanımlandığını varsayıyoruz
+    if (!user || typeof db === 'undefined') {
         return; 
     }
     
@@ -186,10 +184,8 @@ firebase.auth().onAuthStateChanged(user => {
         userEmailDisplay.textContent = `${user.email}`; 
     }
     
-    const db = firebase.firestore();
-
-    // 🔥 UYARLAMA: Fen Bilimleri koleksiyon adı kullanıldı.
-    db.collection(FEN_SURE_COLLECTION).doc(userID).get()
+    // 🔥 KRİTİK DÜZELTME: Merkezi koleksiyondan verileri çekiyoruz.
+    db.collection(ANA_TAKIP_COLLECTION).doc(userID).get()
         .then(doc => {
             const data = doc.exists ? doc.data() : {};
             
@@ -199,15 +195,14 @@ firebase.auth().onAuthStateChanged(user => {
                 sureSayacElementi.textContent = formatTime(toplamSureSaniye);
             }
             
-            // Seriyi ve bugünkü çalışma süresini kontrol et
+            // Seriyi ve bugünkü çalışma süresini kontrol et ve yükle
             checkStreak(data);
             
             // Süre yüklendikten sonra sayacı başlat
             sayaciBaslat();
         })
         .catch((error) => {
-            console.error("Veri yüklenirken kritik hata:", error);
-            // Hata durumunda da sayacı sıfırdan başlatmayı dene (en azından sayar)
+            console.error("Fen Bilimleri Veri yüklenirken kritik hata:", error);
             toplamSureSaniye = 0;
             bugunCalisilanSure = 0;
             checkStreak({});
@@ -219,10 +214,12 @@ firebase.auth().onAuthStateChanged(user => {
 window.addEventListener('beforeunload', sureyiFirebaseKaydet);
 document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
+        // Sekme gizlendiğinde durdur ve kaydet
         clearInterval(timerInterval);
         timerInterval = null;
         sureyiFirebaseKaydet();
     } else {
+        // Sekme geri geldiğinde tekrar başlat
         sayaciBaslat();
     }
 });
